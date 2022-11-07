@@ -20,6 +20,24 @@
 ```
 $ pnpm install
 ```
+
+### 3. Start the local blockchain:
+```
+$ npx hardhat node
+```
+
+### 4. Deploy the smart contract:
+```
+$ npx hardhat run src/backend/scripts/deploy.js --network localhost
+```
+
+### Command to use hardhat console:
+```
+$ npx hardhat console --network localhost
+```
+
+Note: You should be in the root directory of the project to run the above commands.
+
 License
 ----
 MIT
