@@ -49,4 +49,10 @@ app.get('/get-from-ipfs', async (req, res) => {
   res.json({data: JSON.parse(data)});
 });
 
+app.get('/get-user-slug', async (req, res) => {
+  const id = req.query.id;
+  // TODO :: Fetch user slug from DB using id. Return slug, if user has a slug, or return id (public key).
+  res.send({ id, slug: 'test'});
+});
+
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));
