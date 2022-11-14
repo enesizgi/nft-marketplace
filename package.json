@@ -19,6 +19,7 @@
     "hardhat": "^2.8.4",
     "ipfs-core": "^0.17.0",
     "multer": "1.4.5-lts.1",
+    "prop-types": "^15.8.1",
     "react": "^17.0.2",
     "react-bootstrap": "^2.1.2",
     "react-dom": "^17.0.2",
@@ -54,7 +55,7 @@
   },
   "devDependencies": {
     "@babel/preset-env": "^7.16.11",
-    "eslint": "^8.26.0",
+    "eslint": "8.22.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-jsx-a11y": "^6.5.1",

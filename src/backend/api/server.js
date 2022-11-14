@@ -49,10 +49,22 @@ app.get('/get-from-ipfs', async (req, res) => {
   res.json({data: JSON.parse(data)});
 });
 
-app.get('/get-user-slug', async (req, res) => {
+app.get('/user/slug', async (req, res) => {
   const id = req.query.id;
   // TODO :: Fetch user slug from DB using id. Return slug, if user has a slug, or return id (public key).
   res.send({ id, slug: 'test'});
 });
+
+app.get('/user/id', async (req, res) => {
+  const slug = req.query.slug;
+  // TODO :: Fetch user id from DB using slug. Return id, if that slug belongs to any user, or return 404.
+  res.send({ slug, id: '0xabc' });
+});
+
+app.get('/user/profile-photo', async (req, res) => {
+  const id = req.query.id;
+  // TODO :: Fetch user profile photo from DB using id. Return image URL, if exists, else, return a default image.
+  res.send({ id, url: 'https://i.etsystatic.com/5805234/r/il/1a38f2/825515703/il_570xN.825515703_19nf.jpg' })
+})
 
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));
