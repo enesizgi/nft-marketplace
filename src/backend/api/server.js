@@ -67,4 +67,16 @@ app.get('/user/profile-photo', async (req, res) => {
   res.send({ id, url: 'https://i.etsystatic.com/5805234/r/il/1a38f2/825515703/il_570xN.825515703_19nf.jpg' })
 })
 
+app.get('/user/cover-photo', async (req, res) => {
+  const id = req.query.id;
+  // TODO :: Fetch user cover photo from DB using id. Return image URL, if exists, else, return a default image.
+  res.send({ id, url: 'https://media.glassdoor.com/l/1d/0c/e0/81/the-office.jpg' })
+});
+
+app.get('/user/name', async (req, res) => {
+  const id = req.query.id;
+  // TODO :: Fetch user name from DB using id. (it is like a real name, not like credential). Return 404 if the user does not exist.
+  res.send({ id, name: 'Michael Scott' });
+});
+
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));

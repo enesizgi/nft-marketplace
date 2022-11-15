@@ -12,9 +12,10 @@ import MarketplaceAbi from '../contractsData/Marketplace.json';
 import MarketplaceAddress from '../contractsData/Marketplace-address.json';
 import NFTAbi from '../contractsData/NFT.json';
 import NFTAddress from '../contractsData/NFT-address.json';
-import Profile from "./Profile";
+import Profile from './Profile';
+import GlobalStyle from './GlobalStyle';
 
-function App() {
+const App = () => {
   const [account, setAccount] = useState(null);
   const [marketplace, setMarketplace] = useState(null);
   const [nft, setNFT] = useState(null);
@@ -49,6 +50,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <GlobalStyle />
       <div className="App">
         <NavigationBar web3Handler={web3Handler} loading={loading} />
         { loading ? <div>Waiting for Metamask connection...</div>
