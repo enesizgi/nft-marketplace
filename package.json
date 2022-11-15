@@ -19,6 +19,7 @@
     "hardhat": "^2.8.4",
     "ipfs-core": "^0.17.0",
     "multer": "1.4.5-lts.1",
+    "mysql2": "^2.3.3",
     "prop-types": "^15.8.1",
     "react": "^17.0.2",
     "react-bootstrap": "^2.1.2",
