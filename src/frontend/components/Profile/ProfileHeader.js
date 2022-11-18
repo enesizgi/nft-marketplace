@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { bool, string } from 'prop-types';
 import ScProfileHeader from './ScProfileHeader';
 
-const ProfileHeader = ({ id, isOwner }) => {
+const ProfileHeader = ({ id, isOwner }) => { // eslint-disable-line no-unused-vars
   const [profilePhoto, setProfilePhoto] = useState('');
   const [coverPhoto, setCoverPhoto] = useState('');
   const [username, setUsername] = useState('');

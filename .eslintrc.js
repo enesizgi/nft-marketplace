@@ -14,6 +14,7 @@ module.exports = {
   ],
   parser: '@babel/eslint-parser',
   parserOptions: {
+    requireConfigFile: false,
     ecmaVersion: 'latest',
     sourceType: 'module',
     babelOptions: {
@@ -27,6 +28,8 @@ module.exports = {
     'comma-dangle': 0,
     'react/jsx-filename-extension': 0,
     'react/function-component-definition': 0,
-    'arrow-parens': 0
+    'arrow-parens': 0,
+    'import/no-extraneous-dependencies': ['error', { packageDir: '.' }],
+    'max-len': ['error', { code: 150, comments: 150 }],
   }
 };

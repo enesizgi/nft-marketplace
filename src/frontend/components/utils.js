@@ -1,4 +1,4 @@
-export const fetchWithTimeout = async (resource, options = {}) => {
+const fetchWithTimeout = async (resource, options = {}) => {
   const { timeout = 8000 } = options;
 
   const controller = new AbortController();
@@ -9,4 +9,6 @@ export const fetchWithTimeout = async (resource, options = {}) => {
   });
   clearTimeout(id);
   return response;
-}
+};
+
+export default fetchWithTimeout; // You can remove this after adding another function.

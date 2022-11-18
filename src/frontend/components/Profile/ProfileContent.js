@@ -1,11 +1,11 @@
+/* eslint-disable react/prop-types */
+// TODO: Remove eslint disables
 import React from 'react';
 import { bool, string } from 'prop-types';
 
-const ProfileContent = ({ id, isOwner }) => {
-  return (
-    <div>Content will be here.</div>
-  );
-};
+const ProfileContent = ({ id, isOwner }) => ( // eslint-disable-line no-unused-vars
+  <div>Content will be here.</div>
+);
 
 ProfileContent.propTypes = {
   id: string,
