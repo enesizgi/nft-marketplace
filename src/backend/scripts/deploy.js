@@ -1,9 +1,14 @@
 /* global ethers,artifacts */
 /* eslint no-undef: "error" */
 import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
 
 const saveFrontendFiles = (contract, name) => {
-  const contractsDir = `${__dirname}/../../frontend/contractsData`;
+  const contractsDir = `${dirname}/../../frontend/contractsData`;
 
   if (!fs.existsSync(contractsDir)) {
     fs.mkdirSync(contractsDir);
