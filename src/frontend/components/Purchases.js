@@ -2,10 +2,12 @@
 // TODO @Enes: Remove all eslint disables
 import React, { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
+import API from '../modules/api';
 
 const PurchasesPage = ({ nft, marketplace, account }) => {
   const [loading, setLoading] = useState(true);
   const [purchases, setPurchases] = useState([]);
+
   const loadPurchasedItems = async () => {
     // eslint-disable-next-line max-len
     // Fetch purchased items from marketplace by quering Offered events with the buyer set as the user
@@ -19,8 +21,7 @@ const PurchasesPage = ({ nft, marketplace, account }) => {
       // get uri url from nft contract
       const uri = await nft.tokenURI(i.tokenId);
       // use uri to fetch the nft metadata stored on ipfs
-      const response = await fetch(`http://localhost:3001/get-from-ipfs?cid=${uri}`);
-      const metadata = await response.json();
+      const metadata = await API.getFromIPFS(uri);
       // get total price of item (item price + fee)
       const totalPrice = await marketplace.getTotalPrice(i.itemId);
       // define listed item object

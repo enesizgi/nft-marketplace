@@ -3,6 +3,7 @@
 // TODO @Enes: Remove all eslint disables
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
+import API from '../modules/api';
 
 const ListNFTSPage = ({ marketplace, nft, account }) => {
   const [loading, setLoading] = useState(true);
@@ -20,8 +21,7 @@ const ListNFTSPage = ({ marketplace, nft, account }) => {
         // get uri url from nft contract
         const uri = await nft.tokenURI(i.tokenId);
         // use uri to fetch the nft metadata stored on ipfs
-        const response = await fetch(`http://localhost:3001/get-from-ipfs?cid=${uri}`);
-        const metadata = await response.json();
+        const metadata = await API.getFromIPFS(uri);
         // get total price of item (item price + fee)
         const totalPrice = await marketplace.getTotalPrice(i.itemId);
         // define listed item object

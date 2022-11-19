@@ -2,6 +2,7 @@
 // TODO @Enes: Remove this eslint disable
 import React, { useState } from 'react';
 import { ethers } from 'ethers';
+import API from '../modules/api';
 
 const MintNFTSPage = ({ nft, marketplace }) => {
   const [image, setImage] = useState('');
@@ -20,11 +21,7 @@ const MintNFTSPage = ({ nft, marketplace }) => {
       try {
         const formData = new FormData();
         formData.append('file', file);
-        const result = await fetch('http://localhost:3001/upload-to-ipfs', {
-          method: 'POST',
-          body: formData
-        });
-        const response = await result.json();
+        const response = await API.uploadToIPFS(formData);
         // setImage(`https://ipfs.infura.io/ipfs/${result.path}`);
         // console.log('https://ipfs.io/ipfs/' + response.path);
         setImage(response);
@@ -48,16 +45,9 @@ const MintNFTSPage = ({ nft, marketplace }) => {
   const createNFT = async () => {
     if (Object.keys(image).length === 0 || !price || !name || !description) return;
     try {
-      const result = await fetch('http://localhost:3001/upload-metadata-to-ipfs', {
-        method: 'POST',
-        body: JSON.stringify({
-          image, price, name, description
-        }),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-      const response = await result.json();
+      const response = await API.uploadMetadataToIPFS(JSON.stringify({
+        image, price, name, description
+      }));
       console.log(response);
       // const result = await client.add(JSON.stringify({image, price, name, description}))
       mintThenList(response);

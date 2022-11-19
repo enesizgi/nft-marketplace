@@ -3,7 +3,7 @@
 // TODO @Enes: Remove these eslint disables
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
-import fetchWithTimeout from '../utils';
+import API from '../../modules/api';
 
 const HomePage = ({ marketplace, nft }) => {
   const [loading, setLoading] = useState(true);
@@ -19,8 +19,7 @@ const HomePage = ({ marketplace, nft }) => {
           // get uri url from nft contract
           const uri = await nft.tokenURI(item.tokenId);
           // use uri to fetch the nft metadata stored on ipfs
-          const response = await fetchWithTimeout(`http://localhost:3001/get-from-ipfs?cid=${uri}`, { timeout: 3000 });
-          const metadata = await response.json();
+          const metadata = await API.getFromIPFS(uri, 3000);
           // get total price of item (item price + fee)
           const totalPrice = await marketplace.getTotalPrice(item.itemId);
           // Add item to items array
