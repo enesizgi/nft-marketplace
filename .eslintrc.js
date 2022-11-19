@@ -14,7 +14,6 @@ module.exports = {
   ],
   parser: '@babel/eslint-parser',
   parserOptions: {
-    requireConfigFile: false,
     ecmaVersion: 'latest',
     sourceType: 'module',
     babelOptions: {
@@ -31,5 +30,6 @@ module.exports = {
     'arrow-parens': 0,
     'import/no-extraneous-dependencies': ['error', { packageDir: '.' }],
     'max-len': ['error', { code: 150, comments: 150 }],
+    'class-methods-use-this': 0
   }
 };
