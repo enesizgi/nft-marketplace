@@ -56,7 +56,7 @@ const App = () => {
     <BrowserRouter>
       <GlobalStyle />
       <div className="App">
-        <NavigationBar web3Handler={web3Handler} loading={loading} />
+        <NavigationBar web3Handler={web3Handler} loading={loading} account={account} />
         { loading ? <div>Waiting for Metamask connection...</div>
           : (
             <Routes>
