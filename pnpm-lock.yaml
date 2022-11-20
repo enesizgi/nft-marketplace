@@ -18,6 +18,7 @@ specifiers:
   eslint-plugin-jsx-a11y: ^6.5.1
   eslint-plugin-react: ^7.28.0
   eslint-plugin-react-hooks: ^4.3.0
+  eslint-pre-commit-hook: ^2.0.7
   ethereum-waffle: ^3.4.0
   ethers: ^5.5.4
   express: ^4.18.2
@@ -71,6 +72,7 @@ devDependencies:
   eslint-plugin-jsx-a11y: 6.6.1_eslint@8.22.0
   eslint-plugin-react: 7.31.10_eslint@8.22.0
   eslint-plugin-react-hooks: 4.6.0_eslint@8.22.0
+  eslint-pre-commit-hook: 2.0.7
 
 packages:
 
@@ -9747,6 +9749,13 @@ packages:
       - supports-color
       - typescript
     dev: false
+
+  /eslint-pre-commit-hook/2.0.7:
+    resolution: {integrity: sha512-UczFv41W9k6/57Y/TBdhBG5a2zF/s0SL7aFdiaE/qW6gqKSijJF+dySSGFkyHuS7/CSED2J1HJv+rGrxn3peAQ==}
+    engines: {node: '>=14'}
+    hasBin: true
+    requiresBuild: true
+    dev: true
 
   /eslint-scope/5.1.1:
     resolution: {integrity: sha512-2NxwbF/hZ0KpepYN0cNbo+FN6XoK7GaHlQhgx/hIZl6Va0bF45RQOOwhLIy8lQDbuCiadSLCBnH2CFYquit5bw==}
