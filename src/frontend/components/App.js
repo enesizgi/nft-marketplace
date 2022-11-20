@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import { ethers } from 'ethers';
@@ -14,12 +14,42 @@ import NFTAbi from '../contractsData/NFT.json';
 import NFTAddress from '../contractsData/NFT-address.json';
 import Profile from './Profile';
 import GlobalStyle from './GlobalStyle';
+import { DEVICE_TYPES } from '../constants';
+import LeftPanel from './LeftPanel';
 
 const App = () => {
   const [account, setAccount] = useState(null);
   const [marketplace, setMarketplace] = useState(null);
   const [nft, setNFT] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [deviceType, setDeviceType] = useState('');
+  const [isLeftPanelOpened, setLeftPanelOpened] = useState(false);
+
+  const toggleLeftPanel = () => setLeftPanelOpened(!isLeftPanelOpened);
+
+  const leftPanelRef = useRef();
+
+  const handleCloseLeftPanel = e => {
+    if (leftPanelRef.current && isLeftPanelOpened && !leftPanelRef.current.contains(e.target)) {
+      setLeftPanelOpened(false);
+    }
+  };
+
+  document.addEventListener('mousedown', handleCloseLeftPanel);
+
+  const updateDeviceType = () => {
+    if (window.innerWidth <= 480) {
+      setDeviceType(DEVICE_TYPES.MOBILE);
+    } else if (window.innerWidth <= 768) {
+      setDeviceType(DEVICE_TYPES.TABLET);
+    } else {
+      setDeviceType(DEVICE_TYPES.DESKTOP);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('resize', updateDeviceType);
+  }, []);
 
   const loadContracts = async (signer) => {
     // Get deployed copies of contracts
@@ -56,7 +86,20 @@ const App = () => {
     <BrowserRouter>
       <GlobalStyle />
       <div className="App">
-        <NavigationBar web3Handler={web3Handler} loading={loading} account={account} />
+        { deviceType !== DEVICE_TYPES.DESKTOP && (
+          <LeftPanel
+            nodeRef={leftPanelRef}
+            isLeftPanelOpened={isLeftPanelOpened}
+            toggleLeftPanel={toggleLeftPanel}
+          />
+        )}
+        <NavigationBar
+          web3Handler={web3Handler}
+          loading={loading}
+          account={account}
+          deviceType={deviceType}
+          toggleLeftPanel={toggleLeftPanel}
+        />
         { loading ? <div>Waiting for Metamask connection...</div>
           : (
             <Routes>

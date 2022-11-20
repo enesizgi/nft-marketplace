@@ -8,6 +8,12 @@
     align-items: center;
 }
 
+@media screen and (max-width: 768px) {
+    .navigationItemContainer {
+        height: 80px;
+    }
+}
+
 .navigationItem {
     height: 100%;
     box-sizing: border-box;
@@ -19,16 +25,28 @@
     align-items: center;
     text-align: center;
 }
-@media screen and (max-width: 700px) {
+
+@media screen and (max-width: 480px) {
     .navigationItem {
         font-size: 18px;
     }
 }
 
 .navigationItem.accountBox {
-    height: 80px;
-    width: 80px;
+    height: 75px;
+    width: 75px;
+    flex-shrink: 0;
     text-align: center;
+}
+
+.navigationItem.menu {
+    order: -1;
+}
+
+.menu-icon {
+    fill: #fff;
+    height: 70%;
+    width: 70%;
 }
 
 .navigationItem.accountBox > a {
