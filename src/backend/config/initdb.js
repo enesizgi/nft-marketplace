@@ -1,4 +1,4 @@
-import pool from './db.js'
+import pool from './db';
 
 function initUserTable() {
   const sql = 'CREATE TABLE IF NOT EXISTS user('

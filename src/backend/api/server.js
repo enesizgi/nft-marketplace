@@ -3,7 +3,7 @@ import compression from 'compression';
 import multer from 'multer';
 import cors from 'cors';
 import * as IPFS from 'ipfs-core'; // eslint-disable-line
-import userRouter from '../routes/userRoute.js';
+import userRouter from '../routes/userRoute';
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
