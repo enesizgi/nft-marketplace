@@ -43,6 +43,9 @@ Note: You should be in the root directory of the project to run the above comman
 - **type**: One of *fix*, *refactor*, *chore*, *feat*, *ui*. *fix*, *refactor*, and *ui* are trivial. *chore* can be used when a new library is added, or some config is implemented. *feat* can be used for new component, class, method implementations.
 - **subproject**: You can accept *frontend* and *backend* as subprojects. When your changes are hard to separate from frontend or backend, you can use **type: commit message** convention.
 
+More information about conventional commits: https://www.conventionalcommits.org/en/v1.0.0/#summary
+
+
 License
 ----
 MIT
