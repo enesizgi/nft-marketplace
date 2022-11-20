@@ -1,4 +1,5 @@
 import express from 'express';
+import compression from 'compression';
 import multer from 'multer';
 import cors from 'cors';
 import * as IPFS from 'ipfs-core'; // eslint-disable-line
@@ -9,6 +10,7 @@ const upload = multer({ storage });
 
 const client = await IPFS.create();
 const app = express();
+app.use(compression());
 app.use(cors());
 const port = 3001;
 
@@ -53,4 +55,4 @@ app.get('/get-from-ipfs', async (req, res) => {
 
 app.use(userRouter);
 
-app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));
+app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`)); // eslint-disable-line
