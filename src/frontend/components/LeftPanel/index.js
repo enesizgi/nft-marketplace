@@ -45,7 +45,11 @@ const ScLeftPanel = styled.div`
   }
 `;
 
-// eslint-disable-next-line react/prop-types
+/* eslint-disable react/prop-types */
+// TODO @Enes: Remove above eslint disable
+
+/* eslint-disable jsx-a11y/no-static-element-interactions,jsx-a11y/click-events-have-key-events */
+// TODO @Emre: Remove above eslint disable
 const LeftPanel = ({ nodeRef, isLeftPanelOpened, toggleLeftPanel }) => {
   const navigate = useNavigate();
   const handleNavigateToPage = pageLink => {

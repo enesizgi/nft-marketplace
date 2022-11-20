@@ -9,6 +9,10 @@ import { DEVICE_TYPES } from '../../constants';
 import { ReactComponent as MenuIcon } from '../../assets/menu-icon.svg';
 
 /* eslint-disable react/button-has-type */
+// TODO @Enes: Remove above eslint disable
+
+/* eslint-disable jsx-a11y/no-static-element-interactions,jsx-a11y/click-events-have-key-events */
+// TODO @Emre: Remove above eslint disable
 const NavigationBar = ({
   web3Handler, loading, account, deviceType, toggleLeftPanel
 }) => (
