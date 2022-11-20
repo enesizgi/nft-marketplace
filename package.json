@@ -59,10 +59,7 @@
     ]
   },
   "lint-staged": {
-    "*.{js,jsx}": [
-      "eslint --fix",
-      "git add"
-    ]
+    "*.{js,jsx}": ["eslint --fix"]
   },
   "devDependencies": {
     "@babel/preset-env": "^7.16.11",
