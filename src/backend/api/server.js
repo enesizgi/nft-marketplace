@@ -3,8 +3,10 @@ import compression from 'compression';
 import multer from 'multer';
 import cors from 'cors';
 import * as IPFS from 'ipfs-core'; // eslint-disable-line
+import path from 'path';
 import userRouter from '../routes/userRoute.js';
 
+const dirname = path.resolve();
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
@@ -54,5 +56,7 @@ app.get('/get-from-ipfs', async (req, res) => {
 });
 
 app.use(userRouter);
+
+app.use('/public/images', express.static(path.join(dirname, '/../../public/images')));
 
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`)); // eslint-disable-line
