@@ -48,6 +48,7 @@ const App = () => {
   };
 
   useEffect(() => {
+    updateDeviceType();
     window.addEventListener('resize', updateDeviceType);
   }, []);
 
