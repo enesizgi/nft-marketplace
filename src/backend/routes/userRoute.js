@@ -54,7 +54,8 @@ router.get('/user/slug', async (req, res) => {
     if (rows.length) {
       res.send(rows[0]);
     } else {
-      res.status(404).send('User not found.');
+      // default response for the demo: will be changed
+      res.status(404).send({ id: req.query.id, slug: 'test' });
     }
   } catch (err) {
     console.log(err);
@@ -68,7 +69,8 @@ router.get('/user/id', async (req, res) => {
     if (rows.length) {
       res.send(rows[0]);
     } else {
-      res.status(404).send('User slug not found.');
+      // default response for the demo: will be changed
+      res.status(404).send({ slug: req.query.slug, id: '0xabc' });
     }
   } catch (err) {
     console.log(err);
@@ -161,7 +163,8 @@ router.get('/user/name', async (req, res) => {
     if (rows.length) {
       res.send(rows[0]);
     } else {
-      res.status(404).send('User not found.');
+      // default response for the demo: will be changed
+      res.status(404).send({ id: req.query.id, name: 'Micheal Scott' });
     }
   } catch (err) {
     console.log(err);
