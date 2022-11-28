@@ -36,6 +36,13 @@ $ npx hardhat run src/backend/scripts/deploy.js --network localhost
 $ npx hardhat console --network localhost
 ```
 
+### Start all of the services:
+```
+$ pnpm start:all
+$ pnpm hardhat:deploy
+```
+Wait some time after running _pnpm start:all_ command, it will start the hardhat development blockchain. Then, you can run _pnpm hardhat:deploy_ command below.
+
 Note: You should be in the root directory of the project to run the above commands.
 
 ## Commit convention:

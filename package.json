@@ -38,7 +38,12 @@
   },
   "scripts": {
     "prepare": "husky install",
+    "hardhat": "npx hardhat node",
+    "hardhat:deploy": "npx hardhat run src/backend/scripts/deploy.js --network localhost",
+    "api": "nodemon --ignore src/frontend src/backend/api/server.js",
+    "ipfs": "ipfs daemon",
     "start": "react-scripts start",
+    "start:all": "concurrently --names \"HARDHAT,API,FRONTEND,IPFS\" -c auto --kill-others \"pnpm hardhat\" \"pnpm api\" \"pnpm start\" \"pnpm ipfs\"",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
@@ -72,6 +77,7 @@
     "@babel/preset-env": "^7.20.2",
     "@commitlint/cli": "^17.3.0",
     "@commitlint/config-conventional": "^17.3.0",
+    "concurrently": "^7.6.0",
     "eslint": "8.22.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^8.5.0",
@@ -80,6 +86,7 @@
     "eslint-plugin-react": "^7.31.11",
     "eslint-plugin-react-hooks": "^4.6.0",
     "lint-staged": "^13.0.3",
+    "nodemon": "^2.0.20",
     "prettier": "2.7.1"
   }
 }
