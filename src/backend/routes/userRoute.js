@@ -50,7 +50,7 @@ const upload = multer({
 
 router.get('/user/slug', async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT u.walletId, u.slug FROM user u WHERE u.walletId = ?', [req.query.id]);
+    const [rows] = await pool.query('SELECT u.walletId as id, u.slug as slug FROM user u WHERE u.walletId = ?', [req.query.id]);
     if (rows.length) {
       res.send(rows[0]);
     } else {
@@ -64,7 +64,7 @@ router.get('/user/slug', async (req, res) => {
 
 router.get('/user/id', async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT u.slug, u.walletId FROM user u WHERE u.slug = ?', [req.query.slug]);
+    const [rows] = await pool.query('SELECT u.slug as slug, u.walletId as id FROM user u WHERE u.slug = ?', [req.query.slug]);
     if (rows.length) {
       res.send(rows[0]);
     } else {
@@ -120,14 +120,15 @@ router.post('/user/upload-cover-photo', userValidator, upload.single('cover-phot
 router.get('/user/profile-photo', async (req, res) => {
   try {
     const [rows] = await pool.query(
-      'SELECT i.user_id, i.image_path FROM image i WHERE i.user_id = ? AND i.type = ?',
+      'SELECT i.user_id as id, i.image_path as url FROM image i WHERE i.user_id = ? AND i.type = ?',
       [req.query.id, imageType.ProfilePhoto]
     );
     if (rows.length) {
       res.send(rows[0]);
     } else {
       // TODO: Return default avatar
-      res.status(404).send('User profile image not found.');
+      res.status(404).send({ id: req.query.id, 
+        url: 'https://i.etsystatic.com/5805234/r/il/1a38f2/825515703/il_570xN.825515703_19nf.jpg' });
     }
   } catch (err) {
     console.log(err);
@@ -138,14 +139,15 @@ router.get('/user/profile-photo', async (req, res) => {
 router.get('/user/cover-photo', async (req, res) => {
   try {
     const [rows] = await pool.query(
-      'SELECT i.user_id, i.image_path FROM image i WHERE i.user_id = ? AND i.type = ?',
+      'SELECT i.user_id as id, i.image_path as url FROM image i WHERE i.user_id = ? AND i.type = ?',
       [req.query.id, imageType.CoverPhoto]
     );
     if (rows.length) {
       res.send(rows[0]);
     } else {
       // TODO: Return default cover
-      res.status(404).send('User cover image not found.');
+      res.status(404).send({ id: req.query.id, 
+        url: 'https://media.glassdoor.com/l/1d/0c/e0/81/the-office.jpg' });
     }
   } catch (err) {
     console.log(err);
@@ -155,7 +157,7 @@ router.get('/user/cover-photo', async (req, res) => {
 
 router.get('/user/name', async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT u.walletId, u.name FROM user u WHERE u.walletId = ?', [req.query.id]);
+    const [rows] = await pool.query('SELECT u.walletId as id, u.name as name FROM user u WHERE u.walletId = ?', [req.query.id]);
     if (rows.length) {
       res.send(rows[0]);
     } else {
