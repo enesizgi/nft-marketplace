@@ -1,11 +1,11 @@
 import mysql from 'mysql2';
 
 const dbconfig = {
-  host: 'localhost',
+  host: '127.0.0.1',
   user: 'root',
-  password: 'your_password',
-  database: 'your_db',
-  port: 3306
+  password: 'your-passwords',
+  database: 'your-db',
+  port: 3306,
 };
 
 const pool = mysql.createPool(dbconfig);
