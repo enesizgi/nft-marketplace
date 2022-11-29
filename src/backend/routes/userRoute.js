@@ -1,5 +1,6 @@
 import express from 'express';
 import multer from 'multer';
+import { ethers } from 'ethers';
 import pool from '../config/db.js';
 
 const router = express.Router();
@@ -27,6 +28,19 @@ const fileFilter = (req, file, cb) => {
   return cb(null, true);
 };
 
+const verifyMessage = async (req, res, next) => {
+  try {
+    const recoveredAddress = await ethers.utils.verifyMessage(req.query.message, req.query.signature);
+    if (recoveredAddress !== req.query.address) {
+      return res.status(401).send('Message could not verified');
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send();
+  }
+  return next();
+};
+
 const userValidator = async (req, res, next) => {
   try {
     const [rows] = await pool.query('SELECT u.walletId FROM user u WHERE u.walletId = ?', [req.query.id]);
@@ -46,6 +60,33 @@ const upload = multer({
     fileSize: 1024 * 1024 * 5
   },
   fileFilter
+});
+
+router.get('/user/check', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT u.walletId as id FROM user u WHERE u.walletId = ?', [req.query.id]);
+    if (rows.length) {
+      res.send(rows[0]);
+    } else {
+      res.status(404).send('User not found');
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).send();
+  }
+});
+
+router.post('/user/create', verifyMessage, async (req, res) => {
+  try {
+    await pool.query(
+      'INSERT INTO user VALUES (?,?,?,?)',
+      [null, req.query.address, null, 'Unnamed']
+    );
+    return res.status(201).send('User saved successfully');
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send();
+  }
 });
 
 router.get('/user/slug', async (req, res) => {
