@@ -57,6 +57,6 @@ app.get('/get-from-ipfs', async (req, res) => {
 
 app.use(userRouter);
 
-app.use('/public/images', express.static(path.join(dirname, '/../../public/images')));
+app.use('/public/images', express.static(path.join(dirname, '/public/images')));
 
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`)); // eslint-disable-line

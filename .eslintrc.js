@@ -26,5 +26,6 @@ module.exports = {
     'import/no-extraneous-dependencies': ['error', { packageDir: '.' }],
     'max-len': ['error', { code: 150, comments: 150 }],
     'class-methods-use-this': 0,
+    'react/prop-types': 0
   },
 };

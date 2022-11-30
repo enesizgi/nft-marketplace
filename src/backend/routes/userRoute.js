@@ -12,7 +12,7 @@ const imageType = {
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {
-    cb(null, '../../public/images');
+    cb(null, 'public/images');
   },
   filename(req, file, cb) {
     const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
@@ -133,7 +133,7 @@ router.post('/user/upload-profile-photo', userValidator, upload.single('profile-
       'INSERT INTO image VALUES (?,?,?,?)',
       [null, req.query.id, req.file.path.replace(/\.\.\//g, ''), imageType.ProfilePhoto]
     );
-    return res.status(201).send('Image uploaded succesfully');
+    return res.status(201).send({ url: `http://localhost:3001/${req.file.path.replace(/\.\.\//g, '')}` });
   } catch (err) {
     console.log(err);
     return res.status(500).send();

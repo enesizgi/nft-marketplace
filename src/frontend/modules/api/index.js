@@ -60,6 +60,8 @@ class API {
   getProfilePhoto = async id => this.getRequest({ endpoint: '/user/profile-photo', qs: { id } });
 
   getCoverPhoto = async id => this.getRequest({ endpoint: '/user/cover-photo', qs: { id } });
+
+  uploadProfilePhoto = async (id, formData) => this.postRequest({ endpoint: '/user/upload-profile-photo', qs: { id }, body: formData });
 }
 
 export default new API();
