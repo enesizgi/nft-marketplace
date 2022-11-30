@@ -1,6 +1,7 @@
 import express from 'express';
 import multer from 'multer';
 import { ethers } from 'ethers';
+import fs from 'fs';
 import pool from '../config/db.js';
 
 const router = express.Router();
@@ -119,6 +120,30 @@ router.get('/user/id', async (req, res) => {
   }
 });
 
+async function uploadPhoto(id, url, type) {
+  const absolutePath = `http://localhost:3001/${url}`;
+  const [rows] = await pool.query(
+      'SELECT i.image_path as path FROM image i WHERE i.user_id = ? AND i.type = ?',
+      [id, type]
+  );
+  if (rows.length) {
+    await pool.query(
+        'UPDATE image i SET image_path = ? WHERE i.user_id = ? AND i.type = ?',
+        [url,id, type]
+    );
+    // DELETE OLD FILE
+    fs.unlink(rows[0].path, (error)=> {
+      if (error) console.log('Error occured while deleting file ', error);
+    });
+    return absolutePath;
+  }
+  await pool.query(
+      'INSERT INTO image VALUES (?,?,?,?)',
+      [null, id, url, type]
+  );
+  return absolutePath;
+};
+
 // TODO: Set up user controller and reuse code for profile and cover upload
 router.post('/user/upload-profile-photo', userValidator, upload.single('profile-photo'), async (req, res) => {
   if (req.fileValidationError) {
@@ -127,13 +152,11 @@ router.post('/user/upload-profile-photo', userValidator, upload.single('profile-
   if (!req.file) {
     return res.status(412).send('No file received');
   }
-  // TODO: Handle image update case
+
   try {
-    await pool.query(
-      'INSERT INTO image VALUES (?,?,?,?)',
-      [null, req.query.id, req.file.path.replace(/\.\.\//g, ''), imageType.ProfilePhoto]
-    );
-    return res.status(201).send({ url: `http://localhost:3001/${req.file.path.replace(/\.\.\//g, '')}` });
+    const relativePath = req.file.path.replace(/\.\.\//g, '');
+    const absolutePath = await uploadPhoto(req.query.id, relativePath, imageType.ProfilePhoto);
+    return res.status(201).send({ url: absolutePath });
   } catch (err) {
     console.log(err);
     return res.status(500).send();
@@ -147,13 +170,11 @@ router.post('/user/upload-cover-photo', userValidator, upload.single('cover-phot
   if (!req.file) {
     return res.status(412).send('No file received');
   }
-  // TODO: Handle image update case
+
   try {
-    await pool.query(
-      'INSERT INTO image VALUES (?,?,?,?)',
-      [null, req.query.id, req.file.path.replace(/\.\.\//g, ''), imageType.CoverPhoto]
-    );
-    return res.status(201).send('Image uploaded succesfully');
+    const relativePath = req.file.path.replace(/\.\.\//g, '');
+    const absolutePath = await uploadPhoto(req.query.id, relativePath, imageType.CoverPhoto);
+    return res.status(201).send({ url: absolutePath });
   } catch (err) {
     console.log(err);
     return res.status(500).send();
