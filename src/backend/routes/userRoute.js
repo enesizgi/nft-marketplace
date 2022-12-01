@@ -13,7 +13,7 @@ const imageType = {
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {
-    cb(null, 'public/images');
+    cb(null, 'assets/images');
   },
   filename(req, file, cb) {
     const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
@@ -22,7 +22,7 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+  if (!file.originalname.match(/\.(jpg|jpeg|png|avif)$/)) {
     req.fileValidationError = 'Invalid mimetype';
     return cb(null, false, new Error('Invalid mimetype'));
   }
@@ -31,6 +31,9 @@ const fileFilter = (req, file, cb) => {
 
 const verifyMessage = async (req, res, next) => {
   try {
+    if (!req.query.message || !req.query.signature) {
+      return res.status(400).send('Missing message or signature');
+    }
     const recoveredAddress = await ethers.utils.verifyMessage(req.query.message, req.query.signature);
     if (recoveredAddress !== req.query.address) {
       return res.status(401).send('Message could not verified');
