@@ -8,7 +8,7 @@ const ScAccountBox = styled.div`
   height: 100%;
   width: 100%;
   box-sizing: border-box;
-  border: 1px solid #000;
+  border: 2px solid #0089a8;
   border-radius: 100%;
   .accountBox-image {
     height: 100%;

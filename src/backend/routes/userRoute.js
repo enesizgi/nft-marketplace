@@ -188,7 +188,7 @@ router.get('/user/profile-photo', async (req, res) => {
       [req.query.id, imageType.ProfilePhoto]
     );
     if (rows.length) {
-      res.send(rows[0]);
+      res.send({ ...rows[0], url: `http://localhost:3001/${rows[0].url}` });
     } else {
       // TODO: Return default avatar
       res.status(404).send({ id: req.query.id, 
@@ -207,7 +207,7 @@ router.get('/user/cover-photo', async (req, res) => {
       [req.query.id, imageType.CoverPhoto]
     );
     if (rows.length) {
-      res.send(rows[0]);
+      res.send({ ...rows[0], url: `http://localhost:3001/${rows[0].url}` });
     } else {
       // TODO: Return default cover
       res.status(404).send({ id: req.query.id, 

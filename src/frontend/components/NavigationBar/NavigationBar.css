@@ -13,12 +13,6 @@
   align-items: center;
 }
 
-@media screen and (max-width: 768px) {
-  .navigationItemContainer {
-    height: 80px;
-  }
-}
-
 .navigationItem {
   height: 100%;
   box-sizing: border-box;
@@ -55,18 +49,33 @@
   transform: scale(1.1);
 }
 
-@media screen and (max-width: 480px) {
-  .navigationItem {
-    font-size: 18px;
-  }
-}
-
 .navigationItem.accountBox {
   height: 75px;
   width: 75px;
   flex-shrink: 0;
   text-align: center;
 }
+
+@media screen and (max-width: 768px) {
+  .navigationItemContainer {
+    height: 80px;
+  }
+  .navigationItem.accountBox {
+    height: 65px;
+    width: 65px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .navigationItem {
+    font-size: 18px;
+  }
+  .navigationItem.accountBox {
+    height: 60px;
+    width: 60px;
+  }
+}
+
 
 .navigationItem.menu {
   order: -1;

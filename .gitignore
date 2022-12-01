@@ -34,3 +34,6 @@ artifacts
 
 .idea
 .vscode
+
+public/images
+src/backend/images

@@ -9,20 +9,20 @@ import ProfileContent from './ProfileContent';
 const Profile = ({ account }) => {
   const [isOwner, setIsOwner] = useState(false);
   const [profileID, setProfileID] = useState('');
-  const requestedSlug = useLocation().pathname.split('/')[2];
+  const profilePath = useLocation().pathname.split('/')[2];
+  const isPathSlug = !profilePath.startsWith('0x');
 
   useEffect(() => {
-    API.getUserIDFromSlug(requestedSlug)
-      .then(response => setProfileID(response.id));
-  }, []);
-
-  useEffect(() => {
-    if (account) {
-      // Fetch logged-in user slug, not the profile owner's.
-      API.getUserSlug(account)
-        .then(response => setIsOwner(response.slug === requestedSlug));
+    if (isPathSlug) {
+      API.getUserIDFromSlug(profilePath).then(({ id }) => {
+        setProfileID(id);
+        setIsOwner(id === account);
+      });
+    } else {
+      setProfileID(profilePath);
+      setIsOwner(profilePath === account);
     }
-  }, []);
+  }, [account]);
 
   if (!profileID) {
     return <UserNotFound />;
