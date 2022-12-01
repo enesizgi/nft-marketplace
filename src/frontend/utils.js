@@ -1,4 +1,6 @@
-const classNames = (classes) => {
+import { ethers } from "ethers";
+
+export const classNames = (classes) => {
   let str = '';
   if (typeof classes === 'object') {
     Object.entries(classes).forEach(([key, value]) => {
@@ -8,4 +10,10 @@ const classNames = (classes) => {
   return str.trim();
 };
 
-export default classNames; // Feel free to remove this if you add functions.
+export const generateSignatureData = async (message = 'NFTAO') => {
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  await provider.send('eth_requestAccounts', []) // connects MetaMask
+  const signer = provider.getSigner()
+  const signature = await signer.signMessage(message);
+  return { signature, message };
+};

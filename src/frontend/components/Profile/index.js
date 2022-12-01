@@ -30,7 +30,7 @@ const Profile = ({ account }) => {
 
   return (
     <>
-      <ProfileHeader id={profileID} isOwner={isOwner} />
+      <ProfileHeader id={profileID} isOwner={isOwner} account={account}/>
       <ProfileContent id={profileID} isOwner={isOwner} />
     </>
   );

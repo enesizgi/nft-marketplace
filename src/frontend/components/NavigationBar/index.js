@@ -7,7 +7,7 @@ import './NavigationBar.css';
 import AccountBox from './AccountBox';
 import { DEVICE_TYPES } from '../../constants';
 import { ReactComponent as MenuIcon } from '../../assets/menu-icon.svg';
-import classNames from '../../utils';
+import { classNames } from '../../utils';
 
 /* eslint-disable react/button-has-type */
 // TODO @Enes: Remove above eslint disable
