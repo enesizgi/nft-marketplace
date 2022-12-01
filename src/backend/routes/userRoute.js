@@ -145,7 +145,7 @@ async function uploadPhoto(id, url, type) {
 };
 
 // TODO: Set up user controller and reuse code for profile and cover upload
-router.post('/user/upload-profile-photo', userValidator, upload.single('profile-photo'), async (req, res) => {
+router.post('/user/upload-profile-photo', userValidator, verifyMessage, upload.single('profile-photo'), async (req, res) => {
   if (req.fileValidationError) {
     return res.status(412).end(req.fileValidationError);
   }
@@ -163,7 +163,7 @@ router.post('/user/upload-profile-photo', userValidator, upload.single('profile-
   }
 });
 
-router.post('/user/upload-cover-photo', userValidator, upload.single('cover-photo'), async (req, res) => {
+router.post('/user/upload-cover-photo', userValidator, verifyMessage, upload.single('cover-photo'), async (req, res) => {
   if (req.fileValidationError) {
     return res.status(412).end(req.fileValidationError);
   }
