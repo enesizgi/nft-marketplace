@@ -2,8 +2,8 @@
 /* eslint-disable no-await-in-loop */
 // TODO @Enes: Remove these eslint disables
 import React, { useState, useEffect } from 'react';
-import { ethers } from 'ethers';
 import API from '../../modules/api';
+import NFTCard from "../NFTCard";
 
 const HomePage = ({ marketplace, nft }) => {
   const [loading, setLoading] = useState(true);
@@ -33,16 +33,11 @@ const HomePage = ({ marketplace, nft }) => {
           });
         }
       } catch (e) {
-        console.log(e);
+        console.warn(e);
       }
     }
     setLoading(false);
     setItems(items);
-  };
-
-  const buyMarketItem = async (item) => {
-    await (await marketplace.purchaseItem(item.itemId, { value: item.totalPrice })).wait();
-    loadMarketplaceItems();
   };
 
   useEffect(() => {
@@ -60,25 +55,7 @@ const HomePage = ({ marketplace, nft }) => {
     return (
       <div className="imageContainer">
         {items.map(item => (
-          <div key={`${item.image}-${Math.random()}`} className="imageItem">
-            {item.image && <img src={`data:${item.image.data.mimetype};base64,${item.image.data.data}`} width="300px" />}
-            <div className="imageItemInfo">
-              <div className="imageItemName">
-                Name:
-                {item.name}
-              </div>
-              <div className="imageItemDescription">
-                Description:
-                {item.description}
-              </div>
-              <button onClick={() => buyMarketItem(item)}>
-                Buy for
-                {ethers.utils.formatEther(item.totalPrice)}
-                {' '}
-                ETH
-              </button>
-            </div>
-          </div>
+          <NFTCard key={`${item.image}-${Math.random()}`} item={item} loadMarketplaceItems={loadMarketplaceItems} marketplace={marketplace} />
         ))}
       </div>
     );

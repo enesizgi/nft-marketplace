@@ -101,13 +101,11 @@ const App = () => {
           deviceType={deviceType}
           toggleLeftPanel={toggleLeftPanel}
         />
-        <Routes>
-          <Route exact path="/" element={<HomePage nft={nft} marketplace={marketplace} />} />
-          <Route exact path="/user/*" element={<Profile account={account} />} />
-        </Routes>
         { loading ? <div>Waiting for Metamask connection...</div>
           : (
             <Routes>
+              <Route exact path="/" element={<HomePage nft={nft} marketplace={marketplace} />} />
+              <Route path="/user/*" element={<Profile account={account} />} />
               <Route path="/mint-nfts" element={<MintNFTSPage nft={nft} marketplace={marketplace} />} />
               <Route path="/my-listed-nfts" element={<ListNFTSPage nft={nft} marketplace={marketplace} account={account} />} />
               <Route path="/my-purchases" element={<PurchasesPage nft={nft} marketplace={marketplace} account={account} />} />
