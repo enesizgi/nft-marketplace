@@ -47,9 +47,7 @@ class API {
 
   getFromIPFS = async (cid, timeout) => this.getRequest({ endpoint: '/get-from-ipfs', qs: { cid }, timeout });
 
-  uploadToIPFS = async formData => this.postRequest({ endpoint: '/upload-to-ipfs', body: formData });
-
-  uploadMetadataToIPFS = async metadata => this.postRequest({ endpoint: '/upload-metadata-to-ipfs', body: metadata });
+  uploadToIPFS = async (metadata, formData) => this.postRequest({ endpoint: '/upload-to-ipfs', qs: { metadata }, body: formData });
 
   getUserSlug = async id => this.getRequest({ endpoint: '/user/slug', qs: { id } });
 

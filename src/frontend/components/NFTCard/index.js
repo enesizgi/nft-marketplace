@@ -9,7 +9,7 @@ const NFTCard = ({ item, marketplace, loadMarketplaceItems }) => {
 
   return (
     <div className="imageItem">
-      {item.image && <img src={`data:${item.image.data.mimetype};base64,${item.image.data.data}`} width="300px" alt="nftImage" />}
+      {item.url && <img src={item.url} width="300px" alt="nftImage" />}
       <div className="imageItemInfo">
         <div className="imageItemName">
           Name:

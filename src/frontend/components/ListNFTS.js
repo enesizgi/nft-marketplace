@@ -20,18 +20,17 @@ const ListNFTSPage = ({ marketplace, nft, account }) => {
       if (i.seller.toLowerCase() === account) {
         // get uri url from nft contract
         const uri = await nft.tokenURI(i.tokenId);
+        const cid = uri.split('ipfs://')[1];
         // use uri to fetch the nft metadata stored on ipfs
-        const metadata = await API.getFromIPFS(uri);
+        const metadata = await API.getFromIPFS(cid);
         // get total price of item (item price + fee)
         const totalPrice = await marketplace.getTotalPrice(i.itemId);
         // define listed item object
         const item = {
+          ...metadata,
           totalPrice,
           price: i.price,
-          itemId: i.itemId,
-          name: metadata.data.name,
-          description: metadata.data.description,
-          image: metadata.data.image
+          itemId: i.itemId
         };
         listedItems.push(item);
         // Add listed item to sold items array if sold
@@ -56,9 +55,9 @@ const ListNFTSPage = ({ marketplace, nft, account }) => {
   /* eslint-disable jsx-a11y/alt-text */
   return (
     <div className="imageContainer">
-      {listedItems.map(item => (
-        <div key={`${item.image}-${Math.random()}`} className="imageItem">
-          {item.image && <img src={`data:${item.image.data.mimetype};base64,${item.image.data.data}`} width="300px" />}
+      {listedItems.filter(item => !soldItems.find(i => i.itemId === item.itemId)).map(item => (
+        <div key={`${item.url}-${Math.random()}`} className="imageItem">
+          {item.url && <img src={item.url} alt={item.cid} width="300px" />}
           <div className="imageItemInfo">
             <div className="imageItemName">
               Name:

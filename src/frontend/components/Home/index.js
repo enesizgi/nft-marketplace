@@ -18,18 +18,17 @@ const HomePage = ({ marketplace, nft }) => {
         if (!item.sold) {
           // get uri url from nft contract
           const uri = await nft.tokenURI(item.tokenId);
+          const cid = uri.split('ipfs://')[1];
           // use uri to fetch the nft metadata stored on ipfs
-          const metadata = await API.getFromIPFS(uri, 3000);
+          const metadata = await API.getFromIPFS(cid, 3000);
           // get total price of item (item price + fee)
           const totalPrice = await marketplace.getTotalPrice(item.itemId);
           // Add item to items array
           items.push({
+            ...metadata,
             totalPrice,
             itemId: item.itemId,
-            seller: item.seller,
-            name: metadata.data.name,
-            description: metadata.data.description,
-            image: metadata.data.image
+            seller: item.seller
           });
         }
       } catch (e) {
@@ -55,7 +54,7 @@ const HomePage = ({ marketplace, nft }) => {
     return (
       <div className="imageContainer">
         {items.map(item => (
-          <NFTCard key={`${item.image}-${Math.random()}`} item={item} loadMarketplaceItems={loadMarketplaceItems} marketplace={marketplace} />
+          <NFTCard key={`${item.url}-${Math.random()}`} item={item} loadMarketplaceItems={loadMarketplaceItems} marketplace={marketplace} />
         ))}
       </div>
     );

@@ -20,18 +20,17 @@ const PurchasesPage = ({ nft, marketplace, account }) => {
       i = i.args; // eslint-disable-line no-param-reassign
       // get uri url from nft contract
       const uri = await nft.tokenURI(i.tokenId);
+      const cid = uri.split('ipfs://')[1];
       // use uri to fetch the nft metadata stored on ipfs
-      const metadata = await API.getFromIPFS(uri);
+      const metadata = await API.getFromIPFS(cid);
       // get total price of item (item price + fee)
       const totalPrice = await marketplace.getTotalPrice(i.itemId);
       // define listed item object
       return {
+        ...metadata,
         totalPrice,
         price: i.price,
-        itemId: i.itemId,
-        name: metadata.data.name,
-        description: metadata.data.description,
-        image: metadata.data.image
+        itemId: i.itemId
       };
     }));
     setLoading(false);
@@ -48,13 +47,12 @@ const PurchasesPage = ({ nft, marketplace, account }) => {
     );
   }
   // TODO @Enes: Find better way for Math.random below
-  /* eslint-disable jsx-a11y/alt-text */
+
   return (
     <div className="imageContainer">
       {purchases.map(item => (
-        <div key={`${item.image}-${Math.random()}`} className="imageItem">
-          {/* <img src={item.image} alt={item.name} width='300px' /> */}
-          {item.image && <img src={`data:${item.image.data.mimetype};base64,${item.image.data.data}`} width="300px" />}
+        <div key={`${item.url}-${Math.random()}`} className="imageItem">
+          {item.url && <img src={item.url} alt={item.cid} width="300px" />}
           <div className="imageItemInfo">
             <div className="imageItemName">
               Name:
