@@ -2,13 +2,13 @@
 /* eslint-disable no-await-in-loop */
 // TODO @Enes: Remove all eslint disables
 import React, { useState, useEffect } from 'react';
-import { ethers } from 'ethers';
+import NFTCard from "./NFTCard";
 import API from '../modules/api';
 
 const ListNFTSPage = ({ marketplace, nft, account }) => {
   const [loading, setLoading] = useState(true);
   const [listedItems, setListedItems] = useState([]);
-  const [soldItems, setSoldItems] = useState([]); // eslint-disable-line
+  const [soldItems, setSoldItems] = useState([]);
   const loadListedItems = async () => {
     // Load all sold items that the user listed
     const itemCount = await marketplace.itemCount();
@@ -17,7 +17,7 @@ const ListNFTSPage = ({ marketplace, nft, account }) => {
     // TODO @Enes: Rename above two variables again
     for (let indx = 1; indx <= itemCount; indx += 1) {
       const i = await marketplace.items(indx);
-      if (i.seller.toLowerCase() === account) {
+      if (!i.sold && i.seller.toLowerCase() === account) {
         // get uri url from nft contract
         const uri = await nft.tokenURI(i.tokenId);
         const cid = uri.split('ipfs://')[1];
@@ -56,25 +56,11 @@ const ListNFTSPage = ({ marketplace, nft, account }) => {
   return (
     <div className="imageContainer">
       {listedItems.filter(item => !soldItems.find(i => i.itemId === item.itemId)).map(item => (
-        <div key={`${item.url}-${Math.random()}`} className="imageItem">
-          {item.url && <img src={item.url} alt={item.cid} width="300px" />}
-          <div className="imageItemInfo">
-            <div className="imageItemName">
-              Name:
-              {item.name}
-            </div>
-            <div className="imageItemDescription">
-              Description:
-              {item.description}
-            </div>
-            <div className="imageItemPrice">
-              Price:
-              {ethers.utils.formatEther(item.totalPrice)}
-              {' '}
-              ETH
-            </div>
-          </div>
-        </div>
+        <NFTCard
+          key={`${item.url}-${Math.random()}`}
+          item={item}
+          marketplace={marketplace}
+        />
       ))}
     </div>
   );

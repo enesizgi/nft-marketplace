@@ -1,20 +1,26 @@
 /* eslint-disable react/prop-types */
 // TODO @Enes: Remove all eslint disables
 import React, { useEffect, useState } from 'react';
-import { ethers } from 'ethers';
+import sortedUniqBy from 'lodash/sortedUniqBy';
+import NFTCard from "./NFTCard";
 import API from '../modules/api';
 
 const PurchasesPage = ({ nft, marketplace, account }) => {
   const [loading, setLoading] = useState(true);
   const [purchases, setPurchases] = useState([]);
-
   const loadPurchasedItems = async () => {
     // eslint-disable-next-line max-len
     // Fetch purchased items from marketplace by quering Offered events with the buyer set as the user
-    const filter = marketplace.filters.Bought(null, null, null, null, null, account);
-    const results = await marketplace.queryFilter(filter);
+    const boughtFilter = marketplace.filters.Bought(null, null, null, null, null, account);
+    const boughtResults = await marketplace.queryFilter(boughtFilter);
+    const offeredFilter = marketplace.filters.Offered(null, null, null, null, account);
+    const offeredResults = await marketplace.queryFilter(offeredFilter);
+
+    const sortedEvents = [...boughtResults, ...offeredResults].sort((a, b) => b.blockNumber - a.blockNumber);
+    const uniqEvents = sortedUniqBy(sortedEvents, i => i.args.tokenId.toBigInt());
+    const boughtItems = uniqEvents.filter(i => i.event === 'Bought');
     // Fetch metadata of each nft and add that to listedItem object.
-    const purchases = await Promise.all(results.map(async i => { // eslint-disable-line no-shadow
+    const purchases = await Promise.all(boughtItems.map(async i => { // eslint-disable-line no-shadow
       // TODO @Enes: Rename above variable to something else
       // fetch arguments from each result
       i = i.args; // eslint-disable-line no-param-reassign
@@ -51,25 +57,15 @@ const PurchasesPage = ({ nft, marketplace, account }) => {
   return (
     <div className="imageContainer">
       {purchases.map(item => (
-        <div key={`${item.url}-${Math.random()}`} className="imageItem">
-          {item.url && <img src={item.url} alt={item.cid} width="300px" />}
-          <div className="imageItemInfo">
-            <div className="imageItemName">
-              Name:
-              {item.name}
-            </div>
-            <div className="imageItemDescription">
-              Description:
-              {item.description}
-            </div>
-            <div className="imageItemPrice">
-              Price:
-              {ethers.utils.formatEther(item.totalPrice)}
-              {' '}
-              ETH
-            </div>
-          </div>
-        </div>
+        <NFTCard
+          key={`${item.url}-${Math.random()}`}
+          item={item}
+          account={account}
+          marketplace={marketplace}
+          nft={nft}
+          loadMarketplaceItems={loadPurchasedItems}
+          showSellButton
+        />
       ))}
     </div>
   );

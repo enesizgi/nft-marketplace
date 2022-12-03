@@ -22,7 +22,7 @@ const AccountBox = ({ account }) => {
 
   useEffect(() => {
     API.getProfilePhoto(account).then(response => setProfilePhoto(response.url));
-  }, []);
+  }, [account]);
 
   return (
     <ScAccountBox>

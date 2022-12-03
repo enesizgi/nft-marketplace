@@ -54,7 +54,13 @@ const HomePage = ({ marketplace, nft }) => {
     return (
       <div className="imageContainer">
         {items.map(item => (
-          <NFTCard key={`${item.url}-${Math.random()}`} item={item} loadMarketplaceItems={loadMarketplaceItems} marketplace={marketplace} />
+          <NFTCard
+            key={`${item.url}-${Math.random()}`}
+            item={item}
+            loadMarketplaceItems={loadMarketplaceItems}
+            marketplace={marketplace}
+            showBuyButton
+          />
         ))}
       </div>
     );

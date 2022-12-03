@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { ethers } from 'ethers';
 import API from '../modules/api';
 
-const MintNFTSPage = ({ nft, marketplace }) => {
+const MintNFTSPage = ({ account, nft, marketplace }) => {
   const [image, setImage] = useState(''); // eslint-disable-line
   const [price, setPrice] = useState(null);
   const [name, setName] = useState('');
@@ -23,7 +23,10 @@ const MintNFTSPage = ({ nft, marketplace }) => {
     // get tokenId of new nft
     const id = await nft.tokenCounter();
     // approve marketplace to spend nft
-    await (await nft.setApprovalForAll(marketplace.address, true)).wait();
+    const isApproved = await nft.isApprovedForAll(account, marketplace.address);
+    if (!isApproved) {
+      await (await nft.setApprovalForAll(marketplace.address, true)).wait();
+    }
     // add nft to marketplace
     const listingPrice = ethers.utils.parseEther(price.toString());
     await (await marketplace.makeItem(nft.address, id, listingPrice)).wait();
