@@ -14,16 +14,10 @@ const saveFrontendFiles = (contract, name) => {
     fs.mkdirSync(contractsDir);
   }
 
-  fs.writeFileSync(
-    `${contractsDir}/${name}-address.json`,
-    JSON.stringify({ address: contract.address }, undefined, 2)
-  );
+  fs.writeFileSync(`${contractsDir}/${name}-address.json`, JSON.stringify({ address: contract.address }, undefined, 2));
 
   const contractArtifact = artifacts.readArtifactSync(name);
-  fs.writeFileSync(
-    `${contractsDir}/${name}.json`,
-    JSON.stringify(contractArtifact, null, 2)
-  );
+  fs.writeFileSync(`${contractsDir}/${name}.json`, JSON.stringify(contractArtifact, null, 2));
 };
 
 const main = async () => {

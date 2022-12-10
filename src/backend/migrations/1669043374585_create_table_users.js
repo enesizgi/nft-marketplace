@@ -8,5 +8,5 @@ module.exports = {
     'PRIMARY KEY(id), ' +
     'UNIQUE KEY(walletId), ' +
     'UNIQUE KEY(slug));',
-  down: 'DROP TABLE IF EXISTS user',
+  down: 'DROP TABLE IF EXISTS user'
 };

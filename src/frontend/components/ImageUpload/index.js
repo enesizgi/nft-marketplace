@@ -7,14 +7,14 @@ const ScImageUpload = styled.div`
   width: 100%;
   height: 100%;
   position: absolute;
-  top: 50%; 
+  top: 50%;
   left: 50%;
   background-color: rgba(140, 140, 140);
   opacity: 0;
   :hover {
     opacity: 0.7;
   }
-  transition: .3s ease; 
+  transition: 0.3s ease;
   transform: translate(-50%, -50%);
   z-index: 1;
 
@@ -25,13 +25,13 @@ const ScImageUpload = styled.div`
     opacity: 0;
     width: 100%;
     height: 100%;
-    top: 50%; 
+    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
   }
   .profile-photo-edit {
     position: absolute;
-    top: 50%; 
+    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 3;
@@ -42,14 +42,11 @@ const ScImageUpload = styled.div`
 `;
 
 const ImageUpload = ({ onUpload }) => (
-    <ScImageUpload>
-      <EditIcon className="profile-photo-edit" />
-      <input
-        type="file"
-        onChange={onUpload}
-      />
-    </ScImageUpload>
-  );
+  <ScImageUpload>
+    <EditIcon className="profile-photo-edit" />
+    <input type="file" onChange={onUpload} />
+  </ScImageUpload>
+);
 
 ImageUpload.propTypes = {
   onUpload: func
@@ -60,4 +57,3 @@ ImageUpload.defaultProps = {
 };
 
 export default ImageUpload;
-

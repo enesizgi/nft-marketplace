@@ -8,7 +8,7 @@ const dbconfig = {
   user: DB_USER ?? 'root',
   password: DB_PASSWORD ?? 'your-passwords',
   database: DB_NAME ?? 'your-db',
-  port: 3306,
+  port: 3306
 };
 
 const pool = mysql.createPool(dbconfig);

@@ -2,7 +2,7 @@
 /* eslint-disable no-await-in-loop */
 // TODO @Enes: Remove all eslint disables
 import React, { useState, useEffect } from 'react';
-import NFTCard from "./NFTCard";
+import NFTCard from './NFTCard';
 import API from '../modules/api';
 
 const ListNFTSPage = ({ marketplace, nft, account }) => {
@@ -55,13 +55,11 @@ const ListNFTSPage = ({ marketplace, nft, account }) => {
   /* eslint-disable jsx-a11y/alt-text */
   return (
     <div className="imageContainer">
-      {listedItems.filter(item => !soldItems.find(i => i.itemId === item.itemId)).map(item => (
-        <NFTCard
-          key={`${item.url}-${Math.random()}`}
-          item={item}
-          marketplace={marketplace}
-        />
-      ))}
+      {listedItems
+        .filter(item => !soldItems.find(i => i.itemId === item.itemId))
+        .map(item => (
+          <NFTCard key={`${item.url}-${Math.random()}`} item={item} marketplace={marketplace} />
+        ))}
     </div>
   );
 };

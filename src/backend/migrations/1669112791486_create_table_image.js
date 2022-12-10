@@ -7,5 +7,5 @@ module.exports = {
     'type varchar(32) NOT NULL, ' +
     'PRIMARY KEY(id), ' +
     'FOREIGN KEY(user_id) REFERENCES user(walletId));',
-  down: 'DROP TABLE IF EXISTS image;',
+  down: 'DROP TABLE IF EXISTS image;'
 };

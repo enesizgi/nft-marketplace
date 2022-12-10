@@ -3,7 +3,7 @@
 // TODO @Enes: Remove these eslint disables
 import React, { useState, useEffect } from 'react';
 import API from '../../modules/api';
-import NFTCard from "../NFTCard";
+import NFTCard from '../NFTCard';
 
 const HomePage = ({ marketplace, nft }) => {
   const [loading, setLoading] = useState(true);
@@ -44,9 +44,7 @@ const HomePage = ({ marketplace, nft }) => {
   }, []);
 
   if (loading) {
-    return (
-      <h2>Loading...</h2>
-    );
+    return <h2>Loading...</h2>;
   }
   /* eslint-disable jsx-a11y/alt-text,react/button-has-type */
   // TODO @Enes: Remove this eslint disable

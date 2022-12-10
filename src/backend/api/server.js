@@ -39,7 +39,7 @@ app.get('/', (req, res) => {
 
 app.post('/upload-to-ipfs', upload.array('files'), async (req, res) => {
   try {
-    writeFile(`${dirname}/assets/nfts/${req.files[0].filename}.json`, req.query.metadata, async (err) => {
+    writeFile(`${dirname}/assets/nfts/${req.files[0].filename}.json`, req.query.metadata, async err => {
       if (err) {
         res.status(500).send();
         return;
@@ -54,14 +54,11 @@ app.post('/upload-to-ipfs', upload.array('files'), async (req, res) => {
       const imageFilePath = req.files[0].path.split('/');
       const metadataFilePath = `assets/nfts/${req.files[0].filename}.json`.split('/');
       const insertValues = [
-        [ cid, JSON.stringify(imageFilePath) ],
-        [ cid, JSON.stringify(metadataFilePath) ]
+        [cid, JSON.stringify(imageFilePath)],
+        [cid, JSON.stringify(metadataFilePath)]
       ];
 
-      await pool.query(
-        `INSERT INTO nft (cid, path) VALUES ?`,
-        [insertValues]
-      );
+      await pool.query(`INSERT INTO nft (cid, path) VALUES ?`, [insertValues]);
     });
   } catch (err) {
     res.status(500).send();
@@ -71,10 +68,7 @@ app.post('/upload-to-ipfs', upload.array('files'), async (req, res) => {
 
 app.get('/get-from-ipfs', async (req, res) => {
   try {
-    const [rows] = await pool.query(
-      'SELECT nft.cid as cid, nft.path as path FROM nft WHERE nft.cid = ?',
-      [req.query.cid]
-    );
+    const [rows] = await pool.query('SELECT nft.cid as cid, nft.path as path FROM nft WHERE nft.cid = ?', [req.query.cid]);
     if (rows.length) {
       const imageFilePath = rows.filter(i => JSON.parse(i.path).pop().split('.').pop() !== 'json')[0].path;
       const jsonFilePath = rows.filter(i => JSON.parse(i.path).pop().split('.').pop() === 'json')[0].path;
@@ -82,7 +76,10 @@ app.get('/get-from-ipfs', async (req, res) => {
         if (err) throw err;
         const metadata = JSON.parse(data);
         res.send({
-          ...metadata, cid: rows[0].cid, path: JSON.parse(imageFilePath), isIPFS: false,
+          ...metadata,
+          cid: rows[0].cid,
+          path: JSON.parse(imageFilePath),
+          isIPFS: false,
           url: `http://localhost:3001/${JSON.parse(imageFilePath).join('/')}`
         });
       });
@@ -91,13 +88,11 @@ app.get('/get-from-ipfs', async (req, res) => {
 
     const response = await client.get(req.query.cid);
     const files = await response.files();
-    res.json({ isIPFS: true , files });
-
+    res.json({ isIPFS: true, files });
   } catch (err) {
     res.status(500).send();
     console.log(err);
   }
-
 });
 
 app.use(userRouter);

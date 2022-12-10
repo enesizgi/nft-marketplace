@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { string } from 'prop-types';
 import styled from 'styled-components';
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 import API from '../../modules/api';
 import CreateIcon from '../../assets/add_circle_outline_white_24dp.svg';
 
@@ -27,7 +27,7 @@ const ScAccountBox = styled.div`
     display: none;
     flex-direction: column;
   }
-  
+
   .dropdown-content a {
     color: white;
     text-decoration: none;
@@ -37,11 +37,11 @@ const ScAccountBox = styled.div`
     justify-content: center;
     align-items: center;
   }
-  
+
   &:hover .dropdown-content {
     display: flex;
   }
-  
+
   .dropdown-create {
     position: absolute;
     left: -32px;
@@ -49,14 +49,14 @@ const ScAccountBox = styled.div`
     background-color: var(--button-background);
     border-radius: 10px;
     border: 2px solid var(--blue);
-    transition: all .3s ease;
+    transition: all 0.3s ease;
   }
-  
+
   .dropdown-create:hover {
     background-color: var(--blue);
     border: 2px solid var(--button-background);
   }
-  
+
   .dropdown-content img {
     padding-right: 8px;
   }

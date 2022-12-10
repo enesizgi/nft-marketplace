@@ -3,9 +3,8 @@
 import React from 'react';
 import { bool, string } from 'prop-types';
 
-const ProfileContent = ({ id, isOwner }) => ( // eslint-disable-line no-unused-vars
-  <div>Content will be here.</div>
-);
+/* eslint-disable no-unused-vars */
+const ProfileContent = ({ id, isOwner }) => <div>Content will be here.</div>;
 
 ProfileContent.propTypes = {
   id: string,

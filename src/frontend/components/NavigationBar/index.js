@@ -18,16 +18,10 @@ import { classNames } from '../../utils';
 const pages = [
   { path: '/', name: 'Home' },
   { path: '/my-listed-nfts', name: 'My Listed NFTS' },
-  { path: '/my-purchases', name: 'My Purchases' },
+  { path: '/my-purchases', name: 'My Purchases' }
 ];
 
-const NavigationBar = ({
-  web3Handler,
-  loading,
-  account,
-  deviceType,
-  toggleLeftPanel,
-}) => {
+const NavigationBar = ({ web3Handler, loading, account, deviceType, toggleLeftPanel }) => {
   const navigate = useNavigate();
   const isDesktop = deviceType === DEVICE_TYPES.DESKTOP;
   const isTablet = deviceType === DEVICE_TYPES.TABLET;
@@ -40,21 +34,21 @@ const NavigationBar = ({
           logoPlaceHolder: true,
           isDesktop,
           isTablet,
-          isMobile,
+          isMobile
         })}
       >
         NFT Marketplace
       </div>
       {isDesktop ? (
         <>
-          {pages.map((page) => (
+          {pages.map(page => (
             <button
               key={page.path}
               className={classNames({
                 navigationItem: true,
                 isDesktop,
                 isTablet,
-                isMobile,
+                isMobile
               })}
               type="button"
               onClick={() => navigate(page.path)}
@@ -70,7 +64,7 @@ const NavigationBar = ({
             menu: true,
             isDesktop,
             isTablet,
-            isMobile,
+            isMobile
           })}
           onClick={toggleLeftPanel}
         >

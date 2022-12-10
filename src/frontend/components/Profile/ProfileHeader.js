@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { bool, string } from 'prop-types';
 import API from '../../modules/api';
 import ScProfileHeader from './ScProfileHeader';
-import ImageUpload from "../ImageUpload";
-import { generateSignatureData } from "../../utils";
+import ImageUpload from '../ImageUpload';
+import { generateSignatureData } from '../../utils';
 
 const ProfileHeader = ({ id, isOwner, account }) => {
   const [profilePhoto, setProfilePhoto] = useState('');
@@ -16,7 +16,7 @@ const ProfileHeader = ({ id, isOwner, account }) => {
     API.getUsername(id).then(response => setUsername(response.name));
   }, []);
 
-  const handleCoverPhotoUpload = async (e) => {
+  const handleCoverPhotoUpload = async e => {
     e.preventDefault();
     const { signature, message } = await generateSignatureData();
     const file = e.target.files[0];
@@ -31,7 +31,7 @@ const ProfileHeader = ({ id, isOwner, account }) => {
     }
   };
 
-  const handleProfilePhotoUpload = async (e) => {
+  const handleProfilePhotoUpload = async e => {
     e.preventDefault();
     const { signature, message } = await generateSignatureData();
     const file = e.target.files[0];
@@ -50,12 +50,12 @@ const ProfileHeader = ({ id, isOwner, account }) => {
     <ScProfileHeader>
       <div className="profile-photos">
         <div className="cover-photo">
-          { isOwner && (<ImageUpload onUpload={handleCoverPhotoUpload} />) }
+          {isOwner && <ImageUpload onUpload={handleCoverPhotoUpload} />}
           <img className="cover-photo-image" alt="coverPhoto" src={coverPhoto} />
         </div>
         <div className="profile-photo">
-          { isOwner && (<ImageUpload onUpload={handleProfilePhotoUpload} />) }
-          <img className="profile-photo-image" alt="profilePhoto"  src={profilePhoto} />
+          {isOwner && <ImageUpload onUpload={handleProfilePhotoUpload} />}
+          <img className="profile-photo-image" alt="profilePhoto" src={profilePhoto} />
         </div>
       </div>
       <div className="profile-names">
@@ -75,7 +75,5 @@ ProfileHeader.defaultProps = {
   id: '',
   isOwner: false
 };
-
-
 
 export default ProfileHeader;

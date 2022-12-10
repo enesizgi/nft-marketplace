@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
-import {ethers} from "ethers";
+import { ethers } from 'ethers';
 
 const NFTCard = ({ item, account, marketplace, nft, loadMarketplaceItems, showBuyButton, showSellButton }) => {
-  console.log(item);
   const [sellPrice, setSellPrice] = useState(null);
   const buyMarketItem = async itemToBuy => {
     await (await marketplace.purchaseItem(itemToBuy.itemId, { value: itemToBuy.totalPrice })).wait();
     loadMarketplaceItems();
   };
 
-  const sellMarketItem = async itemToSell => {
-    console.log(itemToSell);
+  const sellMarketItem = async () => {
     const isApproved = await nft.isApprovedForAll(account, marketplace.address);
     if (!isApproved) {
       await (await nft.setApprovalForAll(marketplace.address, true)).wait();
@@ -35,18 +33,16 @@ const NFTCard = ({ item, account, marketplace, nft, loadMarketplaceItems, showBu
         </div>
         <div className="imageItemPrice">
           Price:
-          {ethers.utils.formatEther(item.totalPrice)}
-          {' '}
-          ETH
+          {ethers.utils.formatEther(item.totalPrice)} ETH
         </div>
-        { showBuyButton && (
+        {showBuyButton && (
           <button type="button" onClick={() => buyMarketItem(item)}>
             Buy Now
           </button>
         )}
-        { showSellButton && (
+        {showSellButton && (
           <>
-            <input type='number' placeholder='Price in ETH' onChange={(e) => setSellPrice(e.target.value)} />
+            <input type="number" placeholder="Price in ETH" onChange={e => setSellPrice(e.target.value)} />
             <button type="button" onClick={() => sellMarketItem(item)}>
               Sell Now
             </button>

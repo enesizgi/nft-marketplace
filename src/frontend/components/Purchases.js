@@ -2,7 +2,7 @@
 // TODO @Enes: Remove all eslint disables
 import React, { useEffect, useState } from 'react';
 import sortedUniqBy from 'lodash/sortedUniqBy';
-import NFTCard from "./NFTCard";
+import NFTCard from './NFTCard';
 import API from '../modules/api';
 
 const PurchasesPage = ({ nft, marketplace, account }) => {
@@ -20,25 +20,28 @@ const PurchasesPage = ({ nft, marketplace, account }) => {
     const uniqEvents = sortedUniqBy(sortedEvents, i => i.args.tokenId.toBigInt());
     const boughtItems = uniqEvents.filter(i => i.event === 'Bought');
     // Fetch metadata of each nft and add that to listedItem object.
-    const purchases = await Promise.all(boughtItems.map(async i => { // eslint-disable-line no-shadow
-      // TODO @Enes: Rename above variable to something else
-      // fetch arguments from each result
-      i = i.args; // eslint-disable-line no-param-reassign
-      // get uri url from nft contract
-      const uri = await nft.tokenURI(i.tokenId);
-      const cid = uri.split('ipfs://')[1];
-      // use uri to fetch the nft metadata stored on ipfs
-      const metadata = await API.getFromIPFS(cid);
-      // get total price of item (item price + fee)
-      const totalPrice = await marketplace.getTotalPrice(i.itemId);
-      // define listed item object
-      return {
-        ...metadata,
-        totalPrice,
-        price: i.price,
-        itemId: i.itemId
-      };
-    }));
+    // eslint-disable-next-line no-shadow
+    const purchases = await Promise.all(
+      boughtItems.map(async i => {
+        // TODO @Enes: Rename above variable to something else
+        // fetch arguments from each result
+        i = i.args; // eslint-disable-line no-param-reassign
+        // get uri url from nft contract
+        const uri = await nft.tokenURI(i.tokenId);
+        const cid = uri.split('ipfs://')[1];
+        // use uri to fetch the nft metadata stored on ipfs
+        const metadata = await API.getFromIPFS(cid);
+        // get total price of item (item price + fee)
+        const totalPrice = await marketplace.getTotalPrice(i.itemId);
+        // define listed item object
+        return {
+          ...metadata,
+          totalPrice,
+          price: i.price,
+          itemId: i.itemId
+        };
+      })
+    );
     setLoading(false);
     setPurchases(purchases);
   };

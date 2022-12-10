@@ -18,7 +18,7 @@ const ScLeftPanel = styled.div`
     fill: #fff;
     align-self: flex-end;
     margin: 5px;
-    transition: transform .3s ease-in-out;
+    transition: transform 0.3s ease-in-out;
     &:hover {
       transform: rotate(360deg);
     }
@@ -37,7 +37,7 @@ const ScLeftPanel = styled.div`
     }
     &:hover {
       background: #fff;
-      transition: .3s ease;
+      transition: 0.3s ease;
       & > p {
         color: var(--button-background);
       }
@@ -60,7 +60,7 @@ const LeftPanel = ({ nodeRef, isLeftPanelOpened, toggleLeftPanel }) => {
   return (
     <ScLeftPanel ref={nodeRef} isLeftPanelOpened={isLeftPanelOpened}>
       <CloseIcon className="close-icon" onClick={toggleLeftPanel} />
-      { Object.values(PAGE_LINKS).map(pageLink => (
+      {Object.values(PAGE_LINKS).map(pageLink => (
         <div className="pageLink" key={pageLink} onClick={() => handleNavigateToPage(pageLink)}>
           <p>{PAGE_NAMES[pageLink]}</p>
         </div>
@@ -69,10 +69,8 @@ const LeftPanel = ({ nodeRef, isLeftPanelOpened, toggleLeftPanel }) => {
   );
 };
 
-LeftPanel.propTypes = {
-};
+LeftPanel.propTypes = {};
 
-LeftPanel.defaultProps = {
-};
+LeftPanel.defaultProps = {};
 
 export default LeftPanel;

@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
     cb(null, 'assets/images');
   },
   filename(req, file, cb) {
-    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`;
+    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
     cb(null, `${uniqueSuffix}-${file.originalname.replace(/\s/g, '')}`);
   }
 });
@@ -82,10 +82,7 @@ router.get('/user/check', async (req, res) => {
 
 router.post('/user/create', verifyMessage, async (req, res) => {
   try {
-    await pool.query(
-      'INSERT INTO user VALUES (?,?,?,?)',
-      [null, req.query.address, null, 'Unnamed']
-    );
+    await pool.query('INSERT INTO user VALUES (?,?,?,?)', [null, req.query.address, null, 'Unnamed']);
     return res.status(201).send('User saved successfully');
   } catch (err) {
     console.log(err);
@@ -125,27 +122,18 @@ router.get('/user/id', async (req, res) => {
 
 async function uploadPhoto(id, url, type) {
   const absolutePath = `http://localhost:3001/${url}`;
-  const [rows] = await pool.query(
-      'SELECT i.image_path as path FROM image i WHERE i.user_id = ? AND i.type = ?',
-      [id, type]
-  );
+  const [rows] = await pool.query('SELECT i.image_path as path FROM image i WHERE i.user_id = ? AND i.type = ?', [id, type]);
   if (rows.length) {
-    await pool.query(
-        'UPDATE image i SET image_path = ? WHERE i.user_id = ? AND i.type = ?',
-        [url,id, type]
-    );
+    await pool.query('UPDATE image i SET image_path = ? WHERE i.user_id = ? AND i.type = ?', [url, id, type]);
     // DELETE OLD FILE
-    fs.unlink(rows[0].path, (error)=> {
+    fs.unlink(rows[0].path, error => {
       if (error) console.log('Error occured while deleting file ', error);
     });
     return absolutePath;
   }
-  await pool.query(
-      'INSERT INTO image VALUES (?,?,?,?)',
-      [null, id, url, type]
-  );
+  await pool.query('INSERT INTO image VALUES (?,?,?,?)', [null, id, url, type]);
   return absolutePath;
-};
+}
 
 // TODO: Set up user controller and reuse code for profile and cover upload
 router.post('/user/upload-profile-photo', userValidator, verifyMessage, upload.single('profile-photo'), async (req, res) => {
@@ -186,16 +174,15 @@ router.post('/user/upload-cover-photo', userValidator, verifyMessage, upload.sin
 
 router.get('/user/profile-photo', async (req, res) => {
   try {
-    const [rows] = await pool.query(
-      'SELECT i.user_id as id, i.image_path as url FROM image i WHERE i.user_id = ? AND i.type = ?',
-      [req.query.id, imageType.ProfilePhoto]
-    );
+    const [rows] = await pool.query('SELECT i.user_id as id, i.image_path as url FROM image i WHERE i.user_id = ? AND i.type = ?', [
+      req.query.id,
+      imageType.ProfilePhoto
+    ]);
     if (rows.length) {
       res.send({ ...rows[0], url: `http://localhost:3001/${rows[0].url}` });
     } else {
       // TODO: Return default avatar
-      res.status(404).send({ id: req.query.id, 
-        url: 'https://i.etsystatic.com/5805234/r/il/1a38f2/825515703/il_570xN.825515703_19nf.jpg' });
+      res.status(404).send({ id: req.query.id, url: 'https://i.etsystatic.com/5805234/r/il/1a38f2/825515703/il_570xN.825515703_19nf.jpg' });
     }
   } catch (err) {
     console.log(err);
@@ -205,16 +192,15 @@ router.get('/user/profile-photo', async (req, res) => {
 
 router.get('/user/cover-photo', async (req, res) => {
   try {
-    const [rows] = await pool.query(
-      'SELECT i.user_id as id, i.image_path as url FROM image i WHERE i.user_id = ? AND i.type = ?',
-      [req.query.id, imageType.CoverPhoto]
-    );
+    const [rows] = await pool.query('SELECT i.user_id as id, i.image_path as url FROM image i WHERE i.user_id = ? AND i.type = ?', [
+      req.query.id,
+      imageType.CoverPhoto
+    ]);
     if (rows.length) {
       res.send({ ...rows[0], url: `http://localhost:3001/${rows[0].url}` });
     } else {
       // TODO: Return default cover
-      res.status(404).send({ id: req.query.id, 
-        url: 'https://media.glassdoor.com/l/1d/0c/e0/81/the-office.jpg' });
+      res.status(404).send({ id: req.query.id, url: 'https://media.glassdoor.com/l/1d/0c/e0/81/the-office.jpg' });
     }
   } catch (err) {
     console.log(err);

@@ -10,13 +10,14 @@ const MintNFTSPage = ({ account, nft, marketplace }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [file, setFile] = useState(null);
-  const uploadToIPFS = async (e) => {
+  const uploadToIPFS = async e => {
     e.preventDefault();
     if (e.target.files.length > 0) {
       setFile(e.target.files[0]);
     }
   };
-  const mintThenList = async (result) => { // eslint-disable-line
+  const mintThenList = async result => {
+    // eslint-disable-line
     const uri = `ipfs://${result.cid}`;
     // mint nft
     await (await nft.mintNFT(uri)).wait();
@@ -37,7 +38,9 @@ const MintNFTSPage = ({ account, nft, marketplace }) => {
       const formData = new FormData();
       formData.append('files', file);
       const metadata = JSON.stringify({
-        price, name, description
+        price,
+        name,
+        description
       });
       const response = await API.uploadToIPFS(metadata, formData);
       setImage(response);
@@ -49,11 +52,13 @@ const MintNFTSPage = ({ account, nft, marketplace }) => {
   return (
     <div className="mintContainer">
       <input type="file" onChange={uploadToIPFS} name="file" />
-      <input type="text" onChange={(e) => setName(e.target.value)} placeholder="Name" />
-      <input type="text" onChange={(e) => setDescription(e.target.value)} placeholder="Description" />
-      <input type="number" onChange={(e) => setPrice(e.target.value)} placeholder="Price in ETH" />
-      <button type='button' onClick={createNFT}>Mint NFT</button>
-      {image && <img src={image.url} alt='nft-input' width="300px" />}
+      <input type="text" onChange={e => setName(e.target.value)} placeholder="Name" />
+      <input type="text" onChange={e => setDescription(e.target.value)} placeholder="Description" />
+      <input type="number" onChange={e => setPrice(e.target.value)} placeholder="Price in ETH" />
+      <button type="button" onClick={createNFT}>
+        Mint NFT
+      </button>
+      {image && <img src={image.url} alt="nft-input" width="300px" />}
     </div>
   );
 };

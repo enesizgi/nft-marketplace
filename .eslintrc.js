@@ -1,21 +1,21 @@
 module.exports = {
   env: {
     browser: true,
-    es2021: true,
+    es2021: true
   },
   extends: ['plugin:react/recommended', 'airbnb', 'prettier'],
   overrides: [
     {
-      files: ['src/frontend/*.js', 'index.js'],
-    },
+      files: ['src/frontend/*.js', 'index.js']
+    }
   ],
   parser: '@babel/eslint-parser',
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module',
     babelOptions: {
-      presets: ['@babel/preset-react'],
-    },
+      presets: ['@babel/preset-react']
+    }
   },
   plugins: ['react'],
   rules: {
@@ -27,5 +27,5 @@ module.exports = {
     'max-len': ['error', { code: 150, comments: 150 }],
     'class-methods-use-this': 0,
     'react/prop-types': 0
-  },
+  }
 };

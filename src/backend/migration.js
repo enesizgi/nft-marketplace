@@ -7,7 +7,7 @@ const connection = mysql.createPool({
   user: 'root',
   password: 'Hitman.54',
   database: 'nftao',
-  port: '3306',
+  port: '3306'
 });
 
 migration.init(connection, `${__dirname}/migrations`);
