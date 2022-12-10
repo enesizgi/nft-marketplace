@@ -1,6 +1,7 @@
 :root {
   --primary: #4628ff;
   --blue: #0089a8;
+  --button-background: #23252a;
 }
 
 .navigationItemContainer {
@@ -114,5 +115,5 @@
 
 .navigationItemContainer {
   display: flex;
-  background-color: #23252a;
+  background-color: var(--button-background);
 }

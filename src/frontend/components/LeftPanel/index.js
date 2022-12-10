@@ -10,7 +10,7 @@ const ScLeftPanel = styled.div`
   position: absolute;
   display: flex;
   flex-direction: column;
-  background-color: #23252a;
+  background-color: var(--button-background);
   z-index: 999;
   ${({ isLeftPanelOpened }) => (isLeftPanelOpened ? 'left: 0;' : 'left: -90%;')}
   transition: all .5s ease;
@@ -39,7 +39,7 @@ const ScLeftPanel = styled.div`
       background: #fff;
       transition: .3s ease;
       & > p {
-        color: #23252a;
+        color: var(--button-background);
       }
     }
   }

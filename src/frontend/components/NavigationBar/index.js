@@ -17,7 +17,6 @@ import { classNames } from '../../utils';
 
 const pages = [
   { path: '/', name: 'Home' },
-  { path: '/mint-nfts', name: 'Mint NFTS' },
   { path: '/my-listed-nfts', name: 'My Listed NFTS' },
   { path: '/my-purchases', name: 'My Purchases' },
 ];

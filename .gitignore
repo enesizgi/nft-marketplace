@@ -38,3 +38,4 @@ artifacts
 public/images
 src/backend/images
 assets
+!src/frontend/assets
