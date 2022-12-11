@@ -15,3 +15,5 @@ export const PAGE_NAMES = {
   [PAGE_LINKS.MY_LISTED_NFTS]: 'My Listed NFTs',
   [PAGE_LINKS.PURCHASES]: 'My purchases'
 };
+
+export const JSON_RPC_PROVIDER = 'http://localhost:8545';

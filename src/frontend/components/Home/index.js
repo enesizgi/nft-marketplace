@@ -40,14 +40,14 @@ const HomePage = ({ marketplace, nft }) => {
   };
 
   useEffect(() => {
-    loadMarketplaceItems();
-  }, []);
+    if (marketplace && nft) {
+      loadMarketplaceItems();
+    }
+  }, [marketplace, nft]);
 
   if (loading) {
     return <h2>Loading...</h2>;
   }
-  /* eslint-disable jsx-a11y/alt-text,react/button-has-type */
-  // TODO @Enes: Remove this eslint disable
   if (items.length > 0) {
     return (
       <div className="imageContainer">

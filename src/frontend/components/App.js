@@ -14,13 +14,15 @@ import NFTAbi from '../contractsData/NFT.json';
 import NFTAddress from '../contractsData/NFT-address.json';
 import Profile from './Profile';
 import GlobalStyle from './GlobalStyle';
-import { DEVICE_TYPES } from '../constants';
+import { DEVICE_TYPES, JSON_RPC_PROVIDER } from '../constants';
 import LeftPanel from './LeftPanel';
 
 const App = () => {
   const [account, setAccount] = useState(null);
   const [marketplace, setMarketplace] = useState(null);
   const [nft, setNFT] = useState(null);
+  // eslint-disable-next-line no-unused-vars
+  const [chainId, setChainId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [deviceType, setDeviceType] = useState('');
   const [isLeftPanelOpened, setLeftPanelOpened] = useState(false);
@@ -52,13 +54,12 @@ const App = () => {
     window.addEventListener('resize', updateDeviceType);
   }, []);
 
-  const loadContracts = async signer => {
+  const loadContracts = async signerOrProvider => {
     // Get deployed copies of contracts
-    const marketplace = new ethers.Contract(MarketplaceAddress.address, MarketplaceAbi.abi, signer); // eslint-disable-line
-    setMarketplace(marketplace);
-    const nft = new ethers.Contract(NFTAddress.address, NFTAbi.abi, signer); // eslint-disable-line
-    // TODO @Enes: Rename above two variables again and remove eslint line above
-    setNFT(nft);
+    const marketplaceContract = new ethers.Contract(MarketplaceAddress.address, MarketplaceAbi.abi, signerOrProvider);
+    setMarketplace(marketplaceContract);
+    const nftContract = new ethers.Contract(NFTAddress.address, NFTAbi.abi, signerOrProvider);
+    setNFT(nftContract);
     setLoading(false);
   };
 
@@ -70,10 +71,9 @@ const App = () => {
     // Set signer
     const signer = provider.getSigner();
 
-    // eslint-disable-next-line
-    window.ethereum.on('chainChanged', chainId => {
-      // TODO @Enes: React to chain changes and remove eslint line above
-      window.location.reload();
+    window.ethereum.on('chainChanged', chainID => {
+      // TODO @Enes: React to chain changes
+      setChainId(chainID);
     });
 
     // eslint-disable-next-line
@@ -85,6 +85,13 @@ const App = () => {
     loadContracts(signer);
   };
 
+  useEffect(async () => {
+    if (!account) {
+      const provider = new ethers.providers.JsonRpcProvider(JSON_RPC_PROVIDER);
+      await loadContracts(provider);
+    }
+  }, [account]);
+
   return (
     <BrowserRouter>
       <GlobalStyle />
@@ -93,17 +100,13 @@ const App = () => {
           <LeftPanel nodeRef={leftPanelRef} isLeftPanelOpened={isLeftPanelOpened} toggleLeftPanel={toggleLeftPanel} />
         )}
         <NavigationBar web3Handler={web3Handler} loading={loading} account={account} deviceType={deviceType} toggleLeftPanel={toggleLeftPanel} />
-        {loading ? (
-          <div>Waiting for Metamask connection...</div>
-        ) : (
-          <Routes>
-            <Route exact path="/" element={<HomePage nft={nft} marketplace={marketplace} />} />
-            <Route path="/user/*" element={<Profile account={account} nft={nft} marketplace={marketplace} />} />
-            <Route path="/mint-nfts" element={<MintNFTSPage nft={nft} marketplace={marketplace} account={account} />} />
-            <Route path="/my-listed-nfts" element={<ListNFTSPage nft={nft} marketplace={marketplace} account={account} />} />
-            <Route path="/my-purchases" element={<PurchasesPage nft={nft} marketplace={marketplace} account={account} />} />
-          </Routes>
-        )}
+        <Routes>
+          <Route exact path="/" element={<HomePage nft={nft} marketplace={marketplace} />} />
+          <Route path="/user/*" element={<Profile account={account} nft={nft} marketplace={marketplace} />} />
+          <Route path="/mint-nfts" element={<MintNFTSPage nft={nft} marketplace={marketplace} account={account} />} />
+          <Route path="/my-listed-nfts" element={<ListNFTSPage nft={nft} marketplace={marketplace} account={account} />} />
+          <Route path="/my-purchases" element={<PurchasesPage nft={nft} marketplace={marketplace} account={account} />} />
+        </Routes>
       </div>
     </BrowserRouter>
   );

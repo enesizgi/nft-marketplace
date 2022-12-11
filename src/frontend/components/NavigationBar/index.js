@@ -68,7 +68,7 @@ const NavigationBar = ({ web3Handler, loading, account, deviceType, toggleLeftPa
         </div>
       )}
       <div className="navigationItem accountBox">
-        {loading ? (
+        {loading || !account ? (
           <button onClick={web3Handler}>Connect Wallet</button>
         ) : (
           <Link to={`/user/${account}`}>
