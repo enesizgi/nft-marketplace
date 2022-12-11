@@ -6,7 +6,7 @@ import UserNotFound from './UserNotFound';
 import ProfileHeader from './ProfileHeader';
 import ProfileContent from './ProfileContent';
 
-const Profile = ({ account }) => {
+const Profile = ({ account, nft, marketplace }) => {
   const [isOwner, setIsOwner] = useState(false);
   const [profileID, setProfileID] = useState('');
   const profilePath = useLocation().pathname.split('/')[2];
@@ -31,7 +31,7 @@ const Profile = ({ account }) => {
   return (
     <>
       <ProfileHeader id={profileID} isOwner={isOwner} account={account} />
-      <ProfileContent id={profileID} isOwner={isOwner} />
+      <ProfileContent id={profileID} isOwner={isOwner} account={account} nft={nft} marketplace={marketplace} />
     </>
   );
 };

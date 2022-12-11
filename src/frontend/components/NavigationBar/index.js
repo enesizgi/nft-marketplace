@@ -15,11 +15,7 @@ import { classNames } from '../../utils';
 /* eslint-disable jsx-a11y/no-static-element-interactions,jsx-a11y/click-events-have-key-events */
 // TODO @Emre: Remove above eslint disable
 
-const pages = [
-  { path: '/', name: 'Home' },
-  { path: '/my-listed-nfts', name: 'My Listed NFTS' },
-  { path: '/my-purchases', name: 'My Purchases' }
-];
+const pages = [{ path: '/', name: 'Home' }];
 
 const NavigationBar = ({ web3Handler, loading, account, deviceType, toggleLeftPanel }) => {
   const navigate = useNavigate();

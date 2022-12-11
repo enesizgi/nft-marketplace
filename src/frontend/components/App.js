@@ -98,7 +98,7 @@ const App = () => {
         ) : (
           <Routes>
             <Route exact path="/" element={<HomePage nft={nft} marketplace={marketplace} />} />
-            <Route path="/user/*" element={<Profile account={account} />} />
+            <Route path="/user/*" element={<Profile account={account} nft={nft} marketplace={marketplace} />} />
             <Route path="/mint-nfts" element={<MintNFTSPage nft={nft} marketplace={marketplace} account={account} />} />
             <Route path="/my-listed-nfts" element={<ListNFTSPage nft={nft} marketplace={marketplace} account={account} />} />
             <Route path="/my-purchases" element={<PurchasesPage nft={nft} marketplace={marketplace} account={account} />} />

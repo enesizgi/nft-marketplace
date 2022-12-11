@@ -2,9 +2,75 @@
 // TODO: Remove eslint disables
 import React from 'react';
 import { bool, string } from 'prop-types';
+import styled from 'styled-components';
+import ListedIcon from '../../assets/article_black_24dp.svg';
+import PurchasedIcon from '../../assets/shopping_bag_black_24dp.svg';
+import { classNames } from '../../utils';
+import ListNFTSPage from '../ListNFTS';
+import PurchasesPage from '../Purchases';
+
+const ScProfileContent = styled.div`
+  width: 100%;
+  padding: 0 2%;
+  .profile-content-header {
+    display: flex;
+    border-bottom: 3px solid var(--blue);
+    &-title {
+      border: none;
+      background: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 24px;
+      padding: 16px;
+      transition: transform 0.3s ease;
+      opacity: 0.5;
+    }
+
+    &-title.isActive {
+      opacity: 1;
+    }
+
+    &-title:hover {
+      cursor: pointer;
+      transform: translateX(5px);
+      border-bottom: 2px solid #0089a8;
+      opacity: 1;
+    }
+  }
+`;
+
+const tabs = [
+  { name: 'Listed', icon: ListedIcon },
+  { name: 'Purchased', icon: PurchasedIcon }
+];
 
 /* eslint-disable no-unused-vars */
-const ProfileContent = ({ id, isOwner }) => <div>Content will be here.</div>;
+const ProfileContent = ({ id, isOwner, account, nft, marketplace }) => {
+  const [selectedTab, setSelectedTab] = React.useState(tabs[0].name);
+  return (
+    <ScProfileContent>
+      <div className="profile-content-header">
+        {tabs.map(tab => (
+          <button
+            key={tab.name}
+            type="button"
+            className={classNames({
+              'profile-content-header-title': true,
+              isActive: selectedTab === tab.name
+            })}
+            onClick={() => setSelectedTab(tab.name)}
+          >
+            <img src={tab.icon} alt={`${tab.name} Icon`} />
+            {tab.name}
+          </button>
+        ))}
+      </div>
+      {selectedTab === 'Listed' && <ListNFTSPage account={account} nft={nft} marketplace={marketplace} />}
+      {selectedTab === 'Purchased' && <PurchasesPage account={account} nft={nft} marketplace={marketplace} />}
+    </ScProfileContent>
+  );
+};
 
 ProfileContent.propTypes = {
   id: string,
