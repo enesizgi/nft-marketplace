@@ -31,10 +31,12 @@ const NFTCard = ({ item, account, marketplace, nft, loadMarketplaceItems, showBu
           Description:
           {item.description}
         </div>
-        <div className="imageItemPrice">
-          Price:
-          {ethers.utils.formatEther(item.totalPrice)} ETH
-        </div>
+        {item.totalPrice && (
+          <div className="imageItemPrice">
+            Price:
+            {ethers.utils.formatEther(item.totalPrice)} ETH
+          </div>
+        )}
         {showBuyButton && (
           <button type="button" onClick={() => buyMarketItem(item)}>
             Buy Now

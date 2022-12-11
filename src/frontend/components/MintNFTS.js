@@ -18,13 +18,18 @@ const MintNFTSPage = ({ account, nft, marketplace }) => {
       setFile(e.target.files[0]);
     }
   };
-  const mintThenList = async result => {
-    // eslint-disable-line
+
+  const mintNFT = async result => {
     const uri = `ipfs://${result.cid}`;
     // mint nft
-    await (await nft.mintNFT(uri)).wait();
+    const response = await (await nft.mintNFT(uri)).wait();
     // get tokenId of new nft
-    const id = await nft.tokenCounter();
+    return response.events[0].args[2];
+  };
+
+  const mintThenList = async result => {
+    const id = await mintNFT(result);
+
     // approve marketplace to spend nft
     const isApproved = await nft.isApprovedForAll(account, marketplace.address);
     if (!isApproved) {
@@ -34,7 +39,7 @@ const MintNFTSPage = ({ account, nft, marketplace }) => {
     const listingPrice = ethers.utils.parseEther(price.toString());
     await (await marketplace.makeItem(nft.address, id, listingPrice)).wait();
   };
-  const createNFT = async () => {
+  const createNFT = willBeListed => async () => {
     if (!file || !price || !name || !description) return;
     try {
       const formData = new FormData();
@@ -46,7 +51,11 @@ const MintNFTSPage = ({ account, nft, marketplace }) => {
       });
       const response = await API.uploadToIPFS(metadata, formData);
       setImage(response);
-      mintThenList(response);
+      if (willBeListed) {
+        mintThenList(response);
+      } else {
+        mintNFT(response);
+      }
     } catch (error) {
       console.warn('ipfs uri upload error: ', error);
     }
@@ -60,26 +69,27 @@ const MintNFTSPage = ({ account, nft, marketplace }) => {
       </label>
 
       <div className="container">
-        <div className="row mt-2">
-          <div className="col-md-5">
-            <div className="input-group">
-              <div className="input-flat">N</div>
-              <input type="text" onChange={e => setName(e.target.value)} placeholder="Name" className="input-control" />
-            </div>
-            <div className="input-group">
-              <div className="input-flat">D</div>
-              <input type="text" onChange={e => setDescription(e.target.value)} placeholder="Description" className="input-control" />
-            </div>
-            <div className="input-group">
-              <div className="input-flat">P</div>
-              <input type="number" onChange={e => setPrice(e.target.value)} placeholder="Price in ETH" className="input-control" />
-            </div>
-          </div>
+        <div className="input-group">
+          <div className="input-flat">Name</div>
+          <input type="text" onChange={e => setName(e.target.value)} placeholder="Name" className="input-control" />
+        </div>
+        <div className="input-group">
+          <div className="input-flat">Description</div>
+          <input type="text" onChange={e => setDescription(e.target.value)} placeholder="Description" className="input-control" />
+        </div>
+        <div className="input-group">
+          <div className="input-flat">Price</div>
+          <input type="number" onChange={e => setPrice(e.target.value)} placeholder="Price in ETH" className="input-control" />
         </div>
       </div>
-      <button type="button" className="button-37" onClick={createNFT}>
-        Mint NFT
-      </button>
+      <div className="buttonContainer">
+        <button type="button" className="button-37" onClick={createNFT(false)}>
+          Mint NFT
+        </button>
+        <button type="button" className="button-37 isGreen" onClick={createNFT(true)}>
+          Mint and List
+        </button>
+      </div>
       {image && <img src={image.url} alt="nft-input" width="300px" />}
     </div>
   );

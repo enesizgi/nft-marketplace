@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import API from '../../modules/api';
 import NFTCard from '../NFTCard';
 
-const HomePage = ({ marketplace, nft }) => {
+const HomePage = ({ marketplace, nft, account }) => {
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState([]);
   const loadMarketplaceItems = async () => {
@@ -57,6 +57,8 @@ const HomePage = ({ marketplace, nft }) => {
             item={item}
             loadMarketplaceItems={loadMarketplaceItems}
             marketplace={marketplace}
+            account={account}
+            nft={nft}
             showBuyButton
           />
         ))}

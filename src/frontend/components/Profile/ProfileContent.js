@@ -8,6 +8,7 @@ import PurchasedIcon from '../../assets/shopping_bag_black_24dp.svg';
 import { classNames } from '../../utils';
 import ListNFTSPage from '../ListNFTS';
 import PurchasesPage from '../Purchases';
+import OwnedPage from '../OwnedPage';
 
 const ScProfileContent = styled.div`
   width: 100%;
@@ -42,7 +43,8 @@ const ScProfileContent = styled.div`
 
 const tabs = [
   { name: 'Listed', icon: ListedIcon },
-  { name: 'Purchased', icon: PurchasedIcon }
+  { name: 'Purchased', icon: PurchasedIcon },
+  { name: 'Owned', icon: PurchasedIcon }
 ];
 
 /* eslint-disable no-unused-vars */
@@ -68,6 +70,7 @@ const ProfileContent = ({ id, isOwner, account, nft, marketplace }) => {
       </div>
       {selectedTab === 'Listed' && <ListNFTSPage account={account} nft={nft} marketplace={marketplace} />}
       {selectedTab === 'Purchased' && <PurchasesPage account={account} nft={nft} marketplace={marketplace} />}
+      {selectedTab === 'Owned' && <OwnedPage account={account} nft={nft} marketplace={marketplace} />}
     </ScProfileContent>
   );
 };

@@ -41,8 +41,8 @@ const ListNFTSPage = ({ marketplace, nft, account }) => {
     setListedItems(listedItems);
     setSoldItems(soldItems);
   };
-  useEffect(() => {
-    loadListedItems();
+  useEffect(async () => {
+    await loadListedItems();
   }, []);
   if (loading) {
     return (
@@ -51,14 +51,19 @@ const ListNFTSPage = ({ marketplace, nft, account }) => {
       </main>
     );
   }
-  // TODO @Enes: Implement sold items using soldItems variable above. Then remove eslint line above.
-  /* eslint-disable jsx-a11y/alt-text */
   return (
     <div className="imageContainer">
       {listedItems
         .filter(item => !soldItems.find(i => i.itemId === item.itemId))
         .map(item => (
-          <NFTCard key={`${item.url}-${Math.random()}`} item={item} marketplace={marketplace} />
+          <NFTCard
+            key={`${item.url}-${Math.random()}`}
+            item={item}
+            marketplace={marketplace}
+            nft={nft}
+            account={account}
+            loadMarketplaceItems={loadListedItems}
+          />
         ))}
     </div>
   );

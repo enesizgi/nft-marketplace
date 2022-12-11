@@ -101,7 +101,7 @@ const App = () => {
         )}
         <NavigationBar web3Handler={web3Handler} loading={loading} account={account} deviceType={deviceType} toggleLeftPanel={toggleLeftPanel} />
         <Routes>
-          <Route exact path="/" element={<HomePage nft={nft} marketplace={marketplace} />} />
+          <Route exact path="/" element={<HomePage nft={nft} marketplace={marketplace} account={account} />} />
           <Route path="/user/*" element={<Profile account={account} nft={nft} marketplace={marketplace} />} />
           <Route path="/mint-nfts" element={<MintNFTSPage nft={nft} marketplace={marketplace} account={account} />} />
           <Route path="/my-listed-nfts" element={<ListNFTSPage nft={nft} marketplace={marketplace} account={account} />} />
