@@ -31,6 +31,8 @@ contract Marketplace is ReentrancyGuard {
         uint price;
         uint timeToEnd;
         address payable winner;
+        address payable seller;
+        uint deposited;
         bool claimed;
     }
 
@@ -58,6 +60,8 @@ contract Marketplace is ReentrancyGuard {
         feeAccount = payable(msg.sender);
         feePercent = _feePercent;
     }
+
+    fallback() external {}
 
     // Make item to offer on the marketplace
     function makeItem(IERC721 _nft, uint _tokenId, uint _price) external nonReentrant {
@@ -125,31 +129,41 @@ contract Marketplace is ReentrancyGuard {
             _price,
             _timeToEnd,
             payable(msg.sender),
+            payable(msg.sender),
+            0,
             false
         );
         // TODO Implement an event here.
-        // emit Offered event
-        // emit Offered(
-        //     itemCount,
-        //     address(_nft),
-        //     _tokenId,
-        //     _price,
-        //     msg.sender
-        // );
     }
 
     function makeOffer(uint _auctionId, uint _price) external payable nonReentrant {
         require(_auctionId > 0, "Auction id should be bigger than zero.");
         require(_price > auctionItems[_auctionId].price, "Price should be greater than current price.");
         require(block.timestamp >= auctionItems[_auctionId].timeToEnd, "Auction should not be ended.");
-        // TODO Get payment from msg.sender
-        // TODO Change auctionItem winner
+        // Get payment from msg.sender
+        feeAccount.transfer(_price);
+        // Pay previous winner
+        if (auctionItems[_auctionId].deposited > 0) {
+            auctionItems[_auctionId].winner.transfer(auctionItems[_auctionId].deposited);
+        }
+        // Update auction item
+        AuctionItem storage auctionItem = auctionItems[_auctionId];
+        auctionItem.price = _price;
+        auctionItem.winner = payable(msg.sender);
+        auctionItem.deposited = _price;
+        // TODO Emit event
+
     }
 
     function claimNFT(uint _auctionId) external nonReentrant {
         require(_auctionId > 0, "Auction id should be bigger than zero");
-        require(auctionItems[_auctionId].winner == msg.sender, "Only winner can claim this NFT.");
+        require(block.timestamp >= auctionItems[_auctionId].timeToEnd, "Auction should end first.");
+        require(auctionItems[_auctionId].winner == msg.sender || auctionItems[_auctionId].seller == msg.sender, "Only winner or seller can run this function.");
         require(!auctionItems[_auctionId].claimed, "NFT is already claimed.");
-        // TODO Transfer NFT to msg.sender
+        // Transfer NFT to msg.sender
+        auctionItems[_auctionId].nft.transferFrom(address(this), msg.sender, auctionItems[_auctionId].tokenId);
+        // TODO: Check if two lines below are needed. (and how much gas it costs)
+        AuctionItem storage auctionItem = auctionItems[_auctionId];
+        auctionItem.claimed = true;
     }
 }
