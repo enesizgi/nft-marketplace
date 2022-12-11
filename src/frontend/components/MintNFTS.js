@@ -1,8 +1,10 @@
 /* eslint-disable react/prop-types */
+
 // TODO @Enes: Remove this eslint disable
 import React, { useState } from 'react';
 import { ethers } from 'ethers';
 import API from '../modules/api';
+import './MintNFTS.css';
 
 const MintNFTSPage = ({ account, nft, marketplace }) => {
   const [image, setImage] = useState(''); // eslint-disable-line
@@ -49,13 +51,33 @@ const MintNFTSPage = ({ account, nft, marketplace }) => {
       console.warn('ipfs uri upload error: ', error);
     }
   };
+
   return (
     <div className="mintContainer">
-      <input type="file" onChange={uploadToIPFS} name="file" />
-      <input type="text" onChange={e => setName(e.target.value)} placeholder="Name" />
-      <input type="text" onChange={e => setDescription(e.target.value)} placeholder="Description" />
-      <input type="number" onChange={e => setPrice(e.target.value)} placeholder="Price in ETH" />
-      <button type="button" onClick={createNFT}>
+      <label htmlFor="images" className="drop-container">
+        <span className="drop-title">Upload your NFT</span>
+        <input type="file" id="images" name="file" onChange={uploadToIPFS} accept="image/*" required />
+      </label>
+
+      <div className="container">
+        <div className="row mt-2">
+          <div className="col-md-5">
+            <div className="input-group">
+              <div className="input-flat">N</div>
+              <input type="text" onChange={e => setName(e.target.value)} placeholder="Name" className="input-control" />
+            </div>
+            <div className="input-group">
+              <div className="input-flat">D</div>
+              <input type="text" onChange={e => setDescription(e.target.value)} placeholder="Description" className="input-control" />
+            </div>
+            <div className="input-group">
+              <div className="input-flat">P</div>
+              <input type="number" onChange={e => setPrice(e.target.value)} placeholder="Price in ETH" className="input-control" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <button type="button" className="button-37" onClick={createNFT}>
         Mint NFT
       </button>
       {image && <img src={image.url} alt="nft-input" width="300px" />}
