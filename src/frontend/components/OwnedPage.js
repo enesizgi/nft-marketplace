@@ -2,9 +2,8 @@
 /* eslint-disable no-await-in-loop */
 // TODO @Enes: Remove all eslint disables
 import React, { useState, useEffect } from 'react';
-import NFTCard from './NFTCard';
 import API from '../modules/api';
-import NFTShowcase from "./NFTShowcase";
+import NFTShowcase from './NFTShowcase';
 
 const OwnedPage = ({ marketplace, nft, account, isOwner, profileID }) => {
   const [loading, setLoading] = useState(true);
@@ -36,30 +35,7 @@ const OwnedPage = ({ marketplace, nft, account, isOwner, profileID }) => {
       </main>
     );
   }
-  return (
-    <NFTShowcase
-    NFTs={ownedItems}
-    marketplace={marketplace}
-    loadItems={loadOwnedItems}
-    isOwner={isOwner}
-    nft={nft}
-    account={account} />
-  );
-  return (
-    <div className="imageContainer">
-      {ownedItems.map(item => (
-        <NFTCard
-          key={`${item.url}-${Math.random()}`}
-          item={item}
-          marketplace={marketplace}
-          nft={nft}
-          account={account}
-          loadMarketplaceItems={loadOwnedItems}
-          showSellButton
-        />
-      ))}
-    </div>
-  );
+  return <NFTShowcase NFTs={ownedItems} marketplace={marketplace} loadItems={loadOwnedItems} isOwner={isOwner} nft={nft} account={account} />;
 };
 
 export default OwnedPage;
