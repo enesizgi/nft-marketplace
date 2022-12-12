@@ -2,13 +2,15 @@
 /* eslint-disable no-await-in-loop */
 // TODO @Enes: Remove all eslint disables
 import React, { useState, useEffect } from 'react';
-import NFTCard from './NFTCard';
 import API from '../modules/api';
+import NFTShowcase from './NFTShowcase';
 
-const ListNFTSPage = ({ marketplace, nft, account }) => {
+const ListNFTSPage = ({ marketplace, nft, profileID, isOwner, account }) => {
   const [loading, setLoading] = useState(true);
   const [listedItems, setListedItems] = useState([]);
+  // eslint-disable-next-line no-unused-vars
   const [soldItems, setSoldItems] = useState([]);
+
   const loadListedItems = async () => {
     // Load all sold items that the user listed
     const itemCount = await marketplace.itemCount();
@@ -17,7 +19,7 @@ const ListNFTSPage = ({ marketplace, nft, account }) => {
     // TODO @Enes: Rename above two variables again
     for (let indx = 1; indx <= itemCount; indx += 1) {
       const i = await marketplace.items(indx);
-      if (!i.sold && i.seller.toLowerCase() === account) {
+      if (!i.sold && i.seller.toLowerCase() === profileID) {
         // get uri url from nft contract
         const uri = await nft.tokenURI(i.tokenId);
         const cid = uri.split('ipfs://')[1];
@@ -44,6 +46,7 @@ const ListNFTSPage = ({ marketplace, nft, account }) => {
   useEffect(async () => {
     await loadListedItems();
   }, []);
+
   if (loading) {
     return (
       <main style={{ padding: '1rem 0' }}>
@@ -51,22 +54,9 @@ const ListNFTSPage = ({ marketplace, nft, account }) => {
       </main>
     );
   }
-  return (
-    <div className="imageContainer">
-      {listedItems
-        .filter(item => !soldItems.find(i => i.itemId === item.itemId))
-        .map(item => (
-          <NFTCard
-            key={`${item.url}-${Math.random()}`}
-            item={item}
-            marketplace={marketplace}
-            nft={nft}
-            account={account}
-            loadMarketplaceItems={loadListedItems}
-          />
-        ))}
-    </div>
-  );
+  // TODO @Enes: Implement sold items using soldItems variable above. Then remove eslint line above.
+  /* eslint-disable jsx-a11y/alt-text */
+  return <NFTShowcase NFTs={listedItems} marketplace={marketplace} isOwner={isOwner} loadItems={loadListedItems} nft={nft} account={account} />;
 };
 
 export default ListNFTSPage;

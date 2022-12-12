@@ -3,7 +3,7 @@
 // TODO @Enes: Remove these eslint disables
 import React, { useState, useEffect } from 'react';
 import API from '../../modules/api';
-import NFTCard from '../NFTCard';
+import NFTShowcase from '../NFTShowcase';
 
 const HomePage = ({ marketplace, nft, account }) => {
   const [loading, setLoading] = useState(true);
@@ -49,21 +49,7 @@ const HomePage = ({ marketplace, nft, account }) => {
     return <h2>Loading...</h2>;
   }
   if (items.length > 0) {
-    return (
-      <div className="imageContainer">
-        {items.map(item => (
-          <NFTCard
-            key={`${item.url}-${Math.random()}`}
-            item={item}
-            loadMarketplaceItems={loadMarketplaceItems}
-            marketplace={marketplace}
-            account={account}
-            nft={nft}
-            showBuyButton
-          />
-        ))}
-      </div>
-    );
+    return <NFTShowcase NFTs={items} marketplace={marketplace} loadItems={loadMarketplaceItems} isOwner={false} nft={nft} account={account} />;
   }
   return <div>Home</div>;
 };

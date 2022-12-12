@@ -16,6 +16,8 @@ const ScProfileContent = styled.div`
   .profile-content-header {
     display: flex;
     border-bottom: 3px solid var(--blue);
+    margin-bottom: 20px;
+    height: 60px;
     &-title {
       border: none;
       background: none;
@@ -68,9 +70,9 @@ const ProfileContent = ({ id, isOwner, account, nft, marketplace }) => {
           </button>
         ))}
       </div>
-      {selectedTab === 'Listed' && <ListNFTSPage account={account} nft={nft} marketplace={marketplace} />}
-      {selectedTab === 'Purchased' && <PurchasesPage account={account} nft={nft} marketplace={marketplace} />}
-      {selectedTab === 'Owned' && <OwnedPage account={account} nft={nft} marketplace={marketplace} />}
+      {selectedTab === 'Listed' && <ListNFTSPage profileID={id} account={account} nft={nft} marketplace={marketplace} isOwner={isOwner} />}
+      {selectedTab === 'Purchased' && <PurchasesPage profileID={id} account={account} nft={nft} marketplace={marketplace} isOwner={isOwner} />}
+      {selectedTab === 'Owned' && <OwnedPage profileID={id} account={account} nft={nft} marketplace={marketplace} isOwner={isOwner} />}
     </ScProfileContent>
   );
 };

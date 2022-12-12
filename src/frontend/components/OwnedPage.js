@@ -4,15 +4,16 @@
 import React, { useState, useEffect } from 'react';
 import NFTCard from './NFTCard';
 import API from '../modules/api';
+import NFTShowcase from "./NFTShowcase";
 
-const OwnedPage = ({ marketplace, nft, account }) => {
+const OwnedPage = ({ marketplace, nft, account, isOwner, profileID }) => {
   const [loading, setLoading] = useState(true);
   const [ownedItems, setOwnedItems] = useState([]);
   const loadOwnedItems = async () => {
-    const ownedCount = await nft.balanceOf(account);
+    const ownedCount = await nft.balanceOf(profileID);
     const ownedItemsLocal = [];
     for (let i = 0; i < ownedCount; i += 1) {
-      const tokenId = await nft.tokenOfOwnerByIndex(account, i);
+      const tokenId = await nft.tokenOfOwnerByIndex(profileID, i);
       const uri = await nft.tokenURI(tokenId);
       const cid = uri.split('ipfs://')[1];
       const metadata = await API.getFromIPFS(cid);
@@ -35,6 +36,15 @@ const OwnedPage = ({ marketplace, nft, account }) => {
       </main>
     );
   }
+  return (
+    <NFTShowcase
+    NFTs={ownedItems}
+    marketplace={marketplace}
+    loadItems={loadOwnedItems}
+    isOwner={isOwner}
+    nft={nft}
+    account={account} />
+  );
   return (
     <div className="imageContainer">
       {ownedItems.map(item => (

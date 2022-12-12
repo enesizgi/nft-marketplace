@@ -2,18 +2,18 @@
 // TODO @Enes: Remove all eslint disables
 import React, { useEffect, useState } from 'react';
 import sortedUniqBy from 'lodash/sortedUniqBy';
-import NFTCard from './NFTCard';
 import API from '../modules/api';
+import NFTShowcase from './NFTShowcase';
 
-const PurchasesPage = ({ nft, marketplace, account }) => {
+const PurchasesPage = ({ nft, marketplace, profileID, isOwner }) => {
   const [loading, setLoading] = useState(true);
   const [purchases, setPurchases] = useState([]);
   const loadPurchasedItems = async () => {
     // eslint-disable-next-line max-len
     // Fetch purchased items from marketplace by quering Offered events with the buyer set as the user
-    const boughtFilter = marketplace.filters.Bought(null, null, null, null, null, account);
+    const boughtFilter = marketplace.filters.Bought(null, null, null, null, null, profileID);
     const boughtResults = await marketplace.queryFilter(boughtFilter);
-    const offeredFilter = marketplace.filters.Offered(null, null, null, null, account);
+    const offeredFilter = marketplace.filters.Offered(null, null, null, null, profileID);
     const offeredResults = await marketplace.queryFilter(offeredFilter);
 
     const sortedEvents = [...boughtResults, ...offeredResults].sort((a, b) => b.blockNumber - a.blockNumber);
@@ -45,9 +45,11 @@ const PurchasesPage = ({ nft, marketplace, account }) => {
     setLoading(false);
     setPurchases(purchases);
   };
+
   useEffect(() => {
     loadPurchasedItems();
   }, []);
+
   if (loading) {
     return (
       <main style={{ padding: '1rem 0' }}>
@@ -57,21 +59,7 @@ const PurchasesPage = ({ nft, marketplace, account }) => {
   }
   // TODO @Enes: Find better way for Math.random below
 
-  return (
-    <div className="imageContainer">
-      {purchases.map(item => (
-        <NFTCard
-          key={`${item.url}-${Math.random()}`}
-          item={item}
-          account={account}
-          marketplace={marketplace}
-          nft={nft}
-          loadMarketplaceItems={loadPurchasedItems}
-          showSellButton
-        />
-      ))}
-    </div>
-  );
+  return <NFTShowcase NFTs={purchases} marketplace={marketplace} isOwner={isOwner} loadItems={loadPurchasedItems} nft={nft} />;
 };
 
 export default PurchasesPage;
