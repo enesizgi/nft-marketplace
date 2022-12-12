@@ -3,22 +3,31 @@ import { string } from 'prop-types';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import API from '../../modules/api';
+import { ReactComponent as DefaultProfilePhoto } from '../../assets/default-profile-photo.svg';
 import CreateIcon from '../../assets/add_circle_outline_white_24dp.svg';
 
 const ScAccountBox = styled.div`
   position: relative;
   z-index: 100;
   height: 100%;
-  .accountBox-image-content {
-    display: inline-block;
-    width: 100%;
+  .accountBox-default {
+    fill: #23252a;
+    background: #fff;
     height: 100%;
-    box-sizing: border-box;
-    border: 2px solid #0089a8;
+    width: 100%;
     border-radius: 100%;
-    .accountBox-image {
-      height: 100%;
+  }
+  .accountBox-image {
+    height: 100%;
+    width: 100%;
+    border-radius: 100%;
+
+    &-content {
+      display: inline-block;
       width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      border: 2px solid #0089a8;
       border-radius: 100%;
     }
   }
@@ -66,13 +75,17 @@ const AccountBox = ({ account }) => {
   const [profilePhoto, setProfilePhoto] = useState('');
 
   useEffect(() => {
-    API.getProfilePhoto(account).then(response => setProfilePhoto(response.url));
+    API.getProfilePhoto(account).then(response => setProfilePhoto(response?.url));
   }, [account]);
 
   return (
     <ScAccountBox>
       <div className="accountBox-image-content">
-        <img src={profilePhoto} className="accountBox-image" alt="accountImage" />
+        {profilePhoto ? (
+          <img src={profilePhoto} className="accountBox-image" alt="accountImage" />
+        ) : (
+          <DefaultProfilePhoto className="accountBox-default" />
+        )}
       </div>
       <div className="dropdown-content">
         <div className="dropdown-create">

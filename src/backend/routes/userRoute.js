@@ -35,7 +35,7 @@ const verifyMessage = async (req, res, next) => {
       return res.status(400).send('Missing message or signature');
     }
     const recoveredAddress = await ethers.utils.verifyMessage(req.query.message, req.query.signature);
-    if (recoveredAddress.toLowerCase() !== req.query.address.toLowerCase()) {
+    if (recoveredAddress.toLowerCase() !== req.query.id.toLowerCase()) {
       return res.status(401).send('Message could not verified');
     }
   } catch (err) {
@@ -82,8 +82,8 @@ router.get('/user/check', async (req, res) => {
 
 router.post('/user/create', verifyMessage, async (req, res) => {
   try {
-    await pool.query('INSERT INTO user VALUES (?,?,?,?)', [null, req.query.address, null, 'Unnamed']);
-    return res.status(201).send('User saved successfully');
+    await pool.query('INSERT INTO user VALUES (?,?,?,?)', [null, req.query.id, null, 'Unnamed']);
+    return res.status(201).send({ status: 'User saved successfully', id: req.query.id });
   } catch (err) {
     console.log(err);
     return res.status(500).send();
@@ -97,7 +97,7 @@ router.get('/user/slug', async (req, res) => {
       res.send(rows[0]);
     } else {
       // default response for the demo: will be changed
-      res.status(404).send({ id: req.query.id, slug: 'test' });
+      res.status(404).send();
     }
   } catch (err) {
     console.log(err);
@@ -112,7 +112,7 @@ router.get('/user/id', async (req, res) => {
       res.send(rows[0]);
     } else {
       // default response for the demo: will be changed
-      res.status(404).send({ slug: req.query.slug, id: '0xabc' });
+      res.status(404).send();
     }
   } catch (err) {
     console.log(err);
@@ -182,7 +182,7 @@ router.get('/user/profile-photo', async (req, res) => {
       res.send({ ...rows[0], url: `http://localhost:3001/${rows[0].url}` });
     } else {
       // TODO: Return default avatar
-      res.status(404).send({ id: req.query.id, url: 'https://i.etsystatic.com/5805234/r/il/1a38f2/825515703/il_570xN.825515703_19nf.jpg' });
+      res.status(404).send();
     }
   } catch (err) {
     console.log(err);
@@ -200,7 +200,7 @@ router.get('/user/cover-photo', async (req, res) => {
       res.send({ ...rows[0], url: `http://localhost:3001/${rows[0].url}` });
     } else {
       // TODO: Return default cover
-      res.status(404).send({ id: req.query.id, url: 'https://media.glassdoor.com/l/1d/0c/e0/81/the-office.jpg' });
+      res.status(404).send();
     }
   } catch (err) {
     console.log(err);
@@ -215,7 +215,7 @@ router.get('/user/name', async (req, res) => {
       res.send(rows[0]);
     } else {
       // default response for the demo: will be changed
-      res.status(404).send({ id: req.query.id, name: 'Micheal Scott' });
+      res.status(404).send();
     }
   } catch (err) {
     console.log(err);

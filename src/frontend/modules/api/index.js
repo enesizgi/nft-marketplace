@@ -24,7 +24,12 @@ class API {
           method: type,
           ...(header && { header }),
           ...(body && { body })
-        }).then(response => response.json());
+        })
+          .then(response => response.json())
+          .catch(error => {
+            console.warn(`Request to ${endpoint} returned ${error}.`);
+            return null;
+          });
       };
 
     this.getRequest = this.baseRequest('GET');
@@ -59,18 +64,30 @@ class API {
 
   getCoverPhoto = async id => this.getRequest({ endpoint: '/user/cover-photo', qs: { id } });
 
-  uploadProfilePhoto = async (id, signature, address, message, formData) =>
+  uploadProfilePhoto = async (id, signature, message, formData) =>
     this.postRequest({
       endpoint: '/user/upload-profile-photo',
-      qs: { id, signature, address, message },
+      qs: { id, signature, message },
       body: formData
     });
 
-  uploadCoverPhoto = async (id, signature, address, message, formData) =>
+  uploadCoverPhoto = async (id, signature, message, formData) =>
     this.postRequest({
       endpoint: '/user/upload-cover-photo',
-      qs: { id, signature, address, message },
+      qs: { id, signature, message },
       body: formData
+    });
+
+  checkUser = async id =>
+    this.getRequest({
+      endpoint: '/user/check',
+      qs: { id }
+    });
+
+  createUser = async (id, signature, message) =>
+    this.postRequest({
+      endpoint: '/user/create',
+      qs: { id, signature, message }
     });
 }
 

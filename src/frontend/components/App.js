@@ -7,7 +7,7 @@ import MintNFTSPage from './MintNFTS';
 import ListNFTSPage from './ListNFTS';
 import PurchasesPage from './Purchases';
 import NavigationBar from './NavigationBar';
-
+import API from '../modules/api';
 import MarketplaceAbi from '../contractsData/Marketplace.json';
 import MarketplaceAddress from '../contractsData/Marketplace-address.json';
 import NFTAbi from '../contractsData/NFT.json';
@@ -16,6 +16,7 @@ import Profile from './Profile';
 import GlobalStyle from './GlobalStyle';
 import { DEVICE_TYPES, JSON_RPC_PROVIDER } from '../constants';
 import LeftPanel from './LeftPanel';
+import { generateSignatureData } from '../utils';
 
 const App = () => {
   const [account, setAccount] = useState(null);
@@ -63,9 +64,25 @@ const App = () => {
     setLoading(false);
   };
 
+  const createNewUser = async id => {
+    const { signature, message } = await generateSignatureData();
+    return API.createUser(id, signature, message);
+  };
+
   const web3Handler = async () => {
     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-    setAccount(accounts[0]);
+    const userID = accounts[0];
+    const userExists = await API.checkUser(userID);
+
+    if (!userExists) {
+      const created = createNewUser(userID);
+      if (!created) {
+        console.warn('User could not be created.');
+      }
+    }
+
+    setAccount(userID);
+
     // Get provider from Metamask
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     // Set signer

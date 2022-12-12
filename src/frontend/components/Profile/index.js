@@ -30,7 +30,7 @@ const Profile = ({ account, nft, marketplace }) => {
 
   return (
     <>
-      <ProfileHeader id={profileID} isOwner={isOwner} account={account} />
+      <ProfileHeader id={profileID} isOwner={isOwner} />
       <ProfileContent id={profileID} isOwner={isOwner} account={account} nft={nft} marketplace={marketplace} />
     </>
   );

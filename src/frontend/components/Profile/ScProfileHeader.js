@@ -18,6 +18,7 @@ const ScProfileHeader = styled.div`
       width: 100%;
       height: 80%;
       position: relative;
+      background: rgb(200, 227, 227, 0.3);
       &-image {
         object-fit: cover;
         width: 100%;
@@ -48,6 +49,10 @@ const ScProfileHeader = styled.div`
       &-image {
         width: 100%;
         height: 100%;
+      }
+      &-default {
+        fill: #23252a;
+        background: #fff;
       }
     }
   }

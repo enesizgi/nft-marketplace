@@ -50,7 +50,7 @@ const tabs = [
 ];
 
 /* eslint-disable no-unused-vars */
-const ProfileContent = ({ id, isOwner, account, nft, marketplace }) => {
+const ProfileContent = ({ id, isOwner, nft, marketplace, account }) => {
   const [selectedTab, setSelectedTab] = React.useState(tabs[0].name);
   return (
     <ScProfileContent>
