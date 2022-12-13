@@ -48,6 +48,11 @@ const NFTCard = ({ item, account, marketplace, nft, loadItems, isOwner }) => {
   const handleGoToProfile = () => {
     navigate(`/user/${item.seller}`);
   };
+  // TODO @Bugra: add onclick event for detail page
+  // eslint-disable-next-line no-unused-vars
+  const handleGoToDetailPage = () => {
+    navigate(`/nft/${item.cid}`, { state: { id: item.itemId } });
+  };
 
   return (
     <ScNFTCard onMouseEnter={handleHoverCard} onMouseLeave={handleHoverLeave}>

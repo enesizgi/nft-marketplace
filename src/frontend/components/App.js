@@ -17,6 +17,7 @@ import GlobalStyle from './GlobalStyle';
 import { DEVICE_TYPES, JSON_RPC_PROVIDER } from '../constants';
 import LeftPanel from './LeftPanel';
 import { generateSignatureData } from '../utils';
+import NFTDetailPage from './NFTDetailPage';
 
 const App = () => {
   const [account, setAccount] = useState(null);
@@ -123,6 +124,7 @@ const App = () => {
           <Route path="/mint-nfts" element={<MintNFTSPage nft={nft} marketplace={marketplace} account={account} />} />
           <Route path="/my-listed-nfts" element={<ListNFTSPage nft={nft} marketplace={marketplace} account={account} />} />
           <Route path="/my-purchases" element={<PurchasesPage nft={nft} marketplace={marketplace} account={account} />} />
+          <Route path="/nft/*" element={<NFTDetailPage nft={nft} marketplace={marketplace} />} />
         </Routes>
       </div>
     </BrowserRouter>
