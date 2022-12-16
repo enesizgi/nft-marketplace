@@ -2,12 +2,14 @@
 // TODO @Enes: Remove all eslint disables
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-
+import { useDispatch, useSelector } from 'react-redux';
 import './NavigationBar.css';
 import AccountBox from './AccountBox';
 import { DEVICE_TYPES } from '../../constants';
 import { ReactComponent as MenuIcon } from '../../assets/menu-icon.svg';
 import { classNames } from '../../utils';
+import { initMarketplace } from '../../store/actionCreators';
+import { getIsLoadingContracts, getUserID } from '../../store/selectors';
 
 /* eslint-disable react/button-has-type */
 // TODO @Enes: Remove above eslint disable
@@ -17,11 +19,20 @@ import { classNames } from '../../utils';
 
 const pages = [{ path: '/', name: 'Home' }];
 
-const NavigationBar = ({ web3Handler, loading, account, deviceType, toggleLeftPanel }) => {
+const NavigationBar = ({ deviceType, toggleLeftPanel }) => {
   const navigate = useNavigate();
   const isDesktop = deviceType === DEVICE_TYPES.DESKTOP;
   const isTablet = deviceType === DEVICE_TYPES.TABLET;
   const isMobile = deviceType === DEVICE_TYPES.MOBILE;
+
+  const dispatch = useDispatch();
+
+  const handleInitMarketplace = () => dispatch(initMarketplace());
+
+  const isLoadingContracts = useSelector(getIsLoadingContracts);
+
+  const userID = useSelector(getUserID);
+
   return (
     <div className="navigationItemContainer">
       <div
@@ -68,11 +79,11 @@ const NavigationBar = ({ web3Handler, loading, account, deviceType, toggleLeftPa
         </div>
       )}
       <div className="navigationItem accountBox">
-        {loading || !account ? (
-          <button onClick={web3Handler}>Connect Wallet</button>
+        {isLoadingContracts || !userID ? (
+          <button onClick={handleInitMarketplace}>Connect Wallet</button>
         ) : (
-          <Link to={`/user/${account}`}>
-            <AccountBox account={account} />
+          <Link to={`/user/${userID}`}>
+            <AccountBox />
           </Link>
         )}
       </div>

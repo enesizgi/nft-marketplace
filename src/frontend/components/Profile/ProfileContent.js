@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 // TODO: Remove eslint disables
 import React from 'react';
-import { bool, string } from 'prop-types';
+import { string } from 'prop-types';
 import styled from 'styled-components';
 import ListedIcon from '../../assets/article_black_24dp.svg';
 import PurchasedIcon from '../../assets/shopping_bag_black_24dp.svg';
@@ -50,7 +50,7 @@ const tabs = [
 ];
 
 /* eslint-disable no-unused-vars */
-const ProfileContent = ({ id, isOwner, nft, marketplace, account }) => {
+const ProfileContent = ({ id }) => {
   const [selectedTab, setSelectedTab] = React.useState(tabs[0].name);
   return (
     <ScProfileContent>
@@ -70,21 +70,19 @@ const ProfileContent = ({ id, isOwner, nft, marketplace, account }) => {
           </button>
         ))}
       </div>
-      {selectedTab === 'Listed' && <ListNFTSPage profileID={id} account={account} nft={nft} marketplace={marketplace} isOwner={isOwner} />}
-      {selectedTab === 'Purchased' && <PurchasesPage profileID={id} account={account} nft={nft} marketplace={marketplace} isOwner={isOwner} />}
-      {selectedTab === 'Owned' && <OwnedPage profileID={id} account={account} nft={nft} marketplace={marketplace} isOwner={isOwner} />}
+      {selectedTab === 'Listed' && <ListNFTSPage profileID={id} />}
+      {selectedTab === 'Purchased' && <PurchasesPage profileID={id} />}
+      {selectedTab === 'Owned' && <OwnedPage profileID={id} />}
     </ScProfileContent>
   );
 };
 
 ProfileContent.propTypes = {
-  id: string,
-  isOwner: bool
+  id: string
 };
 
 ProfileContent.defaultProps = {
-  id: '',
-  isOwner: false
+  id: ''
 };
 
 export default ProfileContent;

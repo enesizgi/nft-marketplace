@@ -1,28 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { string } from 'prop-types';
-import { useLocation } from 'react-router-dom';
 import API from '../../modules/api';
 import UserNotFound from './UserNotFound';
 import ProfileHeader from './ProfileHeader';
 import ProfileContent from './ProfileContent';
 
-const Profile = ({ account, nft, marketplace }) => {
-  const [isOwner, setIsOwner] = useState(false);
-  const [profileID, setProfileID] = useState('');
-  const profilePath = useLocation().pathname.split('/')[2];
-  const isPathSlug = !profilePath.startsWith('0x');
+const Profile = () => {
+  const [profileID, setProfileID] = useState(null);
+  const profilePath = window.location.pathname.split('/')[2];
 
-  useEffect(() => {
-    if (isPathSlug) {
-      API.getUserIDFromSlug(profilePath).then(({ id }) => {
-        setProfileID(id);
-        setIsOwner(id === account);
-      });
+  useEffect(async () => {
+    if (profilePath.startsWith('0x')) {
+      API.checkUser(profilePath).then(response => setProfileID(response.id));
     } else {
-      setProfileID(profilePath);
-      setIsOwner(profilePath === account);
+      API.getUserIDFromSlug(profilePath).then(response => setProfileID(response.id));
     }
-  }, [account]);
+  });
 
   if (!profileID) {
     return <UserNotFound />;
@@ -30,18 +22,10 @@ const Profile = ({ account, nft, marketplace }) => {
 
   return (
     <>
-      <ProfileHeader id={profileID} isOwner={isOwner} />
-      <ProfileContent id={profileID} isOwner={isOwner} account={account} nft={nft} marketplace={marketplace} />
+      <ProfileHeader id={profileID} />
+      <ProfileContent id={profileID} />
     </>
   );
-};
-
-Profile.propTypes = {
-  account: string
-};
-
-Profile.defaultProps = {
-  account: ''
 };
 
 export default Profile;

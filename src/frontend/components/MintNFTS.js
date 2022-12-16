@@ -2,16 +2,23 @@
 
 // TODO @Enes: Remove this eslint disable
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { ethers } from 'ethers';
 import API from '../modules/api';
 import './MintNFTS.css';
+import { getMarketplaceContract, getNFTContract, getUserID } from '../store/selectors';
 
-const MintNFTSPage = ({ account, nft, marketplace }) => {
+const MintNFTSPage = () => {
   const [image, setImage] = useState(''); // eslint-disable-line
   const [price, setPrice] = useState(null);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [file, setFile] = useState(null);
+
+  const userID = useSelector(getUserID);
+  const marketplaceContract = useSelector(getMarketplaceContract);
+  const nftContract = useSelector(getNFTContract);
+
   const uploadToIPFS = async e => {
     e.preventDefault();
     if (e.target.files.length > 0) {
@@ -22,7 +29,7 @@ const MintNFTSPage = ({ account, nft, marketplace }) => {
   const mintNFT = async result => {
     const uri = `ipfs://${result.cid}`;
     // mint nft
-    const response = await (await nft.mintNFT(uri)).wait();
+    const response = await (await nftContract.mintNFT(uri)).wait();
     // get tokenId of new nft
     return response.events[0].args[2];
   };
@@ -31,13 +38,13 @@ const MintNFTSPage = ({ account, nft, marketplace }) => {
     const id = await mintNFT(result);
 
     // approve marketplace to spend nft
-    const isApproved = await nft.isApprovedForAll(account, marketplace.address);
+    const isApproved = await nftContract.isApprovedForAll(userID, marketplaceContract.address);
     if (!isApproved) {
-      await (await nft.setApprovalForAll(marketplace.address, true)).wait();
+      await (await nftContract.setApprovalForAll(marketplaceContract.address, true)).wait();
     }
     // add nft to marketplace
     const listingPrice = ethers.utils.parseEther(price.toString());
-    await (await marketplace.makeItem(nft.address, id, listingPrice)).wait();
+    await (await marketplaceContract.makeItem(nftContract.address, id, listingPrice)).wait();
   };
   const createNFT = willBeListed => async () => {
     if (!file || !price || !name || !description) return;

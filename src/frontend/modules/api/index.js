@@ -89,6 +89,12 @@ class API {
       endpoint: '/user/create',
       qs: { id, signature, message }
     });
+
+  getUser = async id =>
+    this.getRequest({
+      endpoint: '/user',
+      qs: { id }
+    });
 }
 
 export default new API();

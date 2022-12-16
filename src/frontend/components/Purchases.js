@@ -2,19 +2,24 @@
 // TODO @Enes: Remove all eslint disables
 import React, { useEffect, useState } from 'react';
 import sortedUniqBy from 'lodash/sortedUniqBy';
+import { useSelector } from 'react-redux';
 import API from '../modules/api';
 import NFTShowcase from './NFTShowcase';
+import { getMarketplaceContract, getNFTContract } from '../store/selectors';
 
-const PurchasesPage = ({ nft, marketplace, profileID, isOwner }) => {
+const PurchasesPage = ({ profileID }) => {
   const [loading, setLoading] = useState(true);
   const [purchases, setPurchases] = useState([]);
+  const nftContract = useSelector(getNFTContract);
+  const marketplaceContract = useSelector(getMarketplaceContract);
+
   const loadPurchasedItems = async () => {
     // eslint-disable-next-line max-len
     // Fetch purchased items from marketplace by quering Offered events with the buyer set as the user
-    const boughtFilter = marketplace.filters.Bought(null, null, null, null, null, profileID);
-    const boughtResults = await marketplace.queryFilter(boughtFilter);
-    const offeredFilter = marketplace.filters.Offered(null, null, null, null, profileID);
-    const offeredResults = await marketplace.queryFilter(offeredFilter);
+    const boughtFilter = marketplaceContract.filters.Bought(null, null, null, null, null, profileID);
+    const boughtResults = await marketplaceContract.queryFilter(boughtFilter);
+    const offeredFilter = marketplaceContract.filters.Offered(null, null, null, null, profileID);
+    const offeredResults = await marketplaceContract.queryFilter(offeredFilter);
 
     const sortedEvents = [...boughtResults, ...offeredResults].sort((a, b) => b.blockNumber - a.blockNumber);
     const uniqEvents = sortedUniqBy(sortedEvents, i => i.args.tokenId.toBigInt());
@@ -27,12 +32,12 @@ const PurchasesPage = ({ nft, marketplace, profileID, isOwner }) => {
         // fetch arguments from each result
         i = i.args; // eslint-disable-line no-param-reassign
         // get uri url from nft contract
-        const uri = await nft.tokenURI(i.tokenId);
+        const uri = await nftContract.tokenURI(i.tokenId);
         const cid = uri.split('ipfs://')[1];
         // use uri to fetch the nft metadata stored on ipfs
         const metadata = await API.getFromIPFS(cid);
         // get total price of item (item price + fee)
-        const totalPrice = await marketplace.getTotalPrice(i.itemId);
+        const totalPrice = await marketplaceContract.getTotalPrice(i.itemId);
         // define listed item object
         return {
           ...metadata,
@@ -59,7 +64,7 @@ const PurchasesPage = ({ nft, marketplace, profileID, isOwner }) => {
   }
   // TODO @Enes: Find better way for Math.random below
 
-  return <NFTShowcase NFTs={purchases} marketplace={marketplace} isOwner={isOwner} loadItems={loadPurchasedItems} nft={nft} />;
+  return <NFTShowcase NFTs={purchases} loadItems={loadPurchasedItems} />;
 };
 
 export default PurchasesPage;

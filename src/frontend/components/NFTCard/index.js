@@ -1,9 +1,15 @@
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
+import { useSelector } from 'react-redux';
 import ScNFTCard from './ScNFTCard';
+import { getMarketplaceContract, getNFTContract, getUserID } from '../../store/selectors';
 
-const NFTCard = ({ item, account, marketplace, nft, loadItems, isOwner }) => {
+const NFTCard = ({ item, loadItems }) => {
+  const userID = useSelector(getUserID);
+  const marketplaceContract = useSelector(getMarketplaceContract);
+  const nftContract = useSelector(getNFTContract);
+
   // eslint-disable-next-line no-unused-vars
   const [sellPrice, setSellPrice] = useState(null);
   const [showSellButton, setShowSellButton] = useState(false);
@@ -13,37 +19,39 @@ const NFTCard = ({ item, account, marketplace, nft, loadItems, isOwner }) => {
   const location = useLocation();
 
   const buyMarketItem = async itemToBuy => {
-    await (await marketplace.purchaseItem(itemToBuy.itemId, { value: itemToBuy.totalPrice })).wait();
+    await (await marketplaceContract.purchaseItem(itemToBuy.itemId, { value: itemToBuy.totalPrice })).wait();
     loadItems();
   };
 
   const sellMarketItem = async () => {
-    const isApproved = await nft.isApprovedForAll(account, marketplace.address);
+    const isApproved = await nftContract.isApprovedForAll(userID, marketplaceContract.address);
     if (!isApproved) {
-      await (await nft.setApprovalForAll(marketplace.address, true)).wait();
+      await (await nftContract.setApprovalForAll(marketplaceContract.address, true)).wait();
     }
     // add nft to marketplace
     const listingPrice = ethers.utils.parseEther(sellPrice.toString());
-    await (await marketplace.makeItem(nft.address, item.tokenId, listingPrice)).wait();
+    await (await marketplaceContract.makeItem(nftContract.address, item.tokenId, listingPrice)).wait();
     loadItems();
   };
 
   const formattedPrice = item.totalPrice && `${ethers.utils.formatEther(item.totalPrice)} ETH`;
 
-  const showSeller = !location.pathname.includes('/user');
+  const inProfilePage = location.pathname.includes('/user');
 
-  const handleHoverCard = useCallback(() => {
-    if (isOwner) {
+  const profileID = inProfilePage && location.pathname.split('/')[2];
+
+  const handleHoverCard = () => {
+    if (inProfilePage && profileID === userID) {
       setShowSellButton(true);
     } else {
       setShowBuyButton(true);
     }
-  }, [isOwner]);
+  };
 
-  const handleHoverLeave = useCallback(() => {
+  const handleHoverLeave = () => {
     setShowSellButton(false);
     setShowBuyButton(false);
-  }, []);
+  };
 
   const handleGoToProfile = () => {
     navigate(`/user/${item.seller}`);
@@ -64,7 +72,7 @@ const NFTCard = ({ item, account, marketplace, nft, loadItems, isOwner }) => {
       <div className="nft-info">
         <div className="nft-info-name">
           <span className="nft-info-name-itemName">{item.name}</span>
-          {showSeller && (
+          {!inProfilePage && (
             <button type="button" className="nft-info-name-seller" onClick={handleGoToProfile}>
               Seller: {item.seller}
             </button>

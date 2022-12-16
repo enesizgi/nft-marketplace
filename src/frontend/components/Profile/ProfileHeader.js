@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { bool, string } from 'prop-types';
+import { string } from 'prop-types';
+import { useSelector } from 'react-redux';
 import API from '../../modules/api';
 import ScProfileHeader from './ScProfileHeader';
 import ImageUpload from '../ImageUpload';
 import { ReactComponent as DefaultProfilePhoto } from '../../assets/default-profile-photo.svg';
 import { generateSignatureData } from '../../utils';
+import { getIsProfileOwner } from '../../store/selectors';
 
-const ProfileHeader = ({ id, isOwner }) => {
+const ProfileHeader = ({ id }) => {
   const [profilePhoto, setProfilePhoto] = useState('');
   const [coverPhoto, setCoverPhoto] = useState('');
   const [username, setUsername] = useState('');
+  const isProfileOwner = useSelector(getIsProfileOwner);
 
   useEffect(() => {
     API.getProfilePhoto(id).then(response => setProfilePhoto(response?.url));
@@ -51,11 +54,11 @@ const ProfileHeader = ({ id, isOwner }) => {
     <ScProfileHeader>
       <div className="profile-photos">
         <div className="cover-photo">
-          {isOwner && <ImageUpload onUpload={handleCoverPhotoUpload} />}
+          {isProfileOwner && <ImageUpload onUpload={handleCoverPhotoUpload} />}
           {coverPhoto && <img className="cover-photo-image" alt="coverPhoto" src={coverPhoto} />}
         </div>
         <div className="profile-photo">
-          {isOwner && <ImageUpload onUpload={handleProfilePhotoUpload} />}
+          {isProfileOwner && <ImageUpload onUpload={handleProfilePhotoUpload} />}
           {profilePhoto ? (
             <img className="profile-photo-image" alt="profilePhoto" src={profilePhoto} />
           ) : (
@@ -72,13 +75,11 @@ const ProfileHeader = ({ id, isOwner }) => {
 };
 
 ProfileHeader.propTypes = {
-  id: string,
-  isOwner: bool
+  id: string
 };
 
 ProfileHeader.defaultProps = {
-  id: '',
-  isOwner: false
+  id: ''
 };
 
 export default ProfileHeader;

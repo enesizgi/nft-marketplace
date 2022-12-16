@@ -1,23 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router';
+import { useSelector } from 'react-redux';
 import { ethers } from 'ethers';
 import API from '../modules/api';
+import { getMarketplaceContract, getNFTContract } from '../store/selectors';
 
-const NFTDetailPage = ({ nft, marketplace }) => {
+const NFTDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [item, setItem] = useState(null);
   // eslint-disable-next-line no-unused-vars
   const [transactions, setTransactions] = useState([]);
   const location = useLocation();
   const itemId = location.state.id;
+  const marketplaceContract = useSelector(getMarketplaceContract);
+  const nftContract = useSelector(getNFTContract);
 
   const loadNFTData = async () => {
     // TODO: Error handling
-    const i = await marketplace.items(itemId);
-    const uri = await nft.tokenURI(i.tokenId);
+    const i = await marketplaceContract.items(itemId);
+    const uri = await nftContract.tokenURI(i.tokenId);
     const cid = uri.split('ipfs://')[1];
     const metadata = await API.getFromIPFS(cid);
-    const totalPrice = await marketplace.getTotalPrice(i.itemId);
+    const totalPrice = await marketplaceContract.getTotalPrice(i.itemId);
     // TODO: handle if data comes from ipfs
     const it = {
       ...metadata,
@@ -28,8 +32,8 @@ const NFTDetailPage = ({ nft, marketplace }) => {
 
     setItem(it);
     // TODO: Cache mechanism for transactions maybe?
-    const transferFilter = nft.filters.Transfer(null, null, i.tokenId);
-    const transferEvents = await nft.queryFilter(transferFilter);
+    const transferFilter = nftContract.filters.Transfer(null, null, i.tokenId);
+    const transferEvents = await nftContract.queryFilter(transferFilter);
 
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const nftTransactions = await Promise.all(

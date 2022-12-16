@@ -2,31 +2,35 @@
 /* eslint-disable no-await-in-loop */
 // TODO @Enes: Remove all eslint disables
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import API from '../modules/api';
 import NFTShowcase from './NFTShowcase';
+import { getMarketplaceContract, getNFTContract } from '../store/selectors';
 
-const ListNFTSPage = ({ marketplace, nft, profileID, isOwner, account }) => {
+const ListNFTSPage = ({ profileID }) => {
   const [loading, setLoading] = useState(true);
   const [listedItems, setListedItems] = useState([]);
   // eslint-disable-next-line no-unused-vars
   const [soldItems, setSoldItems] = useState([]);
+  const marketplaceContract = useSelector(getMarketplaceContract);
+  const nftContract = useSelector(getNFTContract);
 
   const loadListedItems = async () => {
     // Load all sold items that the user listed
-    const itemCount = await marketplace.itemCount();
+    const itemCount = await marketplaceContract.itemCount();
     const listedItems = []; // eslint-disable-line
     const soldItems = []; // eslint-disable-line
     // TODO @Enes: Rename above two variables again
     for (let indx = 1; indx <= itemCount; indx += 1) {
-      const i = await marketplace.items(indx);
+      const i = await marketplaceContract.items(indx);
       if (!i.sold && i.seller.toLowerCase() === profileID) {
         // get uri url from nft contract
-        const uri = await nft.tokenURI(i.tokenId);
+        const uri = await nftContract.tokenURI(i.tokenId);
         const cid = uri.split('ipfs://')[1];
         // use uri to fetch the nft metadata stored on ipfs
         const metadata = await API.getFromIPFS(cid);
         // get total price of item (item price + fee)
-        const totalPrice = await marketplace.getTotalPrice(i.itemId);
+        const totalPrice = await marketplaceContract.getTotalPrice(i.itemId);
         // define listed item object
         const item = {
           ...metadata,
@@ -43,6 +47,7 @@ const ListNFTSPage = ({ marketplace, nft, profileID, isOwner, account }) => {
     setListedItems(listedItems);
     setSoldItems(soldItems);
   };
+
   useEffect(async () => {
     await loadListedItems();
   }, []);
@@ -56,7 +61,7 @@ const ListNFTSPage = ({ marketplace, nft, profileID, isOwner, account }) => {
   }
   // TODO @Enes: Implement sold items using soldItems variable above. Then remove eslint line above.
   /* eslint-disable jsx-a11y/alt-text */
-  return <NFTShowcase NFTs={listedItems} marketplace={marketplace} isOwner={isOwner} loadItems={loadListedItems} nft={nft} account={account} />;
+  return <NFTShowcase NFTs={listedItems} loadItems={loadListedItems} />;
 };
 
 export default ListNFTSPage;

@@ -20,18 +20,10 @@ const ScNFTShowcase = styled.div`
   }
 `;
 
-const NFTShowcase = ({ NFTs, marketplace, account, loadItems, isOwner, nft }) => (
+const NFTShowcase = ({ NFTs, loadItems }) => (
   <ScNFTShowcase>
     {NFTs.map(item => (
-      <NFTCard
-        key={`${item.url}-${Math.random()}`}
-        item={item}
-        account={account}
-        marketplace={marketplace}
-        nft={nft}
-        isOwner={isOwner}
-        loadItems={loadItems}
-      />
+      <NFTCard key={`${item.url}-${Math.random()}`} item={item} loadItems={loadItems} />
     ))}
   </ScNFTShowcase>
 );

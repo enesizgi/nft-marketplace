@@ -90,6 +90,21 @@ router.post('/user/create', verifyMessage, async (req, res) => {
   }
 });
 
+router.get('/user', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT u.walletId as id, u.slug as slug, u.name as name FROM user u WHERE u.walletId = ?', [req.query.id]);
+    if (rows.length) {
+      res.send(rows[0]);
+    } else {
+      // default response for the demo: will be changed
+      res.status(404).send();
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).send();
+  }
+});
+
 router.get('/user/slug', async (req, res) => {
   try {
     const [rows] = await pool.query('SELECT u.walletId as id, u.slug as slug FROM user u WHERE u.walletId = ?', [req.query.id]);

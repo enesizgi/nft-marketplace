@@ -2,18 +2,22 @@
 /* eslint-disable no-await-in-loop */
 // TODO @Enes: Remove all eslint disables
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import API from '../modules/api';
 import NFTShowcase from './NFTShowcase';
+import { getNFTContract } from '../store/selectors';
 
-const OwnedPage = ({ marketplace, nft, account, isOwner, profileID }) => {
+const OwnedPage = ({ profileID }) => {
   const [loading, setLoading] = useState(true);
   const [ownedItems, setOwnedItems] = useState([]);
+  const nftContract = useSelector(getNFTContract);
+
   const loadOwnedItems = async () => {
-    const ownedCount = await nft.balanceOf(profileID);
+    const ownedCount = await nftContract.balanceOf(profileID);
     const ownedItemsLocal = [];
     for (let i = 0; i < ownedCount; i += 1) {
-      const tokenId = await nft.tokenOfOwnerByIndex(profileID, i);
-      const uri = await nft.tokenURI(tokenId);
+      const tokenId = await nftContract.tokenOfOwnerByIndex(profileID, i);
+      const uri = await nftContract.tokenURI(tokenId);
       const cid = uri.split('ipfs://')[1];
       const metadata = await API.getFromIPFS(cid);
       const item = {
@@ -35,7 +39,7 @@ const OwnedPage = ({ marketplace, nft, account, isOwner, profileID }) => {
       </main>
     );
   }
-  return <NFTShowcase NFTs={ownedItems} marketplace={marketplace} loadItems={loadOwnedItems} isOwner={isOwner} nft={nft} account={account} />;
+  return <NFTShowcase NFTs={ownedItems} loadItems={loadOwnedItems} />;
 };
 
 export default OwnedPage;
