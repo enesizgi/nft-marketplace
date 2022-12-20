@@ -15,29 +15,33 @@ const NFTDetailPage = () => {
   const [description, setDescription] = useState(false);
   const [details, setDetails] = useState(false);
   const location = useLocation();
-  const itemId = location.state.id;
+  const { itemId, tokenId } = location.state;
   const marketplaceContract = useSelector(getMarketplaceContract);
   const nftContract = useSelector(getNFTContract);
 
   const loadNFTData = async () => {
     // TODO: Error handling
-    const i = await marketplaceContract.items(itemId);
-    const uri = await nftContract.tokenURI(i.tokenId);
+    let i;
+    let totalPrice;
+    if (itemId) {
+      i = await marketplaceContract.items(itemId);
+      totalPrice = await marketplaceContract.getTotalPrice(itemId);
+    }
+    const uri = await nftContract.tokenURI(tokenId);
     const cid = uri.split('ipfs://')[1];
     const metadata = await API.getFromIPFS(cid);
-    const totalPrice = await marketplaceContract.getTotalPrice(i.itemId);
     // TODO: handle if data comes from ipfs
     const it = {
-      ...i,
+      ...(i ?? {}),
       ...metadata,
-      totalPrice,
-      price: i.price,
-      itemId: i.itemId
+      ...(totalPrice ? { totalPrice } : {}),
+      ...(i?.price ? { price: i.price } : {}),
+      ...(itemId ? { itemId } : {})
     };
 
     setItem(it);
     // TODO: Cache mechanism for transactions maybe?
-    const transferFilter = nftContract.filters.Transfer(null, null, i.tokenId);
+    const transferFilter = nftContract.filters.Transfer(null, null, tokenId);
     const transferEvents = await nftContract.queryFilter(transferFilter);
 
     const provider = new ethers.providers.Web3Provider(window.ethereum);

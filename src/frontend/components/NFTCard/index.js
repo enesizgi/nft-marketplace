@@ -62,7 +62,7 @@ const NFTCard = ({ item, loadItems, selectedTab }) => {
   // TODO @Bugra: add onclick event for detail page
   // eslint-disable-next-line no-unused-vars
   const handleGoToDetailPage = () => {
-    navigate(`/nft/${item.cid}`, { state: { id: item.itemId } });
+    navigate(`/nft/${item.cid}`, { state: { itemId: item.itemId, tokenId: item.tokenId } });
   };
 
   const handleBuyButtonClicked = e => {
