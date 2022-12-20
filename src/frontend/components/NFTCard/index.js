@@ -63,7 +63,7 @@ const NFTCard = ({ item, loadItems }) => {
   };
 
   return (
-    <ScNFTCard onMouseEnter={handleHoverCard} onMouseLeave={handleHoverLeave}>
+    <ScNFTCard onMouseEnter={handleHoverCard} onMouseLeave={handleHoverLeave} onClick={handleGoToDetailPage}>
       {item.url && (
         <div className="nft-image">
           <img src={item.url} alt="nftImage" />

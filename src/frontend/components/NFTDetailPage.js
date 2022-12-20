@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router';
 import { useSelector } from 'react-redux';
+import { TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti';
 import { ethers } from 'ethers';
 import API from '../modules/api';
 import { getMarketplaceContract, getNFTContract } from '../store/selectors';
+import './NFTDetailPage.css';
 
 const NFTDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [item, setItem] = useState(null);
   // eslint-disable-next-line no-unused-vars
   const [transactions, setTransactions] = useState([]);
+  const [description, setDescription] = useState(false);
+  const [details, setDetails] = useState(false);
   const location = useLocation();
   const itemId = location.state.id;
   const marketplaceContract = useSelector(getMarketplaceContract);
@@ -47,6 +51,14 @@ const NFTDetailPage = () => {
     setLoading(false);
   };
 
+  const openDesciption = () => {
+    setDescription(!description);
+  };
+
+  const openDetails = () => {
+    setDetails(!details);
+  };
+
   useEffect(async () => {
     await loadNFTData();
   }, []);
@@ -60,15 +72,46 @@ const NFTDetailPage = () => {
   }
 
   return (
-    <div>
-      {item.url && (
-        <div className="nft-image">
-          <img src={item.url} alt="nftImage" />
-          <span className="nft-info-name-itemName">{ethers.utils.formatEther(item.totalPrice)}</span>
+    <div className="nft-detail-img">
+      <div className="nft-detail-img-box">
+        <div className="nft-detail-img-box-nft">
+          <div className="nft-detail-img-box-nft-img">{item.url && <img src={item.url} className="nftImage" alt="NFT" />}</div>
         </div>
-      )}
+        <button type="button" className="nft-detail-img-box-a" onClick={openDesciption}>
+          <p>Description</p>
+          {description ? <TiArrowSortedUp /> : <TiArrowSortedDown />}
+        </button>
+        {description && item.description && (
+          <div className="nft-detail-img-box-description-box">
+            <p> item.description </p>
+          </div>
+        )}
+        <button type="button" className="nft-detail-img-box-detail" onClick={openDetails}>
+          <p>Details</p>
+          {details ? <TiArrowSortedUp /> : <TiArrowSortedDown />}
+        </button>
+        {details && (
+          <div className="nft-detail-img-box-detail-box">
+            <p>
+              <small>Contract Address</small>
+              <br />
+              0x000000f
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
+
+/* <div className="item-container"> 
+    <div className = "item-header"><h1>TEST</h1></div>
+      {item.url && (
+        <div className="nft-image">
+          <img src={item.url} alt="nftImage" />
+        </div>
+      )}
+      <span className="nft-info-name-itemName">{ethers.utils.formatEther(item.totalPrice)}</span>
+    </div> */
 
 export default NFTDetailPage;
