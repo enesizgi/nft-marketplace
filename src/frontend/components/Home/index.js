@@ -31,6 +31,7 @@ const HomePage = () => {
           const totalPrice = await marketplaceContract.getTotalPrice(item.itemId);
           // Add item to items array
           items.push({
+            ...item,
             ...metadata,
             totalPrice,
             itemId: item.itemId,

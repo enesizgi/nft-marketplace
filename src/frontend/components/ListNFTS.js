@@ -7,7 +7,7 @@ import API from '../modules/api';
 import NFTShowcase from './NFTShowcase';
 import { getMarketplaceContract, getNFTContract } from '../store/selectors';
 
-const ListNFTSPage = ({ profileID }) => {
+const ListNFTSPage = ({ profileID, selectedTab }) => {
   const [loading, setLoading] = useState(true);
   const [listedItems, setListedItems] = useState([]);
   // eslint-disable-next-line no-unused-vars
@@ -33,6 +33,7 @@ const ListNFTSPage = ({ profileID }) => {
         const totalPrice = await marketplaceContract.getTotalPrice(i.itemId);
         // define listed item object
         const item = {
+          ...i,
           ...metadata,
           totalPrice,
           price: i.price,
@@ -61,7 +62,7 @@ const ListNFTSPage = ({ profileID }) => {
   }
   // TODO @Enes: Implement sold items using soldItems variable above. Then remove eslint line above.
   /* eslint-disable jsx-a11y/alt-text */
-  return <NFTShowcase NFTs={listedItems} loadItems={loadListedItems} />;
+  return <NFTShowcase NFTs={listedItems} loadItems={loadListedItems} selectedTab={selectedTab} />;
 };
 
 export default ListNFTSPage;

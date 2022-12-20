@@ -7,7 +7,7 @@ import API from '../modules/api';
 import NFTShowcase from './NFTShowcase';
 import { getNFTContract } from '../store/selectors';
 
-const OwnedPage = ({ profileID }) => {
+const OwnedPage = ({ profileID, selectedTab }) => {
   const [loading, setLoading] = useState(true);
   const [ownedItems, setOwnedItems] = useState([]);
   const nftContract = useSelector(getNFTContract);
@@ -39,7 +39,7 @@ const OwnedPage = ({ profileID }) => {
       </main>
     );
   }
-  return <NFTShowcase NFTs={ownedItems} loadItems={loadOwnedItems} />;
+  return <NFTShowcase NFTs={ownedItems} loadItems={loadOwnedItems} selectedTab={selectedTab} />;
 };
 
 export default OwnedPage;

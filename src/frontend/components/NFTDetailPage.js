@@ -28,6 +28,7 @@ const NFTDetailPage = () => {
     const totalPrice = await marketplaceContract.getTotalPrice(i.itemId);
     // TODO: handle if data comes from ipfs
     const it = {
+      ...i,
       ...metadata,
       totalPrice,
       price: i.price,

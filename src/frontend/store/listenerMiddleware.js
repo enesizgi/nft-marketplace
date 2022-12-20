@@ -28,11 +28,12 @@ const userLoginFlow = async (id, listenerApi) => {
 const handleInitMarketplace = async (action, listenerApi) => {
   const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
   const id = accounts[0];
+  const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+  listenerApi.dispatch(setChainID(chainId));
 
   userLoginFlow(id, listenerApi);
 
   window.ethereum.on('chainChanged', chainID => {
-    // TODO @Enes: React to chain changes
     listenerApi.dispatch(setChainID(chainID));
   });
 

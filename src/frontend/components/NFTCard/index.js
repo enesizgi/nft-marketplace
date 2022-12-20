@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import ScNFTCard from './ScNFTCard';
 import { getMarketplaceContract, getNFTContract, getUserID } from '../../store/selectors';
 
-const NFTCard = ({ item, loadItems }) => {
+const NFTCard = ({ item, loadItems, selectedTab }) => {
   const userID = useSelector(getUserID);
   const marketplaceContract = useSelector(getMarketplaceContract);
   const nftContract = useSelector(getNFTContract);
@@ -41,10 +41,12 @@ const NFTCard = ({ item, loadItems }) => {
   const profileID = inProfilePage && location.pathname.split('/')[2];
 
   const handleHoverCard = () => {
-    if (inProfilePage && profileID === userID) {
-      setShowSellButton(true);
-    } else {
-      setShowBuyButton(true);
+    if (selectedTab !== 'Listed') {
+      if (inProfilePage && profileID === userID) {
+        setShowSellButton(true);
+      } else {
+        setShowBuyButton(true);
+      }
     }
   };
 

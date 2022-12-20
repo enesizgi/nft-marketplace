@@ -7,7 +7,7 @@ import API from '../modules/api';
 import NFTShowcase from './NFTShowcase';
 import { getMarketplaceContract, getNFTContract } from '../store/selectors';
 
-const PurchasesPage = ({ profileID }) => {
+const PurchasesPage = ({ profileID, selectedTab }) => {
   const [loading, setLoading] = useState(true);
   const [purchases, setPurchases] = useState([]);
   const nftContract = useSelector(getNFTContract);
@@ -64,7 +64,7 @@ const PurchasesPage = ({ profileID }) => {
   }
   // TODO @Enes: Find better way for Math.random below
 
-  return <NFTShowcase NFTs={purchases} loadItems={loadPurchasedItems} />;
+  return <NFTShowcase NFTs={purchases} loadItems={loadPurchasedItems} selectedTab={selectedTab} />;
 };
 
 export default PurchasesPage;
