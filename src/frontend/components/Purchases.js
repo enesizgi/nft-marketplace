@@ -40,6 +40,7 @@ const PurchasesPage = ({ profileID, selectedTab }) => {
         const totalPrice = await marketplaceContract.getTotalPrice(i.itemId);
         // define listed item object
         return {
+          ...i,
           ...metadata,
           totalPrice,
           price: i.price,
