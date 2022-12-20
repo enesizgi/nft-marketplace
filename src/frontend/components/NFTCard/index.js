@@ -55,13 +55,19 @@ const NFTCard = ({ item, loadItems, selectedTab }) => {
     setShowBuyButton(false);
   };
 
-  const handleGoToProfile = () => {
+  const handleGoToProfile = e => {
+    e.stopPropagation();
     navigate(`/user/${item.seller}`);
   };
   // TODO @Bugra: add onclick event for detail page
   // eslint-disable-next-line no-unused-vars
   const handleGoToDetailPage = () => {
     navigate(`/nft/${item.cid}`, { state: { id: item.itemId } });
+  };
+
+  const handleBuyButtonClicked = e => {
+    e.stopPropagation();
+    buyMarketItem(item);
   };
 
   return (
@@ -83,7 +89,7 @@ const NFTCard = ({ item, loadItems, selectedTab }) => {
         <div className="nft-info-price">
           {!showBuyButton && !showSellButton && <div className="nft-info-price-text">{formattedPrice}</div>}
           {showBuyButton && (
-            <button type="button" className="nft-info-price-buy" onClick={() => buyMarketItem(item)}>
+            <button type="button" className="nft-info-price-buy" onClick={handleBuyButtonClicked}>
               Buy for {formattedPrice}
             </button>
           )}
