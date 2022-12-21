@@ -18,7 +18,7 @@ const ProfileHeader = ({ id }) => {
     API.getProfilePhoto(id).then(response => setProfilePhoto(response?.url));
     API.getCoverPhoto(id).then(response => setCoverPhoto(response?.url));
     API.getUsername(id).then(response => setUsername(response?.name || 'Unnamed'));
-  }, []);
+  }, [id]);
 
   const handleCoverPhotoUpload = async e => {
     e.preventDefault();

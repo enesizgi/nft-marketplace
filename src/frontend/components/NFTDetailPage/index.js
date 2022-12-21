@@ -93,7 +93,7 @@ const NFTDetailPage = () => {
       <div className="item-main">
         <NFTDetailHeader item={item} owner={owner} />
         <AuctionButton item={item} />
-        <NFTDetailActivity item={item} transactions={transactionData} />
+        <NFTDetailActivity transactions={transactionData} />
       </div>
     </div>
   );

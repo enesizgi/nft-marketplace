@@ -5,9 +5,8 @@ import './NFTDetailActivity.css';
 // TODO: Add redux
 
 // eslint-disable-next-line no-unused-vars
-const NFTDetailActivity = ({ item, transactions }) => {
+const NFTDetailActivity = ({ transactions }) => {
   const [open, setOpen] = useState(false);
-  console.log(transactions);
   const openItemActivity = () => {
     setOpen(!open);
   };
@@ -34,7 +33,7 @@ const NFTDetailActivity = ({ item, transactions }) => {
                     transactions.map(transaction => {
                       const p = transaction.price;
                       return (
-                        <div className="event" role="row">
+                        <div className="event" role="row" key={Math.random()}>
                           <div className="event-cell event-type">
                             {transaction.type === 0 && <span>Minted</span>}
                             {transaction.type === 1 && <span>Transfer</span>}

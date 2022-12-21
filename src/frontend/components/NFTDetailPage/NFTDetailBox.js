@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti';
 import { useSelector } from 'react-redux';
-import { ethers } from 'ethers';
 import { getNFTContract } from '../../store/selectors';
 import './NFTDetailBox.css';
 
@@ -20,6 +19,7 @@ const NFTDetailBox = ({ item }) => {
     setDetails(!details);
   };
 
+  /* eslint-disable no-underscore-dangle */
   return (
     <section className="nft-detail-box-container">
       <div>
@@ -51,7 +51,7 @@ const NFTDetailBox = ({ item }) => {
                 </div>
                 <div className="detail-span">
                   Token ID
-                  <span> {ethers.utils.formatEther(item.tokenId)} </span>
+                  <span> {parseInt(item.tokenId._hex, 16)} </span>
                 </div>
                 <div className="detail-span">
                   Token Standard
