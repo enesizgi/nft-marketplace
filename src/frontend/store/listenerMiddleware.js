@@ -40,8 +40,8 @@ const handleInitMarketplace = async (action, listenerApi) => {
   // eslint-disable-next-line
   window.ethereum.on('accountsChanged', async accounts => {
     const newAccountID = accounts[0];
-    userLoginFlow(newAccountID);
-    await handleInitMarketplace();
+    userLoginFlow(newAccountID, listenerApi);
+    await handleInitMarketplace(action, listenerApi);
   });
 
   listenerApi.dispatch(setIsLoadingContracts(false));
