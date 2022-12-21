@@ -22,7 +22,7 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  if (!file.originalname.match(/\.(jpg|jpeg|png|avif)$/)) {
+  if (!file.originalname.match(/\.(jpg|jpeg|png|avif|webp)$/)) {
     req.fileValidationError = 'Invalid mimetype';
     return cb(null, false, new Error('Invalid mimetype'));
   }
