@@ -56,6 +56,15 @@ contract Marketplace is ReentrancyGuard {
         address indexed buyer
     );
 
+    event AuctionStarted(
+        uint auctionId,
+        address indexed nft,
+        uint tokenId,
+        uint price,
+        uint timeToEnd,
+        address indexed seller
+    );
+
     constructor(uint _feePercent) {
         feeAccount = payable(msg.sender);
         feePercent = _feePercent;
@@ -133,24 +142,30 @@ contract Marketplace is ReentrancyGuard {
             0,
             false
         );
-        // TODO Implement an event here.
+        emit AuctionStarted(
+            auctionItemCount,
+            address(_nft),
+            _tokenId,
+            _price,
+            _timeToEnd,
+            msg.sender
+        );
     }
 
-    function makeOffer(uint _auctionId, uint _price) external payable nonReentrant {
+    function makeOffer(uint _auctionId) external payable nonReentrant {
         require(_auctionId > 0, "Auction id should be bigger than zero.");
-        require(_price > auctionItems[_auctionId].price, "Price should be greater than current price.");
-        require(block.timestamp >= auctionItems[_auctionId].timeToEnd, "Auction should not be ended.");
-        // Get payment from msg.sender
-        feeAccount.transfer(_price);
+        require(msg.value > auctionItems[_auctionId].price, "Price should be greater than current price.");
+        require(block.timestamp < auctionItems[_auctionId].timeToEnd, "Auction should not be ended.");
+        console.log(_auctionId, msg.value, auctionItems[_auctionId].price);
         // Pay previous winner
         if (auctionItems[_auctionId].deposited > 0) {
-            auctionItems[_auctionId].winner.transfer(auctionItems[_auctionId].deposited);
+            payable(auctionItems[_auctionId].winner).transfer(auctionItems[_auctionId].deposited);
         }
         // Update auction item
         AuctionItem storage auctionItem = auctionItems[_auctionId];
-        auctionItem.price = _price;
+        auctionItem.price = msg.value;
         auctionItem.winner = payable(msg.sender);
-        auctionItem.deposited = _price;
+        auctionItem.deposited = msg.value;
         // TODO Emit event
 
     }

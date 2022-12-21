@@ -41,12 +41,23 @@ const NFTCard = ({ item, loadItems, selectedTab }) => {
   const profileID = inProfilePage && location.pathname.split('/')[2];
 
   const handleHoverCard = () => {
-    if (selectedTab !== 'Listed') {
-      if (inProfilePage && profileID === userID) {
-        setShowSellButton(true);
-      } else {
-        setShowBuyButton(true);
-      }
+    switch (selectedTab) {
+      case 'Listed':
+        if (profileID !== userID && item.auctionId === undefined) {
+          setShowBuyButton(true);
+        }
+        break;
+      case 'Purchased':
+        if (profileID === userID) setShowSellButton(true);
+        break;
+      case 'Owned':
+        if (profileID === userID) setShowSellButton(true);
+        break;
+      case 'Home':
+        if (item.seller !== userID && item.auctionId === undefined) setShowBuyButton(true);
+        break;
+      default:
+        break;
     }
   };
 
@@ -62,12 +73,18 @@ const NFTCard = ({ item, loadItems, selectedTab }) => {
   // TODO @Bugra: add onclick event for detail page
   // eslint-disable-next-line no-unused-vars
   const handleGoToDetailPage = () => {
-    navigate(`/nft/${item.cid}`, { state: { itemId: item.itemId, tokenId: item.tokenId } });
+    console.log('go to detail page', item);
+    navigate(`/nft/${item.cid}`, { state: { item } });
   };
 
   const handleBuyButtonClicked = e => {
     e.stopPropagation();
     buyMarketItem(item);
+  };
+
+  const handleSellButtonClicked = e => {
+    e.stopPropagation();
+    sellMarketItem();
   };
 
   return (
@@ -96,7 +113,7 @@ const NFTCard = ({ item, loadItems, selectedTab }) => {
           {showSellButton && (
             <>
               {/* <input type="number" placeholder="Price in ETH" onChange={e => setSellPrice(e.target.value)} /> */}
-              <button type="button" className="nft-info-price-sell" onClick={() => sellMarketItem(item)}>
+              <button type="button" className="nft-info-price-sell" onClick={handleSellButtonClicked}>
                 Sell Now
               </button>
             </>

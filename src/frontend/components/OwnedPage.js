@@ -14,19 +14,23 @@ const OwnedPage = ({ profileID, selectedTab }) => {
 
   const loadOwnedItems = async () => {
     const ownedCount = await nftContract.balanceOf(profileID);
-    const ownedItemsLocal = [];
+    const ownedItemIds = [];
     for (let i = 0; i < ownedCount; i += 1) {
-      const tokenId = await nftContract.tokenOfOwnerByIndex(profileID, i);
-      const uri = await nftContract.tokenURI(tokenId);
-      const cid = uri.split('ipfs://')[1];
-      const metadata = await API.getFromIPFS(cid);
-      const item = {
-        ...metadata,
-        tokenId
-      };
-      ownedItemsLocal.push(item);
+      ownedItemIds.push(i);
     }
-    setOwnedItems(ownedItemsLocal);
+    const ownedItemsLocal = await Promise.allSettled(
+      ownedItemIds.map(async i => {
+        const tokenId = await nftContract.tokenOfOwnerByIndex(profileID, i);
+        const uri = await nftContract.tokenURI(tokenId);
+        const cid = uri.split('ipfs://')[1];
+        const metadata = await API.getFromIPFS(cid);
+        return {
+          ...metadata,
+          tokenId
+        };
+      })
+    );
+    setOwnedItems(ownedItemsLocal.filter(i => i.status === 'fulfilled').map(i => i.value));
     setLoading(false);
   };
   useEffect(async () => {

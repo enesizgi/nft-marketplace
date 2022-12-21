@@ -47,12 +47,12 @@ const MintNFTSPage = () => {
     await (await marketplaceContract.makeItem(nftContract.address, id, listingPrice)).wait();
   };
   const createNFT = willBeListed => async () => {
-    if (!file || !price || !name || !description) return;
+    if (willBeListed && !price) return;
+    if (!file || !name || !description) return;
     try {
       const formData = new FormData();
       formData.append('files', file);
       const metadata = JSON.stringify({
-        price,
         name,
         description
       });

@@ -3,9 +3,9 @@ import { useLocation } from 'react-router';
 import { useSelector } from 'react-redux';
 import { TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti';
 import { ethers } from 'ethers';
-import API from '../modules/api';
 import { getMarketplaceContract, getNFTContract } from '../store/selectors';
 import './NFTDetailPage.css';
+import AuctionButton from './AuctionButton';
 
 const NFTDetailPage = () => {
   const [loading, setLoading] = useState(true);
@@ -15,28 +15,25 @@ const NFTDetailPage = () => {
   const [description, setDescription] = useState(false);
   const [details, setDetails] = useState(false);
   const location = useLocation();
-  const { itemId, tokenId } = location.state;
+  const { item: _item } = location.state;
+  // console.log('itemId', itemId, 'tokenId', item2);
   const marketplaceContract = useSelector(getMarketplaceContract);
   const nftContract = useSelector(getNFTContract);
-
   const loadNFTData = async () => {
     // TODO: Error handling
     let i;
     let totalPrice;
+    const { itemId, tokenId } = _item;
     if (itemId) {
       i = await marketplaceContract.items(itemId);
       totalPrice = await marketplaceContract.getTotalPrice(itemId);
     }
-    const uri = await nftContract.tokenURI(tokenId);
-    const cid = uri.split('ipfs://')[1];
-    const metadata = await API.getFromIPFS(cid);
     // TODO: handle if data comes from ipfs
     const it = {
+      ..._item,
       ...(i ?? {}),
-      ...metadata,
       ...(totalPrice ? { totalPrice } : {}),
-      ...(i?.price ? { price: i.price } : {}),
-      ...(itemId ? { itemId } : {})
+      ...(i?.price ? { price: i.price } : {})
     };
 
     setItem(it);
@@ -77,35 +74,40 @@ const NFTDetailPage = () => {
   }
 
   return (
-    <div className="nft-detail-img">
-      <div className="nft-detail-img-box">
-        <div className="nft-detail-img-box-nft">
-          <div className="nft-detail-img-box-nft-img">{item.url && <img src={item.url} className="nftImage" alt="NFT" />}</div>
+    <>
+      <div className="nft-detail-img">
+        <div className="nft-detail-img-box">
+          <div className="nft-detail-img-box-nft">
+            <div className="nft-detail-img-box-nft-img">{item.url && <img src={item.url} className="nftImage" alt="NFT" />}</div>
+          </div>
+          <button type="button" className="nft-detail-img-box-a" onClick={openDesciption}>
+            <p>Description</p>
+            {description ? <TiArrowSortedUp /> : <TiArrowSortedDown />}
+          </button>
+          {description && item.description && (
+            <div className="nft-detail-img-box-description-box">
+              <p> item.description </p>
+            </div>
+          )}
+          <button type="button" className="nft-detail-img-box-detail" onClick={openDetails}>
+            <p>Details</p>
+            {details ? <TiArrowSortedUp /> : <TiArrowSortedDown />}
+          </button>
+          {details && (
+            <div className="nft-detail-img-box-detail-box">
+              <p>
+                <small>Contract Address</small>
+                <br />
+                0x000000f
+              </p>
+            </div>
+          )}
         </div>
-        <button type="button" className="nft-detail-img-box-a" onClick={openDesciption}>
-          <p>Description</p>
-          {description ? <TiArrowSortedUp /> : <TiArrowSortedDown />}
-        </button>
-        {description && item.description && (
-          <div className="nft-detail-img-box-description-box">
-            <p> item.description </p>
-          </div>
-        )}
-        <button type="button" className="nft-detail-img-box-detail" onClick={openDetails}>
-          <p>Details</p>
-          {details ? <TiArrowSortedUp /> : <TiArrowSortedDown />}
-        </button>
-        {details && (
-          <div className="nft-detail-img-box-detail-box">
-            <p>
-              <small>Contract Address</small>
-              <br />
-              0x000000f
-            </p>
-          </div>
-        )}
       </div>
-    </div>
+      <div className="nft-detail-info">
+        <AuctionButton item={item} />
+      </div>
+    </>
   );
 };
 
