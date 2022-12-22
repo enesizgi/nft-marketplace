@@ -177,6 +177,9 @@ contract Marketplace is ReentrancyGuard {
         require(!auctionItems[_auctionId].claimed, "NFT is already claimed.");
         // Transfer NFT to msg.sender
         auctionItems[_auctionId].nft.transferFrom(address(this), msg.sender, auctionItems[_auctionId].tokenId);
+        if (auctionItems[_auctionId].deposited > 0) {
+            payable(auctionItems[_auctionId].seller).transfer(auctionItems[_auctionId].deposited);
+        }
         // TODO: Check if two lines below are needed. (and how much gas it costs)
         AuctionItem storage auctionItem = auctionItems[_auctionId];
         auctionItem.claimed = true;
