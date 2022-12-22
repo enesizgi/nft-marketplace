@@ -95,6 +95,12 @@ class API {
       endpoint: '/user',
       qs: { id }
     });
+
+  getUserBySlug = async slug =>
+    this.getRequest({
+      endpoint: '/user',
+      qs: { slug }
+    });
 }
 
 export default new API();

@@ -12,9 +12,6 @@ const ScNFTCard = styled.div`
 
   :hover {
     box-shadow: 0 0 10px rgba(35, 37, 42, 0.7);
-    .nft-info-price-text {
-      display: none;
-    }
     .nft-image {
       & > img {
         transform: scale(1.2);

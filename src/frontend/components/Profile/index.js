@@ -1,23 +1,22 @@
 import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
-import API from '../../modules/api';
 import UserNotFound from './UserNotFound';
 import ProfileHeader from './ProfileHeader';
 import ProfileContent from './ProfileContent';
+import { initProfile } from '../../store/actionCreators';
+import { getProfileID } from '../../store/selectors';
 
 const Profile = () => {
-  const [profileID, setProfileID] = useState(null);
   const { pathname } = useLocation();
+  const dispatch = useDispatch();
+  const profileID = useSelector(getProfileID);
   const [profilePath, setProfilePath] = useState(null);
 
-  useEffect(async () => {
+  useEffect(() => {
     const newProfilePath = pathname.split('/')[2];
     if (profilePath === newProfilePath) return;
-    if (newProfilePath.startsWith('0x')) {
-      API.checkUser(newProfilePath).then(response => setProfileID(response.id));
-    } else {
-      API.getUserIDFromSlug(newProfilePath).then(response => setProfileID(response.id));
-    }
+    dispatch(initProfile(newProfilePath));
     setProfilePath(newProfilePath);
   }, [pathname]);
 

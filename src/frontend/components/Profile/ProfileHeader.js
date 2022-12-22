@@ -1,24 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { string } from 'prop-types';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { setUserProfilePhoto, setUserCoverPhoto } from '../../store/userSlice';
 import API from '../../modules/api';
 import ScProfileHeader from './ScProfileHeader';
 import ImageUpload from '../ImageUpload';
 import { ReactComponent as DefaultProfilePhoto } from '../../assets/default-profile-photo.svg';
 import { generateSignatureData } from '../../utils';
-import { getIsProfileOwner } from '../../store/selectors';
+import { getIsProfileOwner, getProfile } from '../../store/selectors';
+import { initProfile } from '../../store/actionCreators';
 
 const ProfileHeader = ({ id }) => {
-  const [profilePhoto, setProfilePhoto] = useState('');
-  const [coverPhoto, setCoverPhoto] = useState('');
-  const [username, setUsername] = useState('');
+  const dispatch = useDispatch();
   const isProfileOwner = useSelector(getIsProfileOwner);
-
-  useEffect(() => {
-    API.getProfilePhoto(id).then(response => setProfilePhoto(response?.url));
-    API.getCoverPhoto(id).then(response => setCoverPhoto(response?.url));
-    API.getUsername(id).then(response => setUsername(response?.name || 'Unnamed'));
-  }, [id]);
+  const { name: username, profilePhoto, coverPhoto } = useSelector(getProfile);
 
   const handleCoverPhotoUpload = async e => {
     e.preventDefault();
@@ -28,7 +23,9 @@ const ProfileHeader = ({ id }) => {
       try {
         const formData = new FormData();
         formData.append('cover-photo', file);
-        API.uploadCoverPhoto(id, signature, message, formData).then(response => setCoverPhoto(response.url));
+        const response = await API.uploadCoverPhoto(id, signature, message, formData);
+        dispatch(setUserCoverPhoto(response.url));
+        dispatch(initProfile(id));
       } catch (error) {
         console.warn('Error on uploading file', error);
       }
@@ -43,7 +40,9 @@ const ProfileHeader = ({ id }) => {
       try {
         const formData = new FormData();
         formData.append('profile-photo', file);
-        API.uploadProfilePhoto(id, signature, message, formData).then(response => setProfilePhoto(response.url));
+        const response = await API.uploadProfilePhoto(id, signature, message, formData);
+        dispatch(setUserProfilePhoto(response.url));
+        dispatch(initProfile(id));
       } catch (error) {
         console.warn('Error on uploading file', error);
       }

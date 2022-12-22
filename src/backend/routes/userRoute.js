@@ -92,9 +92,24 @@ router.post('/user/create', verifyMessage, async (req, res) => {
 
 router.get('/user', async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT u.walletId as id, u.slug as slug, u.name as name FROM user u WHERE u.walletId = ?', [req.query.id]);
+    const searchKey = req.query.id ? 'walletId' : 'slug';
+    const value = req.query.id || req.query.slug;
+    const [rows] = await pool.query(`SELECT u.walletId as id, u.slug as slug, u.name as name FROM user u WHERE u.${searchKey} = ?`, [value]);
+    const [imageRows] = await pool.query(
+      'SELECT i.user_id as id, i.image_path as url, i.type as type FROM image i WHERE i.user_id = ? AND (i.type = ? OR i.type = ?)',
+      [rows[0].id, imageType.ProfilePhoto, imageType.CoverPhoto]
+    );
+    const imageObj = {};
+    imageRows.forEach(row => {
+      if (row.type === imageType.ProfilePhoto) {
+        imageObj.profilePhoto = `http://localhost:3001/${row.url}`;
+      } else if (row.type === imageType.CoverPhoto) {
+        imageObj.coverPhoto = `http://localhost:3001/${row.url}`;
+      }
+    });
+
     if (rows.length) {
-      res.send(rows[0]);
+      res.send({ ...rows[0], ...imageObj });
     } else {
       // default response for the demo: will be changed
       res.status(404).send();

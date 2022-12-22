@@ -3,6 +3,7 @@ import { setUser } from './userSlice';
 import API from '../modules/api';
 import { generateSignatureData } from '../utils';
 import { setChainID, setIsLoadingContracts } from './marketplaceSlice';
+import { setProfile } from './profileSlice';
 
 const listenerMiddleware = createListenerMiddleware();
 
@@ -20,8 +21,7 @@ const userLoginFlow = async (id, listenerApi) => {
     }
   } else {
     const userInfo = await API.getUser(id);
-    const { slug, name } = userInfo;
-    listenerApi.dispatch(setUser({ id, slug, name }));
+    listenerApi.dispatch(setUser(userInfo));
   }
 };
 
@@ -47,9 +47,21 @@ const handleInitMarketplace = async (action, listenerApi) => {
   listenerApi.dispatch(setIsLoadingContracts(false));
 };
 
+const handleInitProfile = async (action, listenerApi) => {
+  const path = action.payload;
+  const getUserRequest = path.startsWith('0x') ? API.getUser : API.getUserBySlug;
+  const response = await getUserRequest(path);
+  listenerApi.dispatch(setProfile(response));
+};
+
 listenerMiddleware.startListening({
   type: 'INIT_MARKETPLACE',
   effect: handleInitMarketplace
+});
+
+listenerMiddleware.startListening({
+  type: 'INIT_PROFILE',
+  effect: handleInitProfile
 });
 
 export default listenerMiddleware;

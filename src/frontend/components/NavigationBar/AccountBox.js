@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
-import API from '../../modules/api';
 import { ReactComponent as DefaultProfilePhoto } from '../../assets/default-profile-photo.svg';
 import CreateIcon from '../../assets/add_circle_outline_white_24dp.svg';
-import { getUserID } from '../../store/selectors';
+import { getUserProfilePhoto } from '../../store/selectors';
 
 const ScAccountBox = styled.div`
   position: relative;
@@ -73,13 +72,7 @@ const ScAccountBox = styled.div`
 `;
 
 const AccountBox = () => {
-  const [profilePhoto, setProfilePhoto] = useState('');
-
-  const userID = useSelector(getUserID);
-
-  useEffect(() => {
-    API.getProfilePhoto(userID).then(response => setProfilePhoto(response?.url));
-  }, [userID]);
+  const profilePhoto = useSelector(getUserProfilePhoto);
 
   return (
     <ScAccountBox>
