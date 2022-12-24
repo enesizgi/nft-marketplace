@@ -9,7 +9,8 @@ import { DEVICE_TYPES } from '../../constants';
 import { ReactComponent as MenuIcon } from '../../assets/menu-icon.svg';
 import { classNames } from '../../utils';
 import { initMarketplace } from '../../store/actionCreators';
-import { getIsLoadingContracts, getUserID } from '../../store/selectors';
+import { getDeviceType, getIsLeftPanelOpened, getIsLoadingContracts, getUserID } from '../../store/selectors';
+import { setLeftPanelOpened } from '../../store/uiSlice';
 
 /* eslint-disable react/button-has-type */
 // TODO @Enes: Remove above eslint disable
@@ -19,19 +20,21 @@ import { getIsLoadingContracts, getUserID } from '../../store/selectors';
 
 const pages = [{ path: '/', name: 'Home' }];
 
-const NavigationBar = ({ deviceType, toggleLeftPanel }) => {
+const NavigationBar = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const userID = useSelector(getUserID);
+  const deviceType = useSelector(getDeviceType);
+  const isLeftPanelOpened = useSelector(getIsLeftPanelOpened);
+  const isLoadingContracts = useSelector(getIsLoadingContracts);
+
   const isDesktop = deviceType === DEVICE_TYPES.DESKTOP;
   const isTablet = deviceType === DEVICE_TYPES.TABLET;
   const isMobile = deviceType === DEVICE_TYPES.MOBILE;
 
-  const dispatch = useDispatch();
-
+  const toggleLeftPanel = () => dispatch(setLeftPanelOpened(!isLeftPanelOpened));
   const handleInitMarketplace = () => dispatch(initMarketplace());
-
-  const isLoadingContracts = useSelector(getIsLoadingContracts);
-
-  const userID = useSelector(getUserID);
 
   return (
     <div className="navigationItemContainer">

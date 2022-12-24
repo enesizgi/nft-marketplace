@@ -1,65 +1,32 @@
-import React, { useState } from 'react';
-import { TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti';
-import './NFTDetailActivity.css';
+import React from 'react';
+import DetailsDropdown from '../DetailsDropdown';
+import ScNFTDetailActivity from './ScNFTDetailActivity';
+import AddressDisplay from '../AddressDisplay';
 
 // TODO: Add redux
-
-// eslint-disable-next-line no-unused-vars
-const NFTDetailActivity = ({ transactions }) => {
-  const [open, setOpen] = useState(false);
-  const openItemActivity = () => {
-    setOpen(!open);
-  };
-  // TODO reuse detail box component
-  return (
-    <section className="nft-item-activity-container">
-      <div className="box-container">
-        <div className="box-panel-activity">
-          <button type="button" className="box-button" onClick={openItemActivity}>
-            <span>Item Activity</span>
-            <div className="up-down-icon">{open ? <TiArrowSortedUp /> : <TiArrowSortedDown />}</div>
-          </button>
-          {open && (
-            <div className="panel-body">
-              <div className="event-history">
-                <div className="scroll-box">
-                  <div className="event-header" role="row">
-                    <div className="event-header-item event-type">Event</div>
-                    <div className="event-header-item price">Price</div>
-                    <div className="event-header-item">From</div>
-                    <div className="event-header-item">To</div>
-                  </div>
-                  {transactions &&
-                    transactions.map(transaction => {
-                      const p = transaction.price;
-                      return (
-                        <div className="event" role="row" key={Math.random()}>
-                          <div className="event-cell event-type">
-                            {transaction.type === 0 && <span>Minted</span>}
-                            {transaction.type === 1 && <span>Transfer</span>}
-                            {transaction.type === 2 && <span>Sale</span>}
-                          </div>
-
-                          <div className="event-cell price">{p && <span>{p} ETH</span>}</div>
-
-                          <div className="event-cell">
-                            <span>{transaction.from === 0 ? 'Null' : transaction.from.slice(0, 5)}</span>
-                          </div>
-
-                          <div className="event-cell">
-                            <span>{transaction.to.slice(0, 5)}</span>
-                          </div>
-                        </div>
-                      );
-                    })}
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </section>
-  );
-};
+const NFTDetailActivity = ({ transactions }) => (
+  <DetailsDropdown title="Item Activity">
+    <ScNFTDetailActivity>
+      <tr className="nft-activity-title">
+        <th>Event</th>
+        <th>Price</th>
+        <th>From</th>
+        <th>To</th>
+      </tr>
+      {transactions.map(transaction => (
+        <tr className="nft-activity-content" key={Math.random()}>
+          <td className="nft-activity-content-item">{transaction.type}</td>
+          <td className="nft-activity-content-item">{transaction.price && `${transaction.price} ETH`}</td>
+          <td className="nft-activity-content-item">
+            <AddressDisplay className="nft-activity-content-item-link" address={transaction.from} />
+          </td>
+          <td className="nft-activity-content-item">
+            <AddressDisplay className="nft-activity-content-item-link" address={transaction.to} />
+          </td>
+        </tr>
+      ))}
+    </ScNFTDetailActivity>
+  </DetailsDropdown>
+);
 
 export default NFTDetailActivity;

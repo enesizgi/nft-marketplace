@@ -17,3 +17,9 @@ export const PAGE_NAMES = {
 };
 
 export const JSON_RPC_PROVIDER = 'http://localhost:8545';
+
+export const NFT_ACTIVITY_TYPES = {
+  MINT: 'Mint',
+  TRANSFER: 'Transfer',
+  SALE: 'Sale'
+};

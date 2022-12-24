@@ -4,6 +4,7 @@ import { ethers } from 'ethers';
 import { useSelector } from 'react-redux';
 import ScNFTCard from './ScNFTCard';
 import { getMarketplaceContract, getNFTContract, getUserID } from '../../store/selectors';
+import AddressDisplay from '../AddressDisplay';
 
 const NFTCard = ({ item, loadItems, selectedTab }) => {
   const userID = useSelector(getUserID);
@@ -65,11 +66,6 @@ const NFTCard = ({ item, loadItems, selectedTab }) => {
     setShowSellButton(false);
     setShowBuyButton(false);
   };
-
-  const handleGoToProfile = e => {
-    e.stopPropagation();
-    navigate(`/user/${item.seller}`);
-  };
   // TODO @Bugra: add onclick event for detail page
   // eslint-disable-next-line no-unused-vars
   const handleGoToDetailPage = () => {
@@ -97,11 +93,7 @@ const NFTCard = ({ item, loadItems, selectedTab }) => {
       <div className="nft-info">
         <div className="nft-info-name">
           <span className="nft-info-name-itemName">{item.name}</span>
-          {!inProfilePage && (
-            <button type="button" className="nft-info-name-seller" onClick={handleGoToProfile}>
-              Seller: {item.seller}
-            </button>
-          )}
+          {!inProfilePage && <AddressDisplay className="nft-info-name-seller" address={item.seller} label="Seller" />}
         </div>
         <div className="nft-info-price">
           {!showBuyButton && !showSellButton && <div className="nft-info-price-text">{formattedPrice}</div>}
@@ -111,12 +103,9 @@ const NFTCard = ({ item, loadItems, selectedTab }) => {
             </button>
           )}
           {showSellButton && (
-            <>
-              {/* <input type="number" placeholder="Price in ETH" onChange={e => setSellPrice(e.target.value)} /> */}
-              <button type="button" className="nft-info-price-sell" onClick={handleSellButtonClicked}>
-                Sell Now
-              </button>
-            </>
+            <button type="button" className="nft-info-price-sell" onClick={handleSellButtonClicked}>
+              Sell Now
+            </button>
           )}
         </div>
       </div>

@@ -1,72 +1,75 @@
-import React, { useState } from 'react';
-import { TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti';
+/* eslint-disable no-underscore-dangle */
+import React from 'react';
 import { useSelector } from 'react-redux';
+import styled from 'styled-components';
 import { getNFTContract } from '../../store/selectors';
-import './NFTDetailBox.css';
+import DetailsDropdown from '../DetailsDropdown';
+import AddressDisplay from '../AddressDisplay';
+
+const ScNFTDetailBox = styled.div`
+  .details-container {
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    :hover {
+      background: rgba(35, 37, 42, 0.1);
+      transition: 0.2s ease;
+    }
+  }
+
+  .detail-name {
+    line-height: 100%;
+    font-size: 16px;
+    font-weight: 600;
+    width: 40%;
+    word-wrap: break-word;
+  }
+  .detail-span {
+    line-height: 100%;
+    width: 60%;
+    text-align: end;
+    vertical-align: middle;
+    font-size: 16px;
+  }
+
+  .description-text {
+    padding: 20px;
+    font-size: 16px;
+    word-wrap: break-word;
+  }
+`;
 
 // TODO: Add redux
 const NFTDetailBox = ({ item }) => {
-  const [description, setDescription] = useState(false);
-  const [details, setDetails] = useState(false);
-
   const nftContract = useSelector(getNFTContract);
 
-  const openDescription = () => {
-    setDescription(!description);
+  const NFTDetails = {
+    'Contract Address': nftContract.address,
+    'Token ID': parseInt(item.tokenId._hex, 16),
+    'Token Standard': 'ERC-721',
+    Chain: 'Ethereum'
   };
 
-  const openDetails = () => {
-    setDetails(!details);
-  };
-
-  /* eslint-disable no-underscore-dangle */
   return (
-    <section className="nft-detail-box-container">
-      <div>
-        <div className="box-container">
-          <div className="box-panel">
-            <button type="button" className="box-button" onClick={openDescription}>
-              <span>Description</span>
-              <div className="up-down-icon">{description ? <TiArrowSortedUp /> : <TiArrowSortedDown />}</div>
-            </button>
-            {description && item.description && (
-              <div className="button-body">
-                <span>{item.description}</span>
-              </div>
+    <ScNFTDetailBox>
+      <DetailsDropdown title="Description">
+        <div className="description-text">{item.description}</div>
+      </DetailsDropdown>
+      <DetailsDropdown title="Details">
+        {Object.entries(NFTDetails).map(([detailName, detail]) => (
+          <div className="details-container">
+            <span className="detail-name">{detailName}</span>
+            {detailName === 'Contract Address' ? (
+              <AddressDisplay className="detail-span" address={detail} />
+            ) : (
+              <span className="detail-span">{detail}</span>
             )}
           </div>
-        </div>
-
-        <div className="box-container">
-          <div className="box-panel">
-            <button type="button" className="box-button" onClick={openDetails}>
-              <span>Details</span>
-              <div className="up-down-icon">{details ? <TiArrowSortedUp /> : <TiArrowSortedDown />}</div>
-            </button>
-            {details && (
-              <div className="button-body">
-                <div className="detail-span">
-                  Contract Address
-                  <span> {nftContract.address} </span>
-                </div>
-                <div className="detail-span">
-                  Token ID
-                  <span> {parseInt(item.tokenId._hex, 16)} </span>
-                </div>
-                <div className="detail-span">
-                  Token Standard
-                  <span> ERC-721 </span>
-                </div>
-                <div className="detail-span">
-                  Chain
-                  <span> Ethereum </span>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </section>
+        ))}
+      </DetailsDropdown>
+    </ScNFTDetailBox>
   );
 };
 

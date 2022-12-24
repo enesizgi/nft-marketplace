@@ -12,6 +12,8 @@ export const getMarketplace = state => state.marketplace;
 
 export const getProfile = state => state.profile;
 
+export const getUI = state => state.ui;
+
 export const getUserID = createSelector(getUser, ({ id }) => id);
 
 export const getUserSlug = createSelector(getUser, ({ slug }) => slug);
@@ -57,3 +59,7 @@ export const getProfilePhoto = createSelector(getProfile, ({ profilePhoto }) => 
 export const getCoverPhoto = createSelector(getProfile, ({ coverPhoto }) => coverPhoto);
 
 export const getIsProfileOwner = createSelector([getUserID, getProfileID], (userID, profileID) => userID === profileID);
+
+export const getDeviceType = createSelector(getUI, ({ deviceType }) => deviceType);
+
+export const getIsLeftPanelOpened = createSelector(getUI, ({ leftPanelOpened }) => leftPanelOpened);

@@ -74,7 +74,8 @@ const ListNFTSPage = ({ profileID, selectedTab }) => {
 
   useEffect(async () => {
     const items = await Promise.allSettled([loadListedItems(), loadAuctionItems()]);
-    const itemsFlatten = items.map(i => i.value).flat(1);
+    const fulfilledItems = items.filter(item => item.status === 'fulfilled');
+    const itemsFlatten = fulfilledItems.map(i => i.value).flat(1);
     setListedItems(itemsFlatten);
     setLoading(false);
   }, []);

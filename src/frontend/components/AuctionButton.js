@@ -6,8 +6,7 @@ import { ethers } from 'ethers';
 import { getMarketplaceContract, getNFTContract, getUserID } from '../store/selectors';
 
 const ScAuctionButton = styled.div`
-  margin-left: 24px;
-  margin-top: 24px;
+  margin-bottom: 20px;
   border: 3px dashed var(--blue);
   border-radius: 16px;
   padding: 16px;

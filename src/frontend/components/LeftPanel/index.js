@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { PAGE_LINKS, PAGE_NAMES } from '../../constants';
 import { ReactComponent as CloseIcon } from '../../assets/close-icon.svg';
+import { getIsLeftPanelOpened } from '../../store/selectors';
+import { setLeftPanelOpened } from '../../store/uiSlice';
 
 const ScLeftPanel = styled.div`
   width: 90%;
@@ -45,17 +48,37 @@ const ScLeftPanel = styled.div`
   }
 `;
 
-/* eslint-disable react/prop-types */
-// TODO @Enes: Remove above eslint disable
-
 /* eslint-disable jsx-a11y/no-static-element-interactions,jsx-a11y/click-events-have-key-events */
 // TODO @Emre: Remove above eslint disable
-const LeftPanel = ({ nodeRef, isLeftPanelOpened, toggleLeftPanel }) => {
+const LeftPanel = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const nodeRef = useRef();
+
+  const isLeftPanelOpened = useSelector(getIsLeftPanelOpened);
+
+  const useClickOutsideAlert = ref => {
+    useEffect(() => {
+      const handleClickOutside = e => {
+        if (ref.current && !ref.current.contains(e.target)) {
+          dispatch(setLeftPanelOpened(false));
+        }
+      };
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }, [nodeRef]);
+  };
+
+  const toggleLeftPanel = () => dispatch(setLeftPanelOpened(!isLeftPanelOpened));
+
   const handleNavigateToPage = pageLink => {
     navigate(`/${pageLink}`);
     toggleLeftPanel();
   };
+
+  useClickOutsideAlert(nodeRef);
 
   return (
     <ScLeftPanel ref={nodeRef} isLeftPanelOpened={isLeftPanelOpened}>
@@ -68,9 +91,5 @@ const LeftPanel = ({ nodeRef, isLeftPanelOpened, toggleLeftPanel }) => {
     </ScLeftPanel>
   );
 };
-
-LeftPanel.propTypes = {};
-
-LeftPanel.defaultProps = {};
 
 export default LeftPanel;

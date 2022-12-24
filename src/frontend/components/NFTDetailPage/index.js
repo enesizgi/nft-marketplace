@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router';
 import { useSelector } from 'react-redux';
 import { ethers } from 'ethers';
-import { getMarketplaceContract, getNFTContract } from '../../store/selectors';
-import './NFTDetailPage.css';
+import { getDeviceType, getMarketplaceContract, getNFTContract } from '../../store/selectors';
 import AuctionButton from '../AuctionButton';
 import NFTDetailBox from './NFTDetailBox';
 import NFTDetailImage from './NFTDetailImage';
 import NFTDetailHeader from './NFTDetailHeader';
 import NFTDetailActivity from './NFTDetailActivity';
+import { DEVICE_TYPES, NFT_ACTIVITY_TYPES } from '../../constants';
+import ScNFTDetailPage from './ScNFTDetailPage';
 
 const NFTDetailPage = () => {
   const [loading, setLoading] = useState(true);
@@ -19,9 +20,11 @@ const NFTDetailPage = () => {
   const [owner, setOwner] = useState(null);
   const location = useLocation();
   const { item: _item } = location.state;
-  // console.log('itemId', itemId, 'tokenId', item2);
+
   const marketplaceContract = useSelector(getMarketplaceContract);
   const nftContract = useSelector(getNFTContract);
+  const deviceType = useSelector(getDeviceType);
+
   const loadNFTData = async () => {
     // TODO: Error handling
     let i;
@@ -41,7 +44,7 @@ const NFTDetailPage = () => {
 
     setItem(it);
     const nftOwner = await nftContract.ownerOf(tokenId);
-    setOwner(nftOwner);
+    setOwner(nftOwner.toLowerCase());
     // TODO: Cache mechanism for transactions maybe?
     const transferFilter = nftContract.filters.Transfer(null, null, tokenId);
     const transferEvents = await nftContract.queryFilter(transferFilter);
@@ -57,15 +60,18 @@ const NFTDetailPage = () => {
     setTransactions(nftTransactions);
 
     // TODO: change the logic of the transaction detecting
-    const nftTransactionData = await nftTransactions.map(t => {
-      if (t.to === nftContract.address) {
-        return { type: 0, price: null, from: 0, to: t.from };
+    const nftTransactionData = nftTransactions.map(t => {
+      const from = t.from.toLowerCase();
+      const to = t.to.toLowerCase();
+      const contractAddress = nftContract.address.toLowerCase();
+      if (to === contractAddress) {
+        return { type: NFT_ACTIVITY_TYPES.MINT, price: '', from: 'Null', to: from };
       }
-      console.log(ethers.utils.formatEther(t.value));
+
       if (Number(ethers.utils.formatEther(t.value)) === 0.0) {
-        return { type: 1, price: null, from: t.from, to: t.to };
+        return { type: NFT_ACTIVITY_TYPES.TRANSFER, price: '', from, to };
       }
-      return { type: 2, price: ethers.utils.formatEther(t.value), from: t.to, to: t.from };
+      return { type: NFT_ACTIVITY_TYPES.SALE, price: ethers.utils.formatEther(t.value), from: to, to: from };
     });
 
     setTransactionData(nftTransactionData);
@@ -85,17 +91,22 @@ const NFTDetailPage = () => {
   }
 
   return (
-    <div className="item-wrapper">
+    <ScNFTDetailPage>
+      {deviceType !== DEVICE_TYPES.DESKTOP && <NFTDetailHeader item={item} owner={owner} />}
       <div className="item-summary">
         <NFTDetailImage item={item} />
         <NFTDetailBox item={item} />
       </div>
       <div className="item-main">
-        <NFTDetailHeader item={item} owner={owner} />
-        <AuctionButton item={item} />
+        {deviceType === DEVICE_TYPES.DESKTOP && (
+          <>
+            <NFTDetailHeader item={item} owner={owner} />
+            <AuctionButton item={item} />
+          </>
+        )}
         <NFTDetailActivity transactions={transactionData} />
       </div>
-    </div>
+    </ScNFTDetailPage>
   );
 };
 
