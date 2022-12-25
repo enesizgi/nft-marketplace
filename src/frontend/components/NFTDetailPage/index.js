@@ -101,7 +101,7 @@ const NFTDetailPage = () => {
         {deviceType === DEVICE_TYPES.DESKTOP && (
           <>
             <NFTDetailHeader item={item} owner={owner} />
-            <AuctionButton item={item} />
+            <AuctionButton item={item} owner={owner} />
           </>
         )}
         <NFTDetailActivity transactions={transactionData} />

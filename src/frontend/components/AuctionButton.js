@@ -48,7 +48,7 @@ const ScAuctionButton = styled.div`
   }
 `;
 
-const AuctionButton = ({ item }) => {
+const AuctionButton = ({ item, owner }) => {
   const nftContract = useSelector(getNFTContract);
   const marketplaceContract = useSelector(getMarketplaceContract);
   const userID = useSelector(getUserID);
@@ -116,7 +116,7 @@ const AuctionButton = ({ item }) => {
           </button>
         </div>
       )}
-      {item.auctionId === undefined && item.seller.toLowerCase() === userID && (
+      {item.auctionId === undefined && owner === userID && (
         <>
           <div className="item">
             Minimum Bid: <input type="number" placeholder="Price in ETH" onChange={e => setMinimumBid(e.target.value)} />

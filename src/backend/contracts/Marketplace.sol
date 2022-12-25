@@ -176,7 +176,7 @@ contract Marketplace is ReentrancyGuard {
         require(auctionItems[_auctionId].winner == msg.sender || auctionItems[_auctionId].seller == msg.sender, "Only winner or seller can run this function.");
         require(!auctionItems[_auctionId].claimed, "NFT is already claimed.");
         // Transfer NFT to msg.sender
-        auctionItems[_auctionId].nft.transferFrom(address(this), msg.sender, auctionItems[_auctionId].tokenId);
+        auctionItems[_auctionId].nft.transferFrom(address(this), auctionItems[_auctionId].winner, auctionItems[_auctionId].tokenId);
         if (auctionItems[_auctionId].deposited > 0) {
             payable(auctionItems[_auctionId].seller).transfer(auctionItems[_auctionId].deposited);
         }

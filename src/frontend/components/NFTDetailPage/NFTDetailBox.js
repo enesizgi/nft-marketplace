@@ -59,7 +59,7 @@ const NFTDetailBox = ({ item }) => {
       </DetailsDropdown>
       <DetailsDropdown title="Details">
         {Object.entries(NFTDetails).map(([detailName, detail]) => (
-          <div className="details-container">
+          <div className="details-container" key={detailName}>
             <span className="detail-name">{detailName}</span>
             {detailName === 'Contract Address' ? (
               <AddressDisplay className="detail-span" address={detail} />
