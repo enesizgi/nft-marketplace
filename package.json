@@ -48,7 +48,7 @@
     "hardhat": "npx hardhat node",
     "hardhat:deploy": "HARDHAT_NETWORK=localhost npx hardhat run src/backend/scripts/deploy.js",
     "hardhat:deploy:goerli": "HARDHAT_NETWORK=goerli npx hardhat run src/backend/scripts/deploy.js",
-    "api": "nodemon --ignore src/frontend --ignore assets src/backend/api/server.js",
+    "api": "nodemon --watch .env --ignore src/frontend --ignore assets src/backend/api/server.js",
     "start": "react-scripts start",
     "start:all": "concurrently --names \"HARDHAT,API,FRONTEND\" -c auto --kill-others \"pnpm hardhat\" \"pnpm api\" \"pnpm start\"",
     "build": "react-scripts build",

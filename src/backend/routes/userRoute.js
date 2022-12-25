@@ -3,6 +3,7 @@ import multer from 'multer';
 import { ethers } from 'ethers';
 import fs from 'fs';
 import pool from '../config/db.js';
+import apiBaseURL from '../constants.js';
 
 const router = express.Router();
 
@@ -102,9 +103,9 @@ router.get('/user', async (req, res) => {
     const imageObj = {};
     imageRows.forEach(row => {
       if (row.type === imageType.ProfilePhoto) {
-        imageObj.profilePhoto = `http://localhost:3001/${row.url}`;
+        imageObj.profilePhoto = `http://${apiBaseURL}/${row.url}`;
       } else if (row.type === imageType.CoverPhoto) {
-        imageObj.coverPhoto = `http://localhost:3001/${row.url}`;
+        imageObj.coverPhoto = `http://${apiBaseURL}/${row.url}`;
       }
     });
 
@@ -150,8 +151,8 @@ router.get('/user/id', async (req, res) => {
   }
 });
 
-async function uploadPhoto(id, url, type) {
-  const absolutePath = `http://localhost:3001/${url}`;
+async function uploadPhoto(req, id, url, type) {
+  const absolutePath = `http://${apiBaseURL}/${url}`;
   const [rows] = await pool.query('SELECT i.image_path as path FROM image i WHERE i.user_id = ? AND i.type = ?', [id, type]);
   if (rows.length) {
     await pool.query('UPDATE image i SET image_path = ? WHERE i.user_id = ? AND i.type = ?', [url, id, type]);
@@ -176,7 +177,7 @@ router.post('/user/upload-profile-photo', userValidator, verifyMessage, upload.s
 
   try {
     const relativePath = req.file.path.replace(/\.\.\//g, '');
-    const absolutePath = await uploadPhoto(req.query.id, relativePath, imageType.ProfilePhoto);
+    const absolutePath = await uploadPhoto(req, req.query.id, relativePath, imageType.ProfilePhoto);
     return res.status(201).send({ url: absolutePath });
   } catch (err) {
     console.log(err);
@@ -194,7 +195,7 @@ router.post('/user/upload-cover-photo', userValidator, verifyMessage, upload.sin
 
   try {
     const relativePath = req.file.path.replace(/\.\.\//g, '');
-    const absolutePath = await uploadPhoto(req.query.id, relativePath, imageType.CoverPhoto);
+    const absolutePath = await uploadPhoto(req, req.query.id, relativePath, imageType.CoverPhoto);
     return res.status(201).send({ url: absolutePath });
   } catch (err) {
     console.log(err);
@@ -209,7 +210,7 @@ router.get('/user/profile-photo', async (req, res) => {
       imageType.ProfilePhoto
     ]);
     if (rows.length) {
-      res.send({ ...rows[0], url: `http://localhost:3001/${rows[0].url}` });
+      res.send({ ...rows[0], url: `http://${apiBaseURL}/${rows[0].url}` });
     } else {
       // TODO: Return default avatar
       res.status(404).send();
@@ -227,7 +228,7 @@ router.get('/user/cover-photo', async (req, res) => {
       imageType.CoverPhoto
     ]);
     if (rows.length) {
-      res.send({ ...rows[0], url: `http://localhost:3001/${rows[0].url}` });
+      res.send({ ...rows[0], url: `http://${apiBaseURL}/${rows[0].url}` });
     } else {
       // TODO: Return default cover
       res.status(404).send();

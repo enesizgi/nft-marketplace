@@ -5,10 +5,12 @@ import cors from 'cors';
 import { Web3Storage, getFilesFromPath } from 'web3.storage';
 import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
-import { writeFile, readFile } from 'fs';
+import { readFileSync, writeFile, readFile } from 'fs';
 import * as dotenv from 'dotenv';
+import https from 'https';
 import pool from '../config/db.js';
 import userRouter from '../routes/userRoute.js';
+import apiBaseURL from '../constants.js';
 
 dotenv.config();
 const dirname = path.resolve();
@@ -49,7 +51,7 @@ app.post('/upload-to-ipfs', upload.array('files'), async (req, res) => {
       const metadataFile = await getFilesFromPath([`${dirname}/assets/nfts/${req.files[0].filename}.json`]);
       const files = [...imageFile, ...metadataFile];
       const cid = await client.put(files);
-      res.json({ ...metadata, cid, url: `http://localhost:3001/${req.files[0].path}` });
+      res.json({ ...metadata, cid, url: `http://${apiBaseURL}/${req.files[0].path}` });
 
       const imageFilePath = req.files[0].path.split('/');
       const metadataFilePath = `assets/nfts/${req.files[0].filename}.json`.split('/');
@@ -80,7 +82,7 @@ app.get('/get-from-ipfs', async (req, res) => {
           cid: rows[0].cid,
           path: JSON.parse(imageFilePath),
           isIPFS: false,
-          url: `http://localhost:3001/${JSON.parse(imageFilePath).join('/')}`
+          url: `http://${apiBaseURL}/${JSON.parse(imageFilePath).join('/')}`
         });
       });
       return;
@@ -100,4 +102,20 @@ app.use(userRouter);
 app.use('/assets/images', express.static(path.join(dirname, '/assets/images')));
 app.use('/assets/nfts', express.static(path.join(dirname, '/assets/nfts')));
 
-app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`)); // eslint-disable-line
+if (apiBaseURL.includes('localhost')) {
+  app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`)); // eslint-disable-line
+} else {
+  https
+    .createServer(
+      // Provide the private and public key to the server by reading each
+      // file's content with the readFileSync() method.
+      {
+        key: readFileSync('./privkey.pem'),
+        cert: readFileSync('./fullchain.pem')
+      },
+      app
+    )
+    .listen(3001, () => {
+      console.log('server is running at port 3001');
+    });
+}

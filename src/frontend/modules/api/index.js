@@ -1,4 +1,4 @@
-export const baseURL = 'http://localhost:3001';
+export const baseURL = window.location.href.includes('localhost') ? 'http://localhost:3001' : 'https://api.enesizgi.me';
 
 class API {
   constructor() {

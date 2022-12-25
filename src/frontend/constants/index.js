@@ -25,7 +25,8 @@ export const PAGE_NAMES = {
   [PAGE_LINKS.PURCHASES]: 'My purchases'
 };
 
-export const JSON_RPC_PROVIDER = 'http://localhost:8545';
+// export const JSON_RPC_PROVIDER = window.location.href.includes('localhost') ? 'http://localhost:8545' : '';
+export const JSON_RPC_PROVIDER = window.location.href.includes('localhost') ? 'http://localhost:8545' : 'https://ethereum-goerli-rpc.allthatnode.com';
 
 export const NFT_ACTIVITY_TYPES = {
   MINT: 'Mint',
