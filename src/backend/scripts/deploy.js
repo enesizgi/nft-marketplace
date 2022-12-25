@@ -3,12 +3,15 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
-const saveFrontendFiles = (contract, name) => {
-  const contractsDir = `${dirname}/../../frontend/contractsData`;
+const saveFrontendFiles = (contract, name, network = process.env.HARDHAT_NETWORK || 'localhost') => {
+  const contractsDir = `${dirname}/../../frontend/contractsData/${network}`;
 
   if (!fs.existsSync(contractsDir)) {
     fs.mkdirSync(contractsDir);

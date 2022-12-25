@@ -3,6 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   chainID: null,
+  defaultChainID: '0x5',
   isLoadingContracts: true
 };
 

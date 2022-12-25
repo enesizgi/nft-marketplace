@@ -1,4 +1,10 @@
-require('@nomiclabs/hardhat-waffle');
+require('@nomicfoundation/hardhat-toolbox'); // eslint-disable-line import/no-extraneous-dependencies
+const dotenv = require('dotenv');
+
+dotenv.config();
+
+const { ALCHEMY_API_KEY } = process.env;
+const { GOERLI_PRIVATE_KEY } = process.env;
 
 module.exports = {
   solidity: '0.8.4',
@@ -7,5 +13,11 @@ module.exports = {
     sources: './src/backend/contracts',
     cache: './src/backend/cache',
     tests: './src/backend/test'
+  },
+  networks: {
+    goerli: {
+      url: `https://eth-goerli.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
+      accounts: [GOERLI_PRIVATE_KEY]
+    }
   }
 };

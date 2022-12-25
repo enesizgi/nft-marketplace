@@ -24,25 +24,7 @@
 $ pnpm install
 ```
 
-### 3. Start the local blockchain:
-
-```
-$ npx hardhat node
-```
-
-### 4. Deploy the smart contract:
-
-```
-$ npx hardhat run src/backend/scripts/deploy.js --network localhost
-```
-
-### Command to use hardhat console:
-
-```
-$ npx hardhat console --network localhost
-```
-
-### Start all of the services:
+### 3. Start all of the services:
 
 ```
 $ pnpm start:all
@@ -52,6 +34,26 @@ $ pnpm hardhat:deploy
 Wait some time after running _pnpm start:all_ command, it will start the hardhat development blockchain. Then, you can run _pnpm hardhat:deploy_ command below.
 
 Note: You should be in the root directory of the project to run the above commands.
+
+Note: You can skip below commands if you used the above commands at the 3rd step.
+
+### Start the local blockchain:
+
+```
+$ pnpm hardhat
+```
+
+### Deploy the smart contract:
+
+```
+$ pnpm hardhat:deploy
+```
+
+### Command to use hardhat console:
+
+```
+$ npx hardhat console --network localhost
+```
 
 ## Commit convention:
 
