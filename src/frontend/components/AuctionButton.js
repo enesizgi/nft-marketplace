@@ -116,7 +116,7 @@ const AuctionButton = ({ item }) => {
           </button>
         </div>
       )}
-      {item.auctionId === undefined && (
+      {item.auctionId === undefined && item.seller.toLowerCase() === userID && (
         <>
           <div className="item">
             Minimum Bid: <input type="number" placeholder="Price in ETH" onChange={e => setMinimumBid(e.target.value)} />

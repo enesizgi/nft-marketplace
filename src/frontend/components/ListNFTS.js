@@ -79,7 +79,7 @@ const ListNFTSPage = ({ profileID, selectedTab }) => {
     const itemsFlatten = fulfilledItems.map(i => i.value).flat(1);
     setListedItems(itemsFlatten);
     setLoading(false);
-  }, []);
+  }, [profileID]);
 
   if (loading) {
     return (

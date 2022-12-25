@@ -21,7 +21,10 @@ export const getChainID = createSelector(getMarketplace, ({ chainID }) => chainI
 export const getDefaultChainID = createSelector(getMarketplace, ({ defaultChainID }) => defaultChainID);
 
 export const getMarketplaceContract = createSelector(getUserID, getChainID, getDefaultChainID, (userID, chainID, defaultChainID) => {
-  const marketplaceContract = chainID ? CONTRACTS[chainID].MARKETPLACE : CONTRACTS[defaultChainID].MARKETPLACE;
+  let marketplaceContract;
+  if (chainID && CONTRACTS[chainID]) marketplaceContract = CONTRACTS[chainID].MARKETPLACE;
+  else if (window.location.href.includes('localhost')) marketplaceContract = CONTRACTS['0x7a69'].MARKETPLACE;
+  else marketplaceContract = CONTRACTS[defaultChainID].MARKETPLACE;
   if (userID && chainID) {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer1 = provider.getSigner();
@@ -32,7 +35,10 @@ export const getMarketplaceContract = createSelector(getUserID, getChainID, getD
 });
 
 export const getNFTContract = createSelector(getUserID, getChainID, getDefaultChainID, (userID, chainID, defaultChainID) => {
-  const nftContract = chainID ? CONTRACTS[chainID].NFT : CONTRACTS[defaultChainID].NFT;
+  let nftContract;
+  if (chainID && CONTRACTS[chainID]) nftContract = CONTRACTS[chainID].NFT;
+  else if (window.location.href.includes('localhost')) nftContract = CONTRACTS['0x7a69'].NFT;
+  else nftContract = CONTRACTS[defaultChainID].NFT;
   if (userID && chainID) {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer1 = provider.getSigner();
