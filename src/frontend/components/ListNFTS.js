@@ -51,7 +51,8 @@ const ListNFTSPage = ({ profileID, selectedTab }) => {
     const offeredItems = await Promise.allSettled(
       offeredItemIds.map(async indx => {
         const i = await marketplaceContract.items(indx);
-        if (i.sold || i.seller.toLowerCase() !== profileID) return null;
+        if (i.sold) return null;
+        if (selectedTab !== 'Home' && i.seller.toLowerCase() !== profileID) return null;
         // get uri url from nft contract
         const uri = await nftContract.tokenURI(i.tokenId);
         const cid = uri.split('ipfs://')[1];
