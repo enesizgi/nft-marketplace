@@ -3,6 +3,7 @@ import userSlice from './userSlice';
 import marketplaceSlice from './marketplaceSlice';
 import profileSlice from './profileSlice';
 import uiSlice from './uiSlice';
+import nftSlice from './nftSlice';
 import listenerMiddleware from './listenerMiddleware';
 
 const store = configureStore({
@@ -10,7 +11,8 @@ const store = configureStore({
     user: userSlice,
     marketplace: marketplaceSlice,
     profile: profileSlice,
-    ui: uiSlice
+    ui: uiSlice,
+    nft: nftSlice
   },
   middleware: getDefaultMiddleware => getDefaultMiddleware().prepend(listenerMiddleware.middleware)
 });

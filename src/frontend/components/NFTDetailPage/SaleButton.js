@@ -35,6 +35,8 @@ const ScSaleButton = styled.div`
 `;
 
 const SaleButton = ({ item, isSeller, isOwner }) => {
+  // console.log('item');
+  // return null;
   const userID = useSelector(getUserID);
   // TODO: Implement button actions with sell and buy page
   const handleSell = async () => {
@@ -54,7 +56,7 @@ const SaleButton = ({ item, isSeller, isOwner }) => {
     <ScSaleButton>
       {isOwner && (
         <div className="item">
-          <button type="button" className="nftActionButton" onClick={handleSell()}>
+          <button type="button" className="nftActionButton" onClick={handleSell}>
             Sell
           </button>
         </div>
@@ -62,7 +64,7 @@ const SaleButton = ({ item, isSeller, isOwner }) => {
       {isSeller && (
         <div className="item">
           <div className="item price">{ethers.utils.formatEther(item.price)} ETH</div>
-          <button type="button" className="nftActionButton" onClick={handleCancel()}>
+          <button type="button" className="nftActionButton" onClick={handleCancel}>
             Cancel
           </button>
         </div>
@@ -70,7 +72,7 @@ const SaleButton = ({ item, isSeller, isOwner }) => {
       {!isOwner && !isSeller && (
         <div className="item">
           <div className="item price">{ethers.utils.formatEther(item.price)} ETH</div>
-          <button type="button" className="nftActionButton" onClick={handleBuy()}>
+          <button type="button" className="nftActionButton" onClick={handleBuy}>
             Buy
           </button>
         </div>

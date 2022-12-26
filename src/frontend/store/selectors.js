@@ -1,6 +1,5 @@
 import { createSelector } from 'reselect';
-import { ethers } from 'ethers';
-import { JSON_RPC_PROVIDER, CONTRACTS } from '../constants';
+import { getMarketplaceContractFn, getNFTContractFn } from '../components/utils';
 
 export const getUser = state => state.user;
 
@@ -20,33 +19,9 @@ export const getChainID = createSelector(getMarketplace, ({ chainID }) => chainI
 
 export const getDefaultChainID = createSelector(getMarketplace, ({ defaultChainID }) => defaultChainID);
 
-export const getMarketplaceContract = createSelector(getUserID, getChainID, getDefaultChainID, (userID, chainID, defaultChainID) => {
-  let marketplaceContract;
-  if (chainID && CONTRACTS[chainID]) marketplaceContract = CONTRACTS[chainID].MARKETPLACE;
-  else if (window.location.href.includes('localhost')) marketplaceContract = CONTRACTS['0x7a69'].MARKETPLACE;
-  else marketplaceContract = CONTRACTS[defaultChainID].MARKETPLACE;
-  if (userID && chainID) {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer1 = provider.getSigner();
-    return new ethers.Contract(marketplaceContract.address, marketplaceContract.abi, signer1);
-  }
-  const provider = new ethers.providers.JsonRpcProvider(JSON_RPC_PROVIDER);
-  return new ethers.Contract(marketplaceContract.address, marketplaceContract.abi, provider);
-});
+export const getMarketplaceContract = createSelector(getUserID, getChainID, getDefaultChainID, getMarketplaceContractFn);
 
-export const getNFTContract = createSelector(getUserID, getChainID, getDefaultChainID, (userID, chainID, defaultChainID) => {
-  let nftContract;
-  if (chainID && CONTRACTS[chainID]) nftContract = CONTRACTS[chainID].NFT;
-  else if (window.location.href.includes('localhost')) nftContract = CONTRACTS['0x7a69'].NFT;
-  else nftContract = CONTRACTS[defaultChainID].NFT;
-  if (userID && chainID) {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer1 = provider.getSigner();
-    return new ethers.Contract(nftContract.address, nftContract.abi, signer1);
-  }
-  const provider = new ethers.providers.JsonRpcProvider(JSON_RPC_PROVIDER);
-  return new ethers.Contract(nftContract.address, nftContract.abi, provider);
-});
+export const getNFTContract = createSelector(getUserID, getChainID, getDefaultChainID, getNFTContractFn);
 
 export const getIsLoadingContracts = createSelector(getMarketplace, ({ isLoadingContracts }) => isLoadingContracts);
 

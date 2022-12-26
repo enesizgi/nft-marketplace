@@ -30,7 +30,6 @@ const NFTDetailPage = () => {
   const nftContract = useSelector(getNFTContract);
   const deviceType = useSelector(getDeviceType);
   const profileID = useSelector(getProfileID);
-
   const loadNFTData = async () => {
     // TODO: Error handling
     let i;
@@ -78,11 +77,9 @@ const NFTDetailPage = () => {
 
     if (nftOwner === marketplaceContract.address) {
       if (lastEvent.event === 'Offered') {
-        console.log('offered');
         setListed(true);
         setIsSeller(lastEvent.args[4].toLowerCase() === profileID.toLowerCase());
       } else if (lastEvent.event === 'AuctionStarted') {
-        console.log('onAuction');
         setOnAuction(true);
         setIsSeller(lastEvent.args[5].toLowerCase() === profileID.toLowerCase());
       }
