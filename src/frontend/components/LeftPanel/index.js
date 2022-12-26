@@ -65,7 +65,15 @@ const LeftPanel = () => {
     toggleLeftPanel();
   };
 
-  useClickOutsideAlert(nodeRef, () => dispatch(setLeftPanelOpened(false)));
+  useClickOutsideAlert(
+    nodeRef,
+    _isLeftPanelOpened => {
+      if (_isLeftPanelOpened) {
+        dispatch(setLeftPanelOpened(false));
+      }
+    },
+    [isLeftPanelOpened]
+  );
 
   return (
     <ScLeftPanel ref={nodeRef} isLeftPanelOpened={isLeftPanelOpened}>

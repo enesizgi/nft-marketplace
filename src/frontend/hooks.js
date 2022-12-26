@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react';
 
 // eslint-disable-next-line import/prefer-default-export
-export const useClickOutsideAlert = (ref, callback) => {
+export const useClickOutsideAlert = (ref, callback, args) => {
   useEffect(() => {
     const handleClickOutside = e => {
       if (ref.current && !ref.current.contains(e.target)) {
-        callback();
+        callback(...args);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [ref]);
+  }, [ref, ...args]);
 };
 
 export const useWindowSize = () => {
