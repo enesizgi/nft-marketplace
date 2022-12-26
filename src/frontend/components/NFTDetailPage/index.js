@@ -2,13 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router';
 import { useSelector } from 'react-redux';
 import { ethers } from 'ethers';
-import { getDeviceType, getMarketplaceContract, getNFTContract } from '../../store/selectors';
+import sortedUniqBy from 'lodash/sortedUniqBy';
+import { getDeviceType, getMarketplaceContract, getNFTContract, getProfileID } from '../../store/selectors';
+import AuctionButton from '../AuctionButton';
 import NFTDetailBox from './NFTDetailBox';
 import NFTDetailImage from './NFTDetailImage';
 import NFTDetailHeader from './NFTDetailHeader';
 import NFTDetailActivity from './NFTDetailActivity';
 import { DEVICE_TYPES, NFT_ACTIVITY_TYPES } from '../../constants';
 import ScNFTDetailPage from './ScNFTDetailPage';
+import SaleButton from './SaleButton';
 
 const NFTDetailPage = () => {
   const [loading, setLoading] = useState(true);
@@ -16,6 +19,9 @@ const NFTDetailPage = () => {
   // eslint-disable-next-line no-unused-vars
   const [transactions, setTransactions] = useState([]);
   const [transactionData, setTransactionData] = useState([]);
+  const [isListed, setListed] = useState(false);
+  const [onAuction, setOnAuction] = useState(false);
+  const [isSeller, setIsSeller] = useState(false);
   const [owner, setOwner] = useState(null);
   const location = useLocation();
   const { item: _item } = location.state;
@@ -23,6 +29,7 @@ const NFTDetailPage = () => {
   const marketplaceContract = useSelector(getMarketplaceContract);
   const nftContract = useSelector(getNFTContract);
   const deviceType = useSelector(getDeviceType);
+  const profileID = useSelector(getProfileID);
 
   const loadNFTData = async () => {
     // TODO: Error handling
@@ -57,6 +64,29 @@ const NFTDetailPage = () => {
     );
 
     setTransactions(nftTransactions);
+
+    const boughtFilter = marketplaceContract.filters.Bought(null, null, it.tokenId, null, null, null);
+    const boughtResults = await marketplaceContract.queryFilter(boughtFilter);
+    const offeredFilter = marketplaceContract.filters.Offered(null, null, it.tokenId, null, null);
+    const offeredResults = await marketplaceContract.queryFilter(offeredFilter);
+    const auctionFilter = marketplaceContract.filters.AuctionStarted(null, null, it.tokenId, null, null, null);
+    const auctionResults = await marketplaceContract.queryFilter(auctionFilter);
+
+    const sortedEvents = [...boughtResults, ...offeredResults, ...auctionResults].sort((a, b) => b.blockNumber - a.blockNumber);
+    const uniqEvents = sortedUniqBy(sortedEvents, n => n.args.tokenId.toBigInt());
+    const lastEvent = uniqEvents[0];
+
+    if (nftOwner === marketplaceContract.address) {
+      if (lastEvent.event === 'Offered') {
+        console.log('offered');
+        setListed(true);
+        setIsSeller(lastEvent.args[4].toLowerCase() === profileID.toLowerCase());
+      } else if (lastEvent.event === 'AuctionStarted') {
+        console.log('onAuction');
+        setOnAuction(true);
+        setIsSeller(lastEvent.args[5].toLowerCase() === profileID.toLowerCase());
+      }
+    }
 
     // TODO: change the logic of the transaction detecting
     const nftTransactionData = nftTransactions.map(t => {
@@ -97,7 +127,19 @@ const NFTDetailPage = () => {
         <NFTDetailBox item={item} />
       </div>
       <div className="item-main">
-        {deviceType === DEVICE_TYPES.DESKTOP && <NFTDetailHeader item={item} owner={owner} />}
+        {deviceType === DEVICE_TYPES.DESKTOP && (
+          <>
+            <NFTDetailHeader item={item} owner={owner} />
+            {isListed && <SaleButton item={item} isSeller={isSeller} isOwner={owner.toLowerCase() === profileID.toLowerCase()} />}
+            {onAuction && <AuctionButton item={item} />}
+            {owner.toLowerCase() === profileID.toLowerCase() && (
+              <>
+                <SaleButton item={item} isSeller={isSeller} isOwner={owner.toLowerCase() === profileID.toLowerCase()} />
+                <AuctionButton item={item} owner={owner} />
+              </>
+            )}
+          </>
+        )}
         <NFTDetailActivity transactions={transactionData} />
       </div>
     </ScNFTDetailPage>

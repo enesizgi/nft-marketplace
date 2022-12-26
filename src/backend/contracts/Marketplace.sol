@@ -42,15 +42,15 @@ contract Marketplace is ReentrancyGuard {
 
     event Offered(
         uint itemId,
-        address indexed nft,
-        uint tokenId,
+        address nft,
+        uint indexed tokenId,
         uint price,
         address indexed seller
     );
     event Bought(
         uint itemId,
-        address indexed nft,
-        uint tokenId,
+        address nft,
+        uint indexed tokenId,
         uint price,
         address indexed seller,
         address indexed buyer
@@ -58,8 +58,8 @@ contract Marketplace is ReentrancyGuard {
 
     event AuctionStarted(
         uint auctionId,
-        address indexed nft,
-        uint tokenId,
+        address nft,
+        uint indexed tokenId,
         uint price,
         uint timeToEnd,
         address indexed seller
