@@ -13,6 +13,7 @@ import Profile from './Profile';
 import GlobalStyle from './GlobalStyle';
 import LeftPanel from './LeftPanel';
 import NFTDetailPage from './NFTDetailPage';
+import RouteListener from './RouteListener';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -36,6 +37,7 @@ const App = () => {
 
   return (
     <BrowserRouter>
+      <RouteListener />
       <GlobalStyle />
       <div className="App">
         {deviceType !== DEVICE_TYPES.DESKTOP && <LeftPanel />}

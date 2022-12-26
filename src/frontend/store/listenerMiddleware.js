@@ -64,4 +64,11 @@ listenerMiddleware.startListening({
   effect: handleInitProfile
 });
 
+listenerMiddleware.startListening({
+  type: 'INIT_NFT_DETAILS',
+  effect: () => {
+    console.log('inited nft');
+  }
+});
+
 export default listenerMiddleware;

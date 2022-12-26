@@ -18,6 +18,10 @@ const ScProfileContent = styled.div`
     border-bottom: 3px solid var(--blue);
     margin-bottom: 20px;
     height: 60px;
+    @media screen and (max-width: 480px) {
+      height: 40px;
+    }
+    width: 100%;
     &-title {
       border: none;
       background: none;
@@ -28,6 +32,10 @@ const ScProfileContent = styled.div`
       padding: 16px;
       transition: transform 0.3s ease;
       opacity: 0.5;
+      @media screen and (max-width: 480px) {
+        font-size: 18px;
+        padding: 8px;
+      }
     }
 
     &-title.isActive {

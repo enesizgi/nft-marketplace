@@ -69,3 +69,5 @@ export const getIsProfileOwner = createSelector([getUserID, getProfileID], (user
 export const getDeviceType = createSelector(getUI, ({ deviceType }) => deviceType);
 
 export const getIsLeftPanelOpened = createSelector(getUI, ({ leftPanelOpened }) => leftPanelOpened);
+
+export const getCurrentPath = createSelector(getUI, ({ currentPath }) => currentPath);

@@ -1,7 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
+import { useClickOutsideAlert } from '../../hooks';
 import { PAGE_LINKS, PAGE_NAMES } from '../../constants';
 import { ReactComponent as CloseIcon } from '../../assets/close-icon.svg';
 import { getIsLeftPanelOpened } from '../../store/selectors';
@@ -57,20 +58,6 @@ const LeftPanel = () => {
 
   const isLeftPanelOpened = useSelector(getIsLeftPanelOpened);
 
-  const useClickOutsideAlert = ref => {
-    useEffect(() => {
-      const handleClickOutside = e => {
-        if (ref.current && !ref.current.contains(e.target)) {
-          dispatch(setLeftPanelOpened(false));
-        }
-      };
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => {
-        document.removeEventListener('mousedown', handleClickOutside);
-      };
-    }, [nodeRef]);
-  };
-
   const toggleLeftPanel = () => dispatch(setLeftPanelOpened(!isLeftPanelOpened));
 
   const handleNavigateToPage = pageLink => {
@@ -78,7 +65,7 @@ const LeftPanel = () => {
     toggleLeftPanel();
   };
 
-  useClickOutsideAlert(nodeRef);
+  useClickOutsideAlert(nodeRef, () => dispatch(setLeftPanelOpened(false)));
 
   return (
     <ScLeftPanel ref={nodeRef} isLeftPanelOpened={isLeftPanelOpened}>

@@ -5,10 +5,11 @@ const ScProfileHeader = styled.div`
   height: 50%;
   margin-bottom: 20px;
   @media screen and (max-width: 768px) {
-    height: 40%;
+    height: 40%
   }
   @media screen and (max-width: 480px) {
     height: 30%;
+    margin-bottom: 30px;
   }
   .profile-photos {
     position: relative;

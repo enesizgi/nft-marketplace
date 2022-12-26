@@ -3,7 +3,6 @@ import { useLocation } from 'react-router';
 import { useSelector } from 'react-redux';
 import { ethers } from 'ethers';
 import { getDeviceType, getMarketplaceContract, getNFTContract } from '../../store/selectors';
-import AuctionButton from '../AuctionButton';
 import NFTDetailBox from './NFTDetailBox';
 import NFTDetailImage from './NFTDetailImage';
 import NFTDetailHeader from './NFTDetailHeader';
@@ -98,12 +97,7 @@ const NFTDetailPage = () => {
         <NFTDetailBox item={item} />
       </div>
       <div className="item-main">
-        {deviceType === DEVICE_TYPES.DESKTOP && (
-          <>
-            <NFTDetailHeader item={item} owner={owner} />
-            <AuctionButton item={item} owner={owner} />
-          </>
-        )}
+        {deviceType === DEVICE_TYPES.DESKTOP && <NFTDetailHeader item={item} owner={owner} />}
         <NFTDetailActivity transactions={transactionData} />
       </div>
     </ScNFTDetailPage>

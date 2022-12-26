@@ -1,21 +1,20 @@
 import React from 'react';
+import { useLocation } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { getDeviceType, getUserID } from '../../store/selectors';
+import { getUserID } from '../../store/selectors';
 import AddressDisplay from '../AddressDisplay';
-import { DEVICE_TYPES } from '../../constants';
 
 const ScNFTDetailHeader = styled.div`
   margin-bottom: 20px;
-  padding: 0 20px;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: space-between;
   width: 100%;
 
   @media screen and (max-width: 768px) {
     padding: 0;
-    flex-direction: column;
   }
 
   .nft-header-name {
@@ -23,6 +22,7 @@ const ScNFTDetailHeader = styled.div`
     flex-direction: column;
     width: 100%;
     margin-bottom: 20px;
+    padding: 0 20px;
     &-nftName {
       margin-bottom: 5px;
       height: 100%;
@@ -44,7 +44,10 @@ const ScNFTDetailHeader = styled.div`
   }
 
   .sell-button {
-    width: 100%;
+    width: 30%;
+    @media screen and (max-width: 768px) {
+      width: 100%;
+    }
     margin-right: 10px;
     font-size: 24px;
     background: var(--blue);
@@ -58,8 +61,13 @@ const ScNFTDetailHeader = styled.div`
 
 // TODO: Add redux
 const NFTDetailHeader = ({ item, owner }) => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const userID = useSelector(getUserID);
-  const deviceType = useSelector(getDeviceType);
+
+  const handleGoToSellPage = () => {
+    navigate(`${location.pathname}/sell`);
+  };
 
   return (
     <ScNFTDetailHeader>
@@ -73,8 +81,8 @@ const NFTDetailHeader = ({ item, owner }) => {
           </div>
         )}
       </div>
-      {deviceType === DEVICE_TYPES.MOBILE && owner === userID && (
-        <button type="button" className="sell-button">
+      {owner === userID && (
+        <button type="button" className="sell-button" onClick={handleGoToSellPage}>
           Sell Item
         </button>
       )}

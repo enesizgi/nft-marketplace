@@ -23,6 +23,11 @@ const GlobalStyle = createGlobalStyle`
     width: 100%;
   }
   
+  #modal-root {
+    position: relative;
+    display: block;
+  }
+  
   .App {
     width: 100%;
     height: 100%;
