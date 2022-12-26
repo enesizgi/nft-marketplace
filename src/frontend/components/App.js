@@ -14,26 +14,29 @@ import GlobalStyle from './GlobalStyle';
 import LeftPanel from './LeftPanel';
 import NFTDetailPage from './NFTDetailPage';
 import RouteListener from './RouteListener';
+import { useWindowSize } from '../hooks';
 
 const App = () => {
   const dispatch = useDispatch();
 
   const deviceType = useSelector(getDeviceType);
+  const { width } = useWindowSize();
 
   const updateDeviceType = () => {
-    if (window.innerWidth <= 480) {
+    if (window.innerWidth <= 480 && deviceType !== DEVICE_TYPES.MOBILE) {
       dispatch(setDeviceType(DEVICE_TYPES.MOBILE));
-    } else if (window.innerWidth <= 768) {
+    }
+    if (window.innerWidth <= 768 && window.innerWidth > 480 && deviceType !== DEVICE_TYPES.TABLET) {
       dispatch(setDeviceType(DEVICE_TYPES.TABLET));
-    } else {
+    }
+    if (window.innerWidth > 768 && deviceType !== DEVICE_TYPES.DESKTOP) {
       dispatch(setDeviceType(DEVICE_TYPES.DESKTOP));
     }
   };
 
   useEffect(() => {
     updateDeviceType();
-    window.addEventListener('resize', updateDeviceType);
-  }, []);
+  }, [width]);
 
   return (
     <BrowserRouter>
