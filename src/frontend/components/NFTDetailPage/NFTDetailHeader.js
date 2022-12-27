@@ -5,6 +5,8 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { getUserID } from '../../store/selectors';
 import AddressDisplay from '../AddressDisplay';
+import ShareDropdown from './ShareDropdown';
+import './ShareDropdown.css';
 
 const ScNFTDetailHeader = styled.div`
   margin-bottom: 20px;
@@ -73,8 +75,9 @@ const NFTDetailHeader = ({ item, owner }) => {
     <ScNFTDetailHeader>
       <div className="nft-header-name">
         <header className="nft-header-name-nftName" title={item.name}>
-          {item.name}
+          {item.name} <ShareDropdown url={item.url} title="Check this NFT! " />
         </header>
+
         {userID !== owner && (
           <div className="nft-header-name-owner">
             <AddressDisplay address={owner} label="Owned By" className="nft-header-name-owner-id" />
