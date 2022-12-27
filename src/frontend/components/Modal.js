@@ -70,7 +70,7 @@ const ScModal = styled.div`
 
 const Modal = ({ children, onClose }) => {
   const modalRef = useRef();
-  useClickOutsideAlert(modalRef, onClose);
+  useClickOutsideAlert(modalRef, onClose, []);
 
   return createPortal(
     <ScModal>
