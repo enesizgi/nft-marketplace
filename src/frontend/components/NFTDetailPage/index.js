@@ -117,10 +117,7 @@ const NFTDetailPage = () => {
             {isListed && <SaleButton item={item} isSeller={isSeller} isOwner={owner.toLowerCase() === profileID.toLowerCase()} />}
             {onAuction && <AuctionButton item={item} />}
             {owner.toLowerCase() === profileID.toLowerCase() && (
-              <>
-                <SaleButton item={item} isSeller={isSeller} isOwner={owner.toLowerCase() === profileID.toLowerCase()} />
-                <AuctionButton item={item} owner={owner} />
-              </>
+              <SaleButton item={item} isSeller={isSeller} owner={owner} isOwner={owner.toLowerCase() === profileID.toLowerCase()} />
             )}
           </>
         )}

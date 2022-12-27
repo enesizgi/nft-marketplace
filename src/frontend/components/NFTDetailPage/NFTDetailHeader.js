@@ -1,6 +1,4 @@
 import React from 'react';
-import { useLocation } from 'react-router';
-import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { getUserID } from '../../store/selectors';
@@ -45,32 +43,12 @@ const ScNFTDetailHeader = styled.div`
       }
     }
   }
-
-  .sell-button {
-    width: 30%;
-    @media screen and (max-width: 768px) {
-      width: 100%;
-    }
-    margin-right: 10px;
-    font-size: 24px;
-    background: var(--blue);
-    color: #fff;
-    border: 0;
-    border-radius: 10px;
-    padding: 10px;
-    cursor: pointer;
-  }
 `;
 
 // TODO: Add redux
 const NFTDetailHeader = ({ item, owner }) => {
-  const location = useLocation();
-  const navigate = useNavigate();
   const userID = useSelector(getUserID);
-
-  const handleGoToSellPage = () => {
-    navigate(`${location.pathname}/sell`);
-  };
+  const isOwnerPage = owner === userID;
 
   return (
     <ScNFTDetailHeader>
@@ -81,17 +59,12 @@ const NFTDetailHeader = ({ item, owner }) => {
           <ShareDropdown url={item.url} title="Check this NFT! " />
         </header>
 
-        {userID !== owner && (
+        {!isOwnerPage && (
           <div className="nft-header-name-owner">
             <AddressDisplay address={owner} label="Owned By" className="nft-header-name-owner-id" />
           </div>
         )}
       </div>
-      {owner === userID && (
-        <button type="button" className="sell-button" onClick={handleGoToSellPage}>
-          Sell Item
-        </button>
-      )}
     </ScNFTDetailHeader>
   );
 };
