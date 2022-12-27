@@ -82,8 +82,8 @@ const NFTDetailPage = () => {
     const nftTransactionData = sortedEventsforActivity.map(e => ({
       type: NFT_ACTIVITY_TYPES.SALE,
       price: ethers.utils.formatEther(e.args.price),
-      from: e.args.buyer,
-      to: e.args.seller
+      from: e.args.seller,
+      to: e.args.buyer
     }));
     nftTransactionData.push({ type: NFT_ACTIVITY_TYPES.MINT, price: '', from: 'Null', to: transferEvents[0].args.to });
 

@@ -184,23 +184,24 @@ contract Marketplace is ReentrancyGuard {
         require(block.timestamp >= auctionItems[_auctionId].timeToEnd, "Auction should end first.");
         require(auctionItems[_auctionId].winner == msg.sender || auctionItems[_auctionId].seller == msg.sender, "Only winner or seller can run this function.");
         require(!auctionItems[_auctionId].claimed, "NFT is already claimed.");
+
+        AuctionItem memory item = auctionItems[_auctionId];
         // Transfer NFT to msg.sender
-        auctionItems[_auctionId].nft.transferFrom(address(this), auctionItems[_auctionId].winner, auctionItems[_auctionId].tokenId);
-        if (auctionItems[_auctionId].deposited > 0) {
-            payable(auctionItems[_auctionId].seller).transfer(auctionItems[_auctionId].deposited);
+        item.nft.transferFrom(address(this), item.winner, item.tokenId);
+        if (item.deposited > 0) {
+            payable(item.seller).transfer(item.deposited);
         }
         // TODO: Check if two lines below are needed. (and how much gas it costs)
         AuctionItem storage auctionItem = auctionItems[_auctionId];
         auctionItem.claimed = true;
 
-        AuctionItem memory item = auctionItems[_auctionId];
         emit AuctionEnded(
             _auctionId,
             address(item.nft),
             item.tokenId,
             item.price,
             item.seller,
-            msg.sender
+            item.winner
         );
     }
 }
