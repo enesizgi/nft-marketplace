@@ -51,18 +51,8 @@ const NFTDetailPage = () => {
     const nftOwner = await nftContract.ownerOf(tokenId);
     setOwner(nftOwner.toLowerCase());
     // TODO: Cache mechanism for transactions maybe?
-    const transferFilter = nftContract.filters.Transfer(null, null, tokenId);
+    const transferFilter = nftContract.filters.Transfer(ethers.constants.AddressZero, null, tokenId);
     const transferEvents = await nftContract.queryFilter(transferFilter);
-
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const nftTransactions = await Promise.all(
-      transferEvents.map(async t => {
-        const transaction = await provider.getTransaction(t.transactionHash);
-        return transaction;
-      })
-    );
-
-    setTransactions(nftTransactions);
 
     const boughtFilter = marketplaceContract.filters.Bought(null, null, it.tokenId, null, null, null);
     const boughtResults = await marketplaceContract.queryFilter(boughtFilter);
@@ -70,8 +60,12 @@ const NFTDetailPage = () => {
     const offeredResults = await marketplaceContract.queryFilter(offeredFilter);
     const auctionFilter = marketplaceContract.filters.AuctionStarted(null, null, it.tokenId, null, null, null);
     const auctionResults = await marketplaceContract.queryFilter(auctionFilter);
+    const auctionEndedFilter = await marketplaceContract.filters.AuctionEnded(null, null, it.tokenId, null, null, null);
+    const auctionEndedResults = await marketplaceContract.queryFilter(auctionEndedFilter);
 
-    const sortedEvents = [...boughtResults, ...offeredResults, ...auctionResults].sort((a, b) => b.blockNumber - a.blockNumber);
+    const sortedEvents = [...offeredResults, ...auctionResults].sort((a, b) => b.blockNumber - a.blockNumber);
+    const sortedEventsforActivity = [...boughtResults, ...auctionEndedResults].sort((a, b) => b.blockNumber - a.blockNumber);
+
     const uniqEvents = sortedUniqBy(sortedEvents, n => n.args.tokenId.toBigInt());
     const lastEvent = uniqEvents[0];
 
@@ -85,20 +79,13 @@ const NFTDetailPage = () => {
       }
     }
 
-    // TODO: change the logic of the transaction detecting
-    const nftTransactionData = nftTransactions.map(t => {
-      const from = t.from.toLowerCase();
-      const to = t.to.toLowerCase();
-      const contractAddress = nftContract.address.toLowerCase();
-      if (to === contractAddress) {
-        return { type: NFT_ACTIVITY_TYPES.MINT, price: '', from: 'Null', to: from };
-      }
-
-      if (Number(ethers.utils.formatEther(t.value)) === 0.0) {
-        return { type: NFT_ACTIVITY_TYPES.TRANSFER, price: '', from, to };
-      }
-      return { type: NFT_ACTIVITY_TYPES.SALE, price: ethers.utils.formatEther(t.value), from: to, to: from };
-    });
+    const nftTransactionData = sortedEventsforActivity.map(e => ({
+      type: NFT_ACTIVITY_TYPES.SALE,
+      price: ethers.utils.formatEther(e.args.price),
+      from: e.args.buyer,
+      to: e.args.seller
+    }));
+    nftTransactionData.push({ type: NFT_ACTIVITY_TYPES.MINT, price: '', from: 'Null', to: transferEvents[0].args.to });
 
     setTransactionData(nftTransactionData);
     setLoading(false);

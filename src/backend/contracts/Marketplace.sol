@@ -65,6 +65,15 @@ contract Marketplace is ReentrancyGuard {
         address indexed seller
     );
 
+    event AuctionEnded(
+        uint auctionId,
+        address nft,
+        uint indexed tokenId,
+        uint price,
+        address indexed seller,
+        address indexed buyer
+    );
+
     constructor(uint _feePercent) {
         feeAccount = payable(msg.sender);
         feePercent = _feePercent;
@@ -183,5 +192,15 @@ contract Marketplace is ReentrancyGuard {
         // TODO: Check if two lines below are needed. (and how much gas it costs)
         AuctionItem storage auctionItem = auctionItems[_auctionId];
         auctionItem.claimed = true;
+
+        AuctionItem memory item = auctionItems[_auctionId];
+        emit AuctionEnded(
+            _auctionId,
+            address(item.nft),
+            item.tokenId,
+            item.price,
+            item.seller,
+            msg.sender
+        );
     }
 }

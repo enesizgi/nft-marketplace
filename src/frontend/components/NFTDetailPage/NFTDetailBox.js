@@ -4,7 +4,6 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { getNFTContract } from '../../store/selectors';
 import DetailsDropdown from '../DetailsDropdown';
-import AddressDisplay from '../AddressDisplay';
 
 const ScNFTDetailBox = styled.div`
   .details-container {
@@ -27,6 +26,9 @@ const ScNFTDetailBox = styled.div`
     word-wrap: break-word;
   }
   .detail-span {
+    max-width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
     line-height: 100%;
     width: 60%;
     text-align: end;
@@ -61,11 +63,7 @@ const NFTDetailBox = ({ item }) => {
         {Object.entries(NFTDetails).map(([detailName, detail]) => (
           <div className="details-container" key={detailName}>
             <span className="detail-name">{detailName}</span>
-            {detailName === 'Contract Address' ? (
-              <AddressDisplay className="detail-span" address={detail} />
-            ) : (
-              <span className="detail-span">{detail}</span>
-            )}
+            <span className="detail-span">{detail}</span>
           </div>
         ))}
       </DetailsDropdown>
