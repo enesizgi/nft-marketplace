@@ -25,6 +25,22 @@ function initImageTable() {
   pool.execute(sql);
 }
 
+function initTransactionTable() {
+  const sql =
+    'CREATE TABLE IF NOT EXISTS transaction( ' +
+    'id bigint NOT NULL AUTO_INCREMENT, ' +
+    'price  int,' +
+    'event  varchar(10)  NOT NULL,' +
+    'sender varchar(255) NOT NULL,' +
+    'owner  varchar(255) NOT NULL,' +
+    'contract_id varchar(255) NOT NULL,' +
+    'block_number int NOT NULL,' +
+    'PRIMARY KEY (id),' +
+    'FOREIGN KEY (sender) REFERENCES user (walletId),' +
+    'FOREIGN KEY (owner) REFERENCES user (walletId));';
+  pool.execute(sql);
+}
+
 function initNftTable() {
   const sql = `CREATE TABLE IF NOT EXISTS nft(cid varchar(255) NOT NULL, path varchar(255) NOT NULL, PRIMARY KEY(cid, path));`;
   pool.execute(sql);
@@ -34,6 +50,7 @@ function initDB() {
   initUserTable();
   initImageTable();
   initNftTable();
+  initTransactionTable();
 }
 
 initDB();
