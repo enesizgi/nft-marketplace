@@ -66,7 +66,7 @@ const upload = multer({
   },
   fileFilter
 });
-
+// TODO: Merge /user/check and /user/create endpoints. Create user if not exists. And after creating user, return user data.
 router.get('/user/check', async (req, res) => {
   try {
     const [rows] = await pool.query('SELECT u.walletId as id FROM user u WHERE u.walletId = ?', [req.query.id]);
