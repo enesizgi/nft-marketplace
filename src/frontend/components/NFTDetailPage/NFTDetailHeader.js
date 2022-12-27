@@ -6,6 +6,7 @@ import AddressDisplay from '../AddressDisplay';
 import ShareDropdown from './ShareDropdown';
 import './ShareDropdown.css';
 import NewTab from './NFTOpenNewTab';
+import { compare } from '../../utils';
 
 const ScNFTDetailHeader = styled.div`
   margin-bottom: 20px;
@@ -48,7 +49,7 @@ const ScNFTDetailHeader = styled.div`
 // TODO: Add redux
 const NFTDetailHeader = ({ item, owner }) => {
   const userID = useSelector(getUserID);
-  const isOwnerPage = owner === userID;
+  const isOwnerPage = compare(owner, userID) || compare(item.seller, userID);
 
   return (
     <ScNFTDetailHeader>

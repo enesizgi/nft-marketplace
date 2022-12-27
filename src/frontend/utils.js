@@ -17,3 +17,5 @@ export const generateSignatureData = async (message = 'NFTAO') => {
   const signature = await signer.signMessage(message);
   return { signature, message };
 };
+
+export const compare = (s1, s2) => s1 && s2 && s1.toLowerCase() === s2.toLowerCase();

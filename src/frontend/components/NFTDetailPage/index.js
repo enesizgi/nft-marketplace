@@ -3,7 +3,7 @@ import { useLocation } from 'react-router';
 import { useSelector } from 'react-redux';
 import { ethers } from 'ethers';
 import sortedUniqBy from 'lodash/sortedUniqBy';
-import { getDeviceType, getMarketplaceContract, getNFTContract, getProfileID } from '../../store/selectors';
+import { getDeviceType, getMarketplaceContract, getNFTContract, getUserID } from '../../store/selectors';
 import AuctionButton from '../AuctionButton';
 import NFTDetailBox from './NFTDetailBox';
 import NFTDetailImage from './NFTDetailImage';
@@ -29,7 +29,7 @@ const NFTDetailPage = () => {
   const marketplaceContract = useSelector(getMarketplaceContract);
   const nftContract = useSelector(getNFTContract);
   const deviceType = useSelector(getDeviceType);
-  const profileID = useSelector(getProfileID);
+  const userID = useSelector(getUserID);
   const loadNFTData = async () => {
     // TODO: Error handling
     let i;
@@ -72,10 +72,10 @@ const NFTDetailPage = () => {
     if (nftOwner === marketplaceContract.address) {
       if (lastEvent.event === 'Offered') {
         setListed(true);
-        setIsSeller(lastEvent.args[4].toLowerCase() === profileID.toLowerCase());
+        setIsSeller(lastEvent.args[4].toLowerCase() === userID.toLowerCase());
       } else if (lastEvent.event === 'AuctionStarted') {
         setOnAuction(true);
-        setIsSeller(lastEvent.args[5].toLowerCase() === profileID.toLowerCase());
+        setIsSeller(lastEvent.args[5].toLowerCase() === userID.toLowerCase());
       }
     }
 
@@ -114,10 +114,10 @@ const NFTDetailPage = () => {
         {deviceType === DEVICE_TYPES.DESKTOP && (
           <>
             <NFTDetailHeader item={item} owner={owner} />
-            {isListed && <SaleButton item={item} isSeller={isSeller} isOwner={owner.toLowerCase() === profileID.toLowerCase()} />}
+            {isListed && <SaleButton item={item} isSeller={isSeller} isOwner={owner.toLowerCase() === userID.toLowerCase()} />}
             {onAuction && <AuctionButton item={item} />}
-            {owner.toLowerCase() === profileID.toLowerCase() && (
-              <SaleButton item={item} isSeller={isSeller} owner={owner} isOwner={owner.toLowerCase() === profileID.toLowerCase()} />
+            {owner.toLowerCase() === userID.toLowerCase() && (
+              <SaleButton item={item} isSeller={isSeller} owner={owner} isOwner={owner.toLowerCase() === userID.toLowerCase()} />
             )}
           </>
         )}
