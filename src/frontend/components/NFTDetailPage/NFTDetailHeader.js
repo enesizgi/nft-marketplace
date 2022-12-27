@@ -7,6 +7,7 @@ import { getUserID } from '../../store/selectors';
 import AddressDisplay from '../AddressDisplay';
 import ShareDropdown from './ShareDropdown';
 import './ShareDropdown.css';
+import NewTab from './NFTOpenNewTab';
 
 const ScNFTDetailHeader = styled.div`
   margin-bottom: 20px;
@@ -75,7 +76,9 @@ const NFTDetailHeader = ({ item, owner }) => {
     <ScNFTDetailHeader>
       <div className="nft-header-name">
         <header className="nft-header-name-nftName" title={item.name}>
-          {item.name} <ShareDropdown url={item.url} title="Check this NFT! " />
+          {item.name}
+          <NewTab url={item.url} />
+          <ShareDropdown url={item.url} title="Check this NFT! " />
         </header>
 
         {userID !== owner && (
