@@ -10,7 +10,7 @@ import * as dotenv from 'dotenv';
 import https from 'https';
 import pool from '../config/db.js';
 import userRouter from '../routes/userRoute.js';
-import apiBaseURL from '../constants.js';
+import { apiBaseURL, apiProtocol } from '../constants.js';
 
 dotenv.config();
 const dirname = path.resolve();
@@ -51,7 +51,7 @@ app.post('/upload-to-ipfs', upload.array('files'), async (req, res) => {
       const metadataFile = await getFilesFromPath([`${dirname}/assets/nfts/${req.files[0].filename}.json`]);
       const files = [...imageFile, ...metadataFile];
       const cid = await client.put(files);
-      res.json({ ...metadata, cid, url: `https://${apiBaseURL}/${req.files[0].path}` });
+      res.json({ ...metadata, cid, url: `${apiProtocol}://${apiBaseURL}/${req.files[0].path}` });
 
       const imageFilePath = req.files[0].path.split('/');
       const metadataFilePath = `assets/nfts/${req.files[0].filename}.json`.split('/');
@@ -82,7 +82,7 @@ app.get('/get-from-ipfs', async (req, res) => {
           cid: rows[0].cid,
           path: JSON.parse(imageFilePath),
           isIPFS: false,
-          url: `https://${apiBaseURL}/${JSON.parse(imageFilePath).join('/')}`
+          url: `${apiProtocol}://${apiBaseURL}/${JSON.parse(imageFilePath).join('/')}`
         });
       });
       return;

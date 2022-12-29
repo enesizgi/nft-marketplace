@@ -3,7 +3,7 @@ import multer from 'multer';
 import { ethers } from 'ethers';
 import fs from 'fs';
 import pool from '../config/db.js';
-import apiBaseURL from '../constants.js';
+import { apiBaseURL, apiProtocol } from '../constants.js';
 
 const router = express.Router();
 
@@ -103,9 +103,9 @@ router.get('/user', async (req, res) => {
     const imageObj = {};
     imageRows.forEach(row => {
       if (row.type === imageType.ProfilePhoto) {
-        imageObj.profilePhoto = `https://${apiBaseURL}/${row.url}`;
+        imageObj.profilePhoto = `${apiProtocol}://${apiBaseURL}/${row.url}`;
       } else if (row.type === imageType.CoverPhoto) {
-        imageObj.coverPhoto = `https://${apiBaseURL}/${row.url}`;
+        imageObj.coverPhoto = `${apiProtocol}://${apiBaseURL}/${row.url}`;
       }
     });
 
@@ -152,7 +152,7 @@ router.get('/user/id', async (req, res) => {
 });
 
 async function uploadPhoto(req, id, url, type) {
-  const absolutePath = `https://${apiBaseURL}/${url}`;
+  const absolutePath = `${apiProtocol}://${apiBaseURL}/${url}`;
   const [rows] = await pool.query('SELECT i.image_path as path FROM image i WHERE i.user_id = ? AND i.type = ?', [id, type]);
   if (rows.length) {
     await pool.query('UPDATE image i SET image_path = ? WHERE i.user_id = ? AND i.type = ?', [url, id, type]);
@@ -210,7 +210,7 @@ router.get('/user/profile-photo', async (req, res) => {
       imageType.ProfilePhoto
     ]);
     if (rows.length) {
-      res.send({ ...rows[0], url: `https://${apiBaseURL}/${rows[0].url}` });
+      res.send({ ...rows[0], url: `${apiProtocol}://${apiBaseURL}/${rows[0].url}` });
     } else {
       // TODO: Return default avatar
       res.status(404).send();
@@ -228,7 +228,7 @@ router.get('/user/cover-photo', async (req, res) => {
       imageType.CoverPhoto
     ]);
     if (rows.length) {
-      res.send({ ...rows[0], url: `https://${apiBaseURL}/${rows[0].url}` });
+      res.send({ ...rows[0], url: `${apiProtocol}://${apiBaseURL}/${rows[0].url}` });
     } else {
       // TODO: Return default cover
       res.status(404).send();
