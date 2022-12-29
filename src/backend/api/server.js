@@ -51,7 +51,7 @@ app.post('/upload-to-ipfs', upload.array('files'), async (req, res) => {
       const metadataFile = await getFilesFromPath([`${dirname}/assets/nfts/${req.files[0].filename}.json`]);
       const files = [...imageFile, ...metadataFile];
       const cid = await client.put(files);
-      res.json({ ...metadata, cid, url: `http://${apiBaseURL}/${req.files[0].path}` });
+      res.json({ ...metadata, cid, url: `https://${apiBaseURL}/${req.files[0].path}` });
 
       const imageFilePath = req.files[0].path.split('/');
       const metadataFilePath = `assets/nfts/${req.files[0].filename}.json`.split('/');
@@ -82,7 +82,7 @@ app.get('/get-from-ipfs', async (req, res) => {
           cid: rows[0].cid,
           path: JSON.parse(imageFilePath),
           isIPFS: false,
-          url: `http://${apiBaseURL}/${JSON.parse(imageFilePath).join('/')}`
+          url: `https://${apiBaseURL}/${JSON.parse(imageFilePath).join('/')}`
         });
       });
       return;
