@@ -5,7 +5,8 @@ import cors from 'cors';
 import { Web3Storage, getFilesFromPath } from 'web3.storage';
 import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
-import { readFileSync, writeFile, readFile } from 'fs';
+import { readFileSync } from 'fs';
+import { writeFile, readFile } from 'fs/promises';
 import * as dotenv from 'dotenv';
 import https from 'https';
 import pool from '../config/db.js';
@@ -41,19 +42,16 @@ app.get('/', (req, res) => {
 
 app.post('/upload-to-ipfs', upload.array('files'), async (req, res) => {
   try {
-    writeFile(`${dirname}/assets/nfts/${req.files[0].filename}.json`, req.query.metadata, async err => {
-      if (err) {
-        res.status(500).send();
-        return;
-      }
-      const metadata = JSON.parse(req.query.metadata);
-      const imageFile = await getFilesFromPath([req.files[0].path]);
-      const metadataFile = await getFilesFromPath([`${dirname}/assets/nfts/${req.files[0].filename}.json`]);
-      const files = [...imageFile, ...metadataFile];
-      const cid = await client.put(files);
-      res.json({ ...metadata, cid, url: `${apiProtocol}://${apiBaseURL}/${req.files[0].path}` });
+    const imageFile = await getFilesFromPath([req.files[0].path]);
+    const metadataCid = await client.put(imageFile, { wrapWithDirectory: false });
+    const imageFilePath = req.files[0].path.split('/');
+    const metadata = { ...JSON.parse(req.query.metadata), image: `https://w3s.link/ipfs/${metadataCid}` };
+    await writeFile(`${dirname}/assets/nfts/${req.files[0].filename}.json`, JSON.stringify(metadata));
+    const metadataFile = await getFilesFromPath([`${dirname}/assets/nfts/${req.files[0].filename}.json`]);
+    const cid = await client.put(metadataFile, { wrapWithDirectory: false });
 
-      const imageFilePath = req.files[0].path.split('/');
+    res.json({ ...metadata, cid, url: `${apiProtocol}://${apiBaseURL}/${req.files[0].path}` });
+    try {
       const metadataFilePath = `assets/nfts/${req.files[0].filename}.json`.split('/');
       const insertValues = [
         [cid, JSON.stringify(imageFilePath)],
@@ -61,7 +59,9 @@ app.post('/upload-to-ipfs', upload.array('files'), async (req, res) => {
       ];
 
       await pool.query(`INSERT INTO nft (cid, path) VALUES ?`, [insertValues]);
-    });
+    } catch (err) {
+      console.log(err);
+    }
   } catch (err) {
     res.status(500).send();
     console.log(err);
@@ -74,16 +74,14 @@ app.get('/get-from-ipfs', async (req, res) => {
     if (rows.length) {
       const imageFilePath = rows.filter(i => JSON.parse(i.path).pop().split('.').pop() !== 'json')[0].path;
       const jsonFilePath = rows.filter(i => JSON.parse(i.path).pop().split('.').pop() === 'json')[0].path;
-      readFile(JSON.parse(jsonFilePath).join('/'), (err, data) => {
-        if (err) throw err;
-        const metadata = JSON.parse(data);
-        res.send({
-          ...metadata,
-          cid: rows[0].cid,
-          path: JSON.parse(imageFilePath),
-          isIPFS: false,
-          url: `${apiProtocol}://${apiBaseURL}/${JSON.parse(imageFilePath).join('/')}`
-        });
+      const data = await readFile(JSON.parse(jsonFilePath).join('/'));
+      const metadata = JSON.parse(data);
+      res.send({
+        ...metadata,
+        cid: rows[0].cid,
+        path: JSON.parse(imageFilePath),
+        isIPFS: false,
+        url: `${apiProtocol}://${apiBaseURL}/${JSON.parse(imageFilePath).join('/')}`
       });
       return;
     }

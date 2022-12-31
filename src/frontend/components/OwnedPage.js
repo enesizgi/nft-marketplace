@@ -92,8 +92,8 @@ const OwnedPage = ({ profileID, selectedTab }) => {
         }
         const chainRequests = chainItemIds.map(async i => {
           try {
-            const tokenId = await nftContract.tokenOfOwnerByIndex(profileID, i);
-            const uri = await nftContract.tokenURI(tokenId);
+            const tokenId = await contract.tokenOfOwnerByIndex(profileID, i);
+            const uri = await contract.tokenURI(tokenId);
             if (uri.startsWith('ipfs://')) {
               const cid = uri.split('ipfs://')[1];
               const metadata = await API.getFromIPFS(cid);
@@ -121,7 +121,7 @@ const OwnedPage = ({ profileID, selectedTab }) => {
     });
     const nfts = await Promise.allSettled(chainNftRequests);
     // eslint-disable-next-line
-    const nftsSuccessfulTest = nfts.reduce((acc, i) => {
+    const nftsSuccessful = nfts.reduce((acc, i) => {
       if (i?.value?.length > 0 && i?.status === 'fulfilled') {
         return [...acc, ...i.value];
       }
