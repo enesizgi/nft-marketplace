@@ -1,18 +1,15 @@
 import { createListenerMiddleware, isAnyOf } from '@reduxjs/toolkit';
 import { ethers } from 'ethers';
 import sortedUniqBy from 'lodash/sortedUniqBy';
-// import { useSelector } from 'react-redux';
 import { setUser } from './userSlice';
 import API from '../modules/api';
 import { generateSignatureData } from '../utils';
 import { setChainID, setIsLoadingContracts } from './marketplaceSlice';
 import { setProfile } from './profileSlice';
 import { loadNFT, setCurrentPath, setIsLoading } from './uiSlice';
-// import { getMarketplaceContract } from './selectors';
 import { NFT_ACTIVITY_TYPES } from '../constants';
 import { getMarketplaceContractFn, getNFTContractFn } from '../components/utils';
 import { setNFT } from './nftSlice';
-// import { getMarketplaceContractFn } from '../components/utils';
 
 /* eslint-disable */
 const listenerMiddleware = createListenerMiddleware();
@@ -27,29 +24,45 @@ const userLoginFlow = async (id, listenerApi) => {
       console.warn('User could not be created.');
     } else {
       const { slug, name } = createdUser;
-      listenerApi.dispatch(setUser({ id, slug, name }));
+      listenerApi.dispatch(setUser({ id: id.toLowerCase(), slug, name }));
     }
   } else {
     const userInfo = await API.getUser(id);
-    listenerApi.dispatch(setUser(userInfo));
+    listenerApi.dispatch(setUser({ ...userInfo, id: id.toLowerCase() }));
   }
 };
 
-const handleInitMarketplace = async (action, listenerApi) => {
+const setAccounts = async () => {
   const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-  const id = accounts[0];
+  sessionStorage.setItem('account', accounts[0]);
+  return accounts[0];
+};
+
+const setChainId = async () => {
   const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+  sessionStorage.setItem('chainId', chainId);
+  return chainId;
+};
+
+const handleInitMarketplace = async (action, listenerApi) => {
+  const sessionAccount = sessionStorage.getItem('account');
+  const sessionChainId = sessionStorage.getItem('chainId');
+
+  const id = sessionAccount || (await setAccounts());
+  const chainId = sessionChainId || (await setChainId());
+
   listenerApi.dispatch(setChainID(chainId));
 
   await userLoginFlow(id, listenerApi);
 
   window.ethereum.on('chainChanged', chainID => {
+    sessionStorage.setItem('chainId', chainID);
     listenerApi.dispatch(setChainID(chainID));
   });
 
-  // eslint-disable-next-line
   window.ethereum.on('accountsChanged', async accounts => {
     const newAccountID = accounts[0];
+    sessionStorage.setItem('account', accounts[0]);
     await userLoginFlow(newAccountID, listenerApi);
     await handleInitMarketplace(action, listenerApi);
   });
@@ -61,7 +74,7 @@ const handleInitProfile = async (action, listenerApi) => {
   const path = action.payload;
   const getUserRequest = path.startsWith('0x') ? API.getUser : API.getUserBySlug;
   const response = await getUserRequest(path);
-  listenerApi.dispatch(setProfile(response));
+  listenerApi.dispatch(setProfile({ ...response, id: response.id.toLowerCase() }));
 };
 
 const handleInitNFTState = async (listenerApi, tokenID) => {

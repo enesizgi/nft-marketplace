@@ -15,6 +15,7 @@ import LeftPanel from './LeftPanel';
 import NFTDetailPage from './NFTDetailPage';
 import RouteListener from './RouteListener';
 import { useWindowSize } from '../hooks';
+import { initMarketplace } from '../store/actionCreators';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -37,6 +38,12 @@ const App = () => {
   useEffect(() => {
     updateDeviceType();
   }, [width]);
+
+  useEffect(() => {
+    if (sessionStorage.getItem('account')) {
+      dispatch(initMarketplace());
+    }
+  }, []);
 
   return (
     <BrowserRouter>
