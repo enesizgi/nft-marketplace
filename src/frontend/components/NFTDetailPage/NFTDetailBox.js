@@ -2,7 +2,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { getNFTContract } from '../../store/selectors';
+import { getNFTContract, getNFTDescription, getTokenID } from '../../store/selectors';
 import DetailsDropdown from '../DetailsDropdown';
 
 const ScNFTDetailBox = styled.div`
@@ -44,12 +44,14 @@ const ScNFTDetailBox = styled.div`
 `;
 
 // TODO: Add redux
-const NFTDetailBox = ({ item }) => {
+const NFTDetailBox = () => {
   const nftContract = useSelector(getNFTContract);
+  const description = useSelector(getNFTDescription);
+  const tokenID = useSelector(getTokenID);
 
   const NFTDetails = {
     'Contract Address': nftContract.address,
-    'Token ID': parseInt(item.tokenId._hex, 16),
+    'Token ID': tokenID,
     'Token Standard': 'ERC-721',
     Chain: 'Ethereum'
   };
@@ -57,7 +59,7 @@ const NFTDetailBox = ({ item }) => {
   return (
     <ScNFTDetailBox>
       <DetailsDropdown title="Description">
-        <div className="description-text">{item.description}</div>
+        <div className="description-text">{description}</div>
       </DetailsDropdown>
       <DetailsDropdown title="Details">
         {Object.entries(NFTDetails).map(([detailName, detail]) => (

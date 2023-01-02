@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { getUserID } from '../../store/selectors';
+import { getNFTName, getNFTOwner, getNFTSeller, getNFTURL, getUserID } from '../../store/selectors';
 import AddressDisplay from '../AddressDisplay';
 import ShareDropdown from './ShareDropdown';
 import './ShareDropdown.css';
@@ -46,23 +46,26 @@ const ScNFTDetailHeader = styled.div`
   }
 `;
 
-// TODO: Add redux
-const NFTDetailHeader = ({ item, owner }) => {
+const NFTDetailHeader = () => {
   const userID = useSelector(getUserID);
-  const isOwnerPage = compare(owner, userID) || compare(item.seller, userID);
+  const itemName = useSelector(getNFTName);
+  const owner = useSelector(getNFTOwner);
+  const seller = useSelector(getNFTSeller);
+  const url = useSelector(getNFTURL);
+  const isOwnerPage = compare(owner, userID);
 
   return (
     <ScNFTDetailHeader>
       <div className="nft-header-name">
-        <header className="nft-header-name-nftName" title={item.name}>
-          {item.name}
-          <NewTab url={item.url} />
-          <ShareDropdown url={item.url} title="Check this NFT! " />
+        <header className="nft-header-name-nftName" title={itemName}>
+          {itemName}
+          <NewTab url={url} />
+          <ShareDropdown url={url} title="Check this NFT! " />
         </header>
 
         {!isOwnerPage && (
           <div className="nft-header-name-owner">
-            <AddressDisplay address={owner} label="Owned By" className="nft-header-name-owner-id" />
+            <AddressDisplay address={seller || owner} label="Owned By" className="nft-header-name-owner-id" />
           </div>
         )}
       </div>

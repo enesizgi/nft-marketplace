@@ -7,10 +7,10 @@ const nftSlice = createSlice({
   name: 'nft',
   initialState,
   reducers: {
-    setNFT: (state, action) => {
-      const { tokenID } = action.payload;
-      state[tokenID] = action.payload;
-    }
+    setNFT: (state, action) => 
+      // eslint-disable-next-line no-return-assign
+       action.payload
+    
   }
 });
 

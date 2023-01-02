@@ -5,7 +5,8 @@ import { DEVICE_TYPES } from '../constants';
 const initialState = {
   deviceType: DEVICE_TYPES.DESKTOP,
   leftPanelOpened: false,
-  currentPath: '/'
+  currentPath: '/',
+  loading: true
 };
 
 const uiSlice = createSlice({
@@ -20,9 +21,13 @@ const uiSlice = createSlice({
     },
     setCurrentPath: (state, action) => {
       state.currentPath = action.payload;
-    }
+    },
+    setIsLoading: (state, action) => {
+      state.loading = action.payload;
+    },
+    loadNFT: () => {}
   }
 });
 
 export default uiSlice.reducer;
-export const { setDeviceType, setLeftPanelOpened, setCurrentPath } = uiSlice.actions;
+export const { setDeviceType, setLeftPanelOpened, setCurrentPath, setIsLoading, loadNFT } = uiSlice.actions;

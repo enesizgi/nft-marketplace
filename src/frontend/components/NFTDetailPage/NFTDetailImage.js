@@ -1,8 +1,10 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { FaEthereum } from 'react-icons/fa';
 import Modal from '../Modal';
+import { getNFTURL } from '../../store/selectors';
 
 const ScNFTDetailImage = styled.div`
   display: flex;
@@ -25,8 +27,9 @@ const ScNFTDetailImage = styled.div`
   }
 `;
 // TODO: Add redux
-const NFTDetailImage = ({ item }) => {
+const NFTDetailImage = () => {
   const [showModal, setShowModal] = useState(false);
+  const url = useSelector(getNFTURL);
 
   const handleOpenImage = () => {
     setShowModal(true);
@@ -37,10 +40,10 @@ const NFTDetailImage = ({ item }) => {
       <div className="nft-detail-image-icon">
         <FaEthereum />
       </div>
-      {item.url && <img className="nft-detail-image" src={item.url} alt="nftImage" onClick={handleOpenImage} />}
+      {url && <img className="nft-detail-image" src={url} alt="nftImage" onClick={handleOpenImage} />}
       {showModal && (
         <Modal onClose={() => setShowModal(false)}>
-          <img src={item.url} alt="nftImage" onClick={handleOpenImage} />
+          <img src={url} alt="nftImage" onClick={handleOpenImage} />
         </Modal>
       )}
     </ScNFTDetailImage>

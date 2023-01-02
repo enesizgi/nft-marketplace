@@ -1,9 +1,21 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { ethers } from 'ethers';
-import { getMarketplaceContract, getNFTContract, getUserID } from '../store/selectors';
+import {
+  getAuctionID,
+  getMarketplaceContract,
+  getNFTContract,
+  getNFTOwner,
+  getNFTSeller,
+  getPriceOfNFT,
+  getTimeToEnd,
+  getTokenID,
+  getUserID,
+  getWinner
+} from '../store/selectors';
+import { loadNFT } from '../store/uiSlice';
 
 const ScAuctionButton = styled.div`
   margin-bottom: 20px;
@@ -48,10 +60,19 @@ const ScAuctionButton = styled.div`
   }
 `;
 
-const AuctionButton = ({ item, owner }) => {
+const AuctionButton = () => {
+  const dispatch = useDispatch();
   const nftContract = useSelector(getNFTContract);
   const marketplaceContract = useSelector(getMarketplaceContract);
   const userID = useSelector(getUserID);
+  const tokenID = useSelector(getTokenID);
+  const auctionID = useSelector(getAuctionID);
+  const price = useSelector(getPriceOfNFT);
+  const owner = useSelector(getNFTOwner);
+  const winner = useSelector(getWinner);
+  const seller = useSelector(getNFTSeller);
+
+  const timeToEnd = useSelector(getTimeToEnd);
   const [minimumBid, setMinimumBid] = React.useState(null);
   const [expireTime, setExpireTime] = React.useState(null);
   const [makeBid, setMakeBid] = React.useState(null);
@@ -59,7 +80,7 @@ const AuctionButton = ({ item, owner }) => {
   const navigate = useNavigate();
   const startAuctionHandler = async () => {
     if (!expireTime || !minimumBid) return;
-    const price = ethers.utils.parseEther(minimumBid.toString());
+    const minimumBidPrice = ethers.utils.parseEther(minimumBid.toString());
     const untilDate = Math.floor(new Date(expireTime).getTime() / 1000);
     if (untilDate < Math.floor(Date.now() / 1000)) return;
     // approve marketplace to spend nft
@@ -67,22 +88,25 @@ const AuctionButton = ({ item, owner }) => {
     if (!isApproved) {
       await (await nftContract.setApprovalForAll(marketplaceContract.address, true)).wait();
     }
-    await (await marketplaceContract.startAuction(nftContract.address, item.tokenId, price, untilDate)).wait();
+    await (await marketplaceContract.startAuction(nftContract.address, tokenID, minimumBidPrice, untilDate)).wait();
+    dispatch(loadNFT());
   };
   const makeBidHandler = async () => {
-    if (makeBid <= parseInt(ethers.utils.formatEther(item.price), 10)) return;
-    const price = ethers.utils.parseEther(makeBid.toString());
-    await (await marketplaceContract.makeOffer(item.auctionId, { value: price })).wait();
+    if (makeBid <= parseInt(ethers.utils.formatEther(price.toString()), 10)) return;
+    const bidPrice = ethers.utils.parseEther(makeBid.toString());
+    await (await marketplaceContract.makeOffer(auctionID, { value: bidPrice })).wait();
+    await (await marketplaceContract.makeOffer(auctionID, { value: bidPrice })).wait();
+    dispatch(loadNFT());
   };
 
   const claimNFTHandler = async () => {
-    await (await marketplaceContract.claimNFT(item.auctionId)).wait();
+    await (await marketplaceContract.claimNFT(auctionID)).wait();
+    dispatch(loadNFT());
   };
   const now = Math.floor(new Date().getTime() / 1000);
   /* eslint-disable no-underscore-dangle */
-  const isAuctionOver = item.auctionId && now > parseInt(item.timeToEnd._hex, 16);
-  const auctionEndTime = item.auctionId && new Date(parseInt(item.timeToEnd._hex, 16) * 1000).toString();
-
+  const isAuctionOver = auctionID && now > timeToEnd;
+  const auctionEndTime = auctionID && new Date(timeToEnd * 1000).toString();
   const handleGoToProfile = id => () => {
     navigate(`/user/${id}`);
   };
@@ -90,33 +114,34 @@ const AuctionButton = ({ item, owner }) => {
   if (!userID) {
     return null;
   }
+
   return (
     <ScAuctionButton>
-      {item.auctionId !== undefined && !isAuctionOver && (
+      {auctionID && !isAuctionOver && (
         <>
           <div className="item">{`Sale ends at ${auctionEndTime}`}</div>
-          <div className="item price">{ethers.utils.formatEther(item.price)} ETH</div>
+          <div className="item price">{ethers.utils.formatEther(price.toString())} ETH</div>
         </>
       )}
-      {item.auctionId !== undefined && isAuctionOver && (
+      {auctionID && isAuctionOver && (
         <>
-          {item.winner.toLowerCase() === userID ? (
+          {winner.toLowerCase() === userID ? (
             <div className="item">Sale Ended. You won the auction!</div>
           ) : (
             <div className="item">Auction is over.</div>
           )}
-          <div className="item price">{ethers.utils.formatEther(item.price)} ETH</div>
+          <div className="item price">{ethers.utils.formatEther(price.toString())} ETH</div>
         </>
       )}
-      {item.auctionId !== undefined && (
+      {auctionID && (
         <div>
           Winner:
-          <button type="button" className="item address" onClick={handleGoToProfile(item.winner)}>
-            {item.winner.toLowerCase() === userID ? 'You' : item.winner}
+          <button type="button" className="item address" onClick={handleGoToProfile(winner)}>
+            {winner.toLowerCase() === userID ? 'You' : winner}
           </button>
         </div>
       )}
-      {item.auctionId === undefined && owner === userID && (
+      {!auctionID && owner === userID && (
         <>
           <div className="item">
             Minimum Bid: <input type="number" placeholder="Price in ETH" onChange={e => setMinimumBid(e.target.value)} />
@@ -131,7 +156,7 @@ const AuctionButton = ({ item, owner }) => {
           </div>
         </>
       )}
-      {item.auctionId !== undefined && item.seller.toLowerCase() !== userID && !isAuctionOver && (
+      {auctionID && seller.toLowerCase() !== userID && !isAuctionOver && (
         <>
           <div className="item">
             Bid Price: <input type="number" placeholder="Price in ETH" onChange={e => setMakeBid(e.target.value)} />
@@ -143,7 +168,7 @@ const AuctionButton = ({ item, owner }) => {
           </div>
         </>
       )}
-      {isAuctionOver && (item.winner.toLowerCase() === userID || item.seller.toLowerCase() === userID) && (
+      {isAuctionOver && (winner.toLowerCase() === userID || seller.toLowerCase() === userID) && (
         <div className="item">
           <button type="button" className="nftActionButton" onClick={claimNFTHandler}>
             Claim

@@ -1,4 +1,4 @@
-import { createListenerMiddleware } from '@reduxjs/toolkit';
+import { createListenerMiddleware, isAnyOf } from '@reduxjs/toolkit';
 import { ethers } from 'ethers';
 import sortedUniqBy from 'lodash/sortedUniqBy';
 // import { useSelector } from 'react-redux';
@@ -7,7 +7,7 @@ import API from '../modules/api';
 import { generateSignatureData } from '../utils';
 import { setChainID, setIsLoadingContracts } from './marketplaceSlice';
 import { setProfile } from './profileSlice';
-import { setCurrentPath } from './uiSlice';
+import { loadNFT, setCurrentPath, setIsLoading } from './uiSlice';
 // import { getMarketplaceContract } from './selectors';
 import { NFT_ACTIVITY_TYPES } from '../constants';
 import { getMarketplaceContractFn, getNFTContractFn } from '../components/utils';
@@ -65,54 +65,22 @@ const handleInitProfile = async (action, listenerApi) => {
 };
 
 const handleInitNFTState = async (listenerApi, tokenID) => {
-  // TODO: Error handling
   const {
     user: { id: userID },
     marketplace: { chainID, defaultChainID }
   } = listenerApi.getState();
+
   const marketplaceContract = await getMarketplaceContractFn(userID, chainID, defaultChainID);
   const nftContract = await getNFTContractFn(userID, chainID, defaultChainID);
   const _nftOwner = await nftContract.ownerOf(tokenID);
-  const nftOwner = _nftOwner.toLowerCase();
+  const owner = _nftOwner.toLowerCase();
   const uri = await nftContract.tokenURI(tokenID);
   const cid = uri.split('ipfs://')[1];
   const metadata = await API.getFromIPFS(cid);
-  const _item = {
-    ...metadata,
-    tokenID
-  };
 
-  let i;
-  let totalPrice;
-  const { itemId } = _item;
-  if (itemId) {
-    i = await marketplaceContract.items(itemId);
-    totalPrice = await marketplaceContract.getTotalPrice(itemId);
-  }
-  // TODO: handle if data comes from ipfs
-  const it = {
-    ..._item,
-    ...(i ?? {}),
-    ...(totalPrice ? { totalPrice } : {}),
-    ...(i?.price ? { price: i.price } : {})
-  };
-
-  // setItem(it);
-  // setOwner(nftOwner.toLowerCase());
   // TODO: Cache mechanism for transactions maybe?
-  const transferFilter = nftContract.filters.Transfer(null, null, tokenID);
+  const transferFilter = nftContract.filters.Transfer(ethers.constants.AddressZero, null, tokenID);
   const transferEvents = await nftContract.queryFilter(transferFilter);
-
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  const nftTransactions = await Promise.all(
-    transferEvents.map(async t => {
-      return await provider.getTransaction(t.transactionHash);
-    })
-  );
-
-  console.log(transferEvents, nftTransactions);
-
-  // setTransactions(nftTransactions);
 
   const boughtFilter = marketplaceContract.filters.Bought(null, null, tokenID, null, null, null);
   const boughtResults = await marketplaceContract.queryFilter(boughtFilter);
@@ -120,58 +88,73 @@ const handleInitNFTState = async (listenerApi, tokenID) => {
   const offeredResults = await marketplaceContract.queryFilter(offeredFilter);
   const auctionFilter = marketplaceContract.filters.AuctionStarted(null, null, tokenID, null, null, null);
   const auctionResults = await marketplaceContract.queryFilter(auctionFilter);
+  const auctionEndedFilter = await marketplaceContract.filters.AuctionEnded(null, null, tokenID, null, null, null);
+  const auctionEndedResults = await marketplaceContract.queryFilter(auctionEndedFilter);
 
-  const sortedEvents = [...boughtResults, ...offeredResults, ...auctionResults].sort((a, b) => b.blockNumber - a.blockNumber);
-  const uniqEvents = sortedUniqBy(sortedEvents, n => n.args.tokenId.toBigInt());
-  const lastEvent = uniqEvents[0];
+  // const sortedEvents = [...offeredResults, ...auctionResults].sort((a, b) => b.blockNumber - a.blockNumber);
+  const sortedEventsForActivity = [...boughtResults, ...auctionEndedResults].sort((a, b) => b.blockNumber - a.blockNumber);
+  const allEvents = [...offeredResults, ...auctionResults, ...boughtResults, ...auctionEndedResults].sort((a, b) => b.blockNumber - a.blockNumber);
+  const allUniqueEvents = sortedUniqBy(allEvents, e => e.args.tokenId.toBigInt());
+  const lastEvent = allUniqueEvents[0];
 
-  if (nftOwner === marketplaceContract.address) {
-    if (lastEvent.event === 'Offered') {
-      console.log('offered');
-      // setListed(true);
-      // setIsSeller(lastEvent.args[4].toLowerCase() === profileID.toLowerCase());
-    } else if (lastEvent.event === 'AuctionStarted') {
-      console.log('onAuction');
-      // setOnAuction(true);
-      // setIsSeller(lastEvent.args[5].toLowerCase() === profileID.toLowerCase());
-    }
+  let i;
+  let totalPrice;
+
+  const itemId = lastEvent?.args?.itemId;
+  const auctionId = lastEvent?.args?.auctionId;
+
+  if (itemId) {
+    i = await marketplaceContract.items(itemId);
+    totalPrice = await marketplaceContract.getTotalPrice(itemId);
+    i = i.itemId && !i.sold && i;
+  } else if (auctionId) {
+    i = await marketplaceContract.auctionItems(auctionId);
+    i = i.auctionId && !i.claimed && i;
   }
+  // TODO: handle if data comes from ipfs
+  const it = {
+    ...metadata,
+    tokenId: tokenID,
+    ...(itemId ? { itemId: parseInt(itemId._hex, 16) } : {}),
+    ...(i ?? {}),
+    ...(totalPrice ? { totalPrice } : {}),
+    ...(i?.price ? { price: i.price } : {})
+  };
+  // console.log(Object.entries(it));
+  const finalItem = Object.entries(it).reduce((acc, [key, value]) => {
+    return ethers.BigNumber.isBigNumber(value) ? { ...acc, [key]: parseInt(value._hex, 16) } : { ...acc, [key]: value };
+  }, {});
+  // console.log(it2);
+  // console.log(ethers.BigNumber.isBigNumber(it.itemId));
 
-  // TODO: change the logic of the transaction detecting
-  const nftTransactionData = {};
-  nftTransactions.forEach(t => {
-    const from = t.from.toLowerCase();
-    const to = t.to.toLowerCase();
-    const { blockNumber, hash } = t;
-    const contractAddress = nftContract.address.toLowerCase();
-    if (to === contractAddress) {
-      nftTransactionData[hash] = { blockNumber, type: NFT_ACTIVITY_TYPES.MINT, price: '', from: 'Null', to: from };
-    } else if (Number(ethers.utils.formatEther(t.value)) === 0.0) {
-      nftTransactionData[hash] = { blockNumber, type: NFT_ACTIVITY_TYPES.TRANSFER, price: '', from, to };
-    } else {
-      nftTransactionData[hash] = { blockNumber, type: NFT_ACTIVITY_TYPES.SALE, price: ethers.utils.formatEther(t.value), from: to, to: from };
-    }
-  });
-  listenerApi.dispatch(setNFT({ ...it, transactions: nftTransactionData }));
+  const nftTransactionData = sortedEventsForActivity.map(e => ({
+    type: NFT_ACTIVITY_TYPES.SALE,
+    price: ethers.utils.formatEther(e.args.price),
+    from: e.args.seller,
+    to: e.args.buyer
+  }));
+  nftTransactionData.push({ type: NFT_ACTIVITY_TYPES.MINT, price: '', from: 'Null', to: transferEvents[0].args.to });
+
+  const isNFTOwnedByMarketplace = owner === marketplaceContract.address.toLowerCase();
+  const isListed = isNFTOwnedByMarketplace && lastEvent.event === 'Offered';
+  const isOnAuction = isNFTOwnedByMarketplace && lastEvent.event === 'AuctionStarted';
+
+  const seller = isListed || isOnAuction ? lastEvent.args.seller.toLowerCase() : '';
+  console.log({ finalItem });
+
+  listenerApi.dispatch(setNFT({ ...finalItem, transactions: nftTransactionData, owner, seller, isListed, isOnAuction }));
 };
-// {
-//   contractID: {
-//     tokenID: {
-//     name,
-//       description,
-//       url: 'assets/nfts/1.png'
-//     }
-//   }
-// }
 
 const handlePathChanges = async (action, listenerApi) => {
-  const pathName = action.payload;
+  const pathName = window.location.pathname;
   const isInNFTPage = pathName.startsWith('/nft/');
   // const isInProfilePage = pathName.startsWith('/profile/');
 
   if (isInNFTPage) {
     const tokenID = pathName.split('/')[3];
+    listenerApi.dispatch(setIsLoading(true));
     await handleInitNFTState(listenerApi, tokenID);
+    listenerApi.dispatch(setIsLoading(false));
   }
 };
 
@@ -186,7 +169,7 @@ listenerMiddleware.startListening({
 });
 
 listenerMiddleware.startListening({
-  actionCreator: setCurrentPath,
+  matcher: isAnyOf(setCurrentPath, loadNFT),
   effect: handlePathChanges
 });
 

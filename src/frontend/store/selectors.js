@@ -1,3 +1,4 @@
+import { ethers } from 'ethers';
 import { createSelector } from 'reselect';
 import { getMarketplaceContractFn, getNFTContractFn } from '../components/utils';
 
@@ -9,7 +10,9 @@ export const getProfile = state => state.profile;
 
 export const getUI = state => state.ui;
 
-export const getUserID = createSelector(getUser, ({ id }) => id);
+export const getNFT = state => state.nft;
+
+export const getUserID = createSelector(getUser, ({ id }) => id.toLowerCase());
 
 export const getUserSlug = createSelector(getUser, ({ slug }) => slug);
 
@@ -45,4 +48,38 @@ export const getDeviceType = createSelector(getUI, ({ deviceType }) => deviceTyp
 
 export const getIsLeftPanelOpened = createSelector(getUI, ({ leftPanelOpened }) => leftPanelOpened);
 
+export const getIsLoading = createSelector(getUI, ({ loading }) => loading);
+
 export const getCurrentPath = createSelector(getUI, ({ currentPath }) => currentPath);
+
+export const getIsListed = createSelector(getNFT, ({ isListed }) => isListed);
+
+export const getIsOnAuction = createSelector(getNFT, ({ isOnAuction }) => isOnAuction);
+
+export const getNFTName = createSelector(getNFT, ({ name }) => name);
+
+export const getNFTOwner = createSelector(getNFT, ({ owner }) => owner);
+
+export const getNFTSeller = createSelector(getNFT, ({ seller }) => seller);
+
+export const getWinner = createSelector(getNFT, ({ winner }) => winner);
+
+export const getNFTURL = createSelector(getNFT, ({ url }) => url);
+
+export const getNFTDescription = createSelector(getNFT, ({ description }) => description);
+
+export const getNFTTransactions = createSelector(getNFT, ({ transactions }) => transactions);
+
+export const getTokenID = createSelector(getNFT, ({ tokenId }) => tokenId);
+
+export const getPriceOfNFT = createSelector(getNFT, ({ price }) => price);
+
+export const getTotalPriceOfNFT = createSelector(getNFT, ({ totalPrice }) => totalPrice);
+
+export const getFormattedPrice = createSelector(getNFT, ({ totalPrice }) => (totalPrice ? ethers.utils.formatEther(totalPrice.toString()) : ''));
+
+export const getItemID = createSelector(getNFT, ({ itemId }) => itemId);
+
+export const getAuctionID = createSelector(getNFT, ({ auctionId }) => auctionId);
+
+export const getTimeToEnd = createSelector(getNFT, ({ timeToEnd }) => timeToEnd);

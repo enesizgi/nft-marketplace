@@ -2,7 +2,16 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { ethers } from 'ethers';
-import { getMarketplaceContract, getNFTContract, getUserID } from '../../store/selectors';
+import {
+  getFormattedPrice,
+  getItemID,
+  getMarketplaceContract,
+  getNFTContract,
+  getNFTOwner,
+  getNFTSeller,
+  getTokenID,
+  getUserID
+} from '../../store/selectors';
 import AuctionButton from '../AuctionButton';
 
 const ScSaleButton = styled.div`
@@ -69,15 +78,21 @@ const ScSaleButton = styled.div`
   }
 `;
 
-const SaleButton = ({ item, isSeller, isOwner, owner }) => {
-  // console.log('item');
-  // return null;
+const SaleButton = () => {
+  const owner = useSelector(getNFTOwner);
+  const userID = useSelector(getUserID);
+  const seller = useSelector(getNFTSeller);
+  const tokenID = useSelector(getTokenID);
+  const itemID = useSelector(getItemID);
+  const formattedPrice = useSelector(getFormattedPrice);
+  const nftContract = useSelector(getNFTContract);
+  const marketplaceContract = useSelector(getMarketplaceContract);
+
   const [isAuctionSelected, setIsAuctionSelected] = useState(false);
   const [isSellSelected, setIsSellSelected] = useState(false);
   const [sellPrice, setSellPrice] = useState('');
-  const userID = useSelector(getUserID);
-  const nftContract = useSelector(getNFTContract);
-  const marketplaceContract = useSelector(getMarketplaceContract);
+  const isOwner = owner && userID && owner.toLowerCase() === userID.toLowerCase();
+  const isSeller = seller && userID && seller.toLowerCase() === userID.toLowerCase();
 
   const handleSelectAuction = () => {
     setIsAuctionSelected(true);
@@ -96,17 +111,17 @@ const SaleButton = ({ item, isSeller, isOwner, owner }) => {
     }
     // add nft to marketplace
     const listingPrice = ethers.utils.parseEther(sellPrice.toString());
-    await (await marketplaceContract.makeItem(nftContract.address, item.tokenId, listingPrice)).wait();
+    await (await marketplaceContract.makeItem(nftContract.address, tokenID, listingPrice)).wait();
   };
 
-  // TODO: Implement button actions with sell and buy pag
   const handleBuy = async () => {
-    await (await marketplaceContract.purchaseItem(item.itemId, { value: item.totalPrice })).wait();
+    await (await marketplaceContract.purchaseItem(itemID, { value: ethers.utils.parseEther(formattedPrice) })).wait();
   };
 
   if (!userID) {
     return null;
   }
+
   return (
     <ScSaleButton>
       {isOwner && (
@@ -119,7 +134,7 @@ const SaleButton = ({ item, isSeller, isOwner, owner }) => {
           </button>
         </div>
       )}
-      {isOwner && isAuctionSelected && <AuctionButton item={item} owner={owner} />}
+      {isOwner && isAuctionSelected && <AuctionButton />}
       {isOwner && isSellSelected && (
         <div className="sell">
           <div className="input-sell">
@@ -136,7 +151,7 @@ const SaleButton = ({ item, isSeller, isOwner, owner }) => {
       )}
       {!isOwner && (
         <div className="item">
-          <div className="text1">{ethers.utils.formatEther(item.price)} ETH</div>
+          <div className="text1">{formattedPrice} ETH</div>
           <button type="button" className="sell-button buy" onClick={handleBuy}>
             {isSeller ? 'Cancel' : 'Buy'}
           </button>
