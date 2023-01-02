@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { ethers } from 'ethers';
 import {
@@ -13,6 +13,7 @@ import {
   getUserID
 } from '../../store/selectors';
 import AuctionButton from '../AuctionButton';
+import { loadNFT } from '../../store/uiSlice';
 
 const ScSaleButton = styled.div`
   .sell-buttons {
@@ -79,6 +80,7 @@ const ScSaleButton = styled.div`
 `;
 
 const SaleButton = () => {
+  const dispatch = useDispatch();
   const owner = useSelector(getNFTOwner);
   const userID = useSelector(getUserID);
   const seller = useSelector(getNFTSeller);
@@ -112,10 +114,12 @@ const SaleButton = () => {
     // add nft to marketplace
     const listingPrice = ethers.utils.parseEther(sellPrice.toString());
     await (await marketplaceContract.makeItem(nftContract.address, tokenID, listingPrice)).wait();
+    dispatch(loadNFT());
   };
 
   const handleBuy = async () => {
     await (await marketplaceContract.purchaseItem(itemID, { value: ethers.utils.parseEther(formattedPrice) })).wait();
+    dispatch(loadNFT());
   };
 
   if (!userID) {
