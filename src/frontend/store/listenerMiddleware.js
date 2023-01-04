@@ -1,6 +1,5 @@
 import { createListenerMiddleware, isAnyOf } from '@reduxjs/toolkit';
 import { ethers } from 'ethers';
-import sortedUniqBy from 'lodash/sortedUniqBy';
 import { setUser } from './userSlice';
 import API from '../modules/api';
 import { generateSignatureData } from '../utils';
@@ -114,23 +113,31 @@ const handleInitNFTState = async (listenerApi, tokenID) => {
 
   // TODO: Cache mechanism for transactions maybe?
   const transferFilter = nftContract.filters.Transfer(ethers.constants.AddressZero, null, tokenID);
-  const transferEvents = await nftContract.queryFilter(transferFilter);
+  const transferQuery = nftContract.queryFilter(transferFilter);
 
   const boughtFilter = marketplaceContract.filters.Bought(null, null, tokenID, null, null, null);
-  const boughtResults = await marketplaceContract.queryFilter(boughtFilter);
   const offeredFilter = marketplaceContract.filters.Offered(null, null, tokenID, null, null);
-  const offeredResults = await marketplaceContract.queryFilter(offeredFilter);
   const auctionFilter = marketplaceContract.filters.AuctionStarted(null, null, tokenID, null, null, null);
-  const auctionResults = await marketplaceContract.queryFilter(auctionFilter);
-  const auctionEndedFilter = await marketplaceContract.filters.AuctionEnded(null, null, tokenID, null, null, null);
-  const auctionEndedResults = await marketplaceContract.queryFilter(auctionEndedFilter);
+  const auctionEndedFilter = marketplaceContract.filters.AuctionEnded(null, null, tokenID, null, null, null);
+  const boughtQuery = marketplaceContract.queryFilter(boughtFilter);
+  const offeredQuery = marketplaceContract.queryFilter(offeredFilter);
+  const auctionQuery = marketplaceContract.queryFilter(auctionFilter);
+  const auctionEndedQuery = marketplaceContract.queryFilter(auctionEndedFilter);
+  const promiseList = await Promise.allSettled([transferQuery, boughtQuery, offeredQuery, auctionQuery, auctionEndedQuery]);
+  const [transferPromise, ...eventPromiseList] = promiseList;
+  const eventsArray = eventPromiseList.reduce((acc, eventPromise) => {
+    return eventPromise.status === 'fulfilled' && eventPromise.value != null ? [...acc, eventPromise.value] : acc;
+  }, []);
+  const [boughtResults, , , auctionEndedResults] = eventsArray;
+  const events = eventsArray.flat(1);
+  const lastEvent = events.reduce((acc, event) => {
+    if (acc === null) return event;
+    if (parseFloat(`${event.blockNumber}.${event.transactionIndex}`) > parseFloat(`${acc.blockNumber}.${acc.transactionIndex}`)) return event;
+    return acc;
+  }, null);
 
-  // const sortedEvents = [...offeredResults, ...auctionResults].sort((a, b) => b.blockNumber - a.blockNumber);
   const sortFn = (a, b) => parseFloat(`${b.blockNumber}.${b.transactionIndex}`) - parseFloat(`${a.blockNumber}.${a.transactionIndex}`);
   const sortedEventsForActivity = [...boughtResults, ...auctionEndedResults].sort(sortFn);
-  const allEvents = [...offeredResults, ...auctionResults, ...boughtResults, ...auctionEndedResults].sort(sortFn);
-  const allUniqueEvents = sortedUniqBy(allEvents, e => e.args.tokenId.toBigInt());
-  const lastEvent = allUniqueEvents[0];
   const itemId = lastEvent?.args?.itemId;
   const auctionId = lastEvent?.args?.auctionId;
 
@@ -165,7 +172,7 @@ const handleInitNFTState = async (listenerApi, tokenID) => {
     from: e.args.seller,
     to: e.args.buyer
   }));
-  nftTransactionData.push({ type: NFT_ACTIVITY_TYPES.MINT, price: '', from: 'Null', to: transferEvents[0].args.to });
+  nftTransactionData.push({ type: NFT_ACTIVITY_TYPES.MINT, price: '', from: 'Null', to: transferPromise.value[0].args.to });
 
   const isNFTOwnedByMarketplace = owner === marketplaceContract.address.toLowerCase();
   const isListed = isNFTOwnedByMarketplace && lastEvent.event === 'Offered';
