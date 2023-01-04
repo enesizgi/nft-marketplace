@@ -100,7 +100,7 @@ const handleInitNFTState = async (listenerApi, tokenID) => {
   const {
     user: { id: userID },
     marketplace: { chainID, defaultChainID },
-    nft: { metadata: currentMetadata }
+    nft: { metadata: currentMetadata, tokenId: currentTokenID }
   } = listenerApi.getState();
 
   const marketplaceContract = await getMarketplaceContractFn(userID, chainID, defaultChainID);
@@ -109,7 +109,7 @@ const handleInitNFTState = async (listenerApi, tokenID) => {
   const owner = _nftOwner.toLowerCase();
   const uri = await nftContract.tokenURI(tokenID);
   const cid = uri.split('ipfs://')[1];
-  const metadata = currentMetadata || (await API.getFromIPFS(cid));
+  const metadata = currentMetadata && tokenID === currentTokenID ? currentMetadata : await API.getFromIPFS(cid);
 
   // TODO: Cache mechanism for transactions maybe?
   const transferFilter = nftContract.filters.Transfer(ethers.constants.AddressZero, null, tokenID);
