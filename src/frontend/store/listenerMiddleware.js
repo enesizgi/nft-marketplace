@@ -152,9 +152,7 @@ const handleInitNFTState = async (listenerApi, tokenID) => {
     }
   }
   // TODO: handle if data comes from ipfs
-  // TODO @Enes: Don't spread metadata. Remove it from state.
   const it = {
-    ...metadata,
     metadata,
     tokenId: tokenID,
     ...(itemId ? { itemId: parseInt(itemId._hex, 16) } : {}),

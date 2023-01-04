@@ -52,11 +52,13 @@ export const getIsLoading = createSelector(getUI, ({ loading }) => loading);
 
 export const getCurrentPath = createSelector(getUI, ({ currentPath }) => currentPath);
 
+export const getNFTMetadata = createSelector(getNFT, ({ metadata }) => metadata);
+
 export const getIsListed = createSelector(getNFT, ({ isListed }) => isListed);
 
 export const getIsOnAuction = createSelector(getNFT, ({ isOnAuction }) => isOnAuction);
 
-export const getNFTName = createSelector(getNFT, ({ name }) => name);
+export const getNFTName = createSelector(getNFTMetadata, ({ name }) => name);
 
 export const getNFTOwner = createSelector(getNFT, ({ owner }) => owner);
 
@@ -64,9 +66,9 @@ export const getNFTSeller = createSelector(getNFT, ({ seller }) => seller);
 
 export const getWinner = createSelector(getNFT, ({ winner }) => winner);
 
-export const getNFTURL = createSelector(getNFT, ({ url }) => url);
+export const getNFTURL = createSelector(getNFTMetadata, ({ url }) => url);
 
-export const getNFTDescription = createSelector(getNFT, ({ description }) => description);
+export const getNFTDescription = createSelector(getNFTMetadata, ({ description }) => description);
 
 export const getNFTTransactions = createSelector(getNFT, ({ transactions }) => transactions);
 
