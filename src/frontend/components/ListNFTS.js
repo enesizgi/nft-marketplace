@@ -7,7 +7,9 @@ import LoadingSpinner from './LoadingSpinner';
 
 const ListNFTSPage = ({ profileId, selectedTab }) => {
   const [loading, setLoading] = useState(true);
+  const [marketplaceItems, setMarketplaceItems] = useState([]);
   const [listedItems, setListedItems] = useState([]);
+  const [auctionItems, setAuctionItems] = useState([]);
   /* eslint-disable no-unused-vars */
   const [listedCurrentPage, setListedCurrentPage] = useState(1);
   const [auctionCurrentPage, setAuctionCurrentPage] = useState(1);
@@ -27,7 +29,7 @@ const ListNFTSPage = ({ profileId, selectedTab }) => {
         itemIds.push(i);
       }
       // eslint-disable-next-line no-await-in-loop
-      const auctionItems = await Promise.allSettled(
+      const batchItems = await Promise.allSettled(
         itemIds.map(async indx => {
           const i = isAuctionItems ? await marketplaceContract.auctionItems(indx) : await marketplaceContract.items(indx);
           const soldCriteria = isAuctionItems ? i.claimed : i.sold;
@@ -56,8 +58,8 @@ const ListNFTSPage = ({ profileId, selectedTab }) => {
           };
         })
       );
-      const batchItems = auctionItems.filter(i => i.status === 'fulfilled' && i.value != null).map(i => i.value);
-      items.push(...batchItems);
+      const batchItemsResult = batchItems.filter(i => i.status === 'fulfilled' && i.value != null).map(i => i.value);
+      items.push(...batchItemsResult);
       if (items.length === 5) return items;
       if (items.length > 5) {
         items.length = 5;
@@ -69,18 +71,41 @@ const ListNFTSPage = ({ profileId, selectedTab }) => {
   const loadAuctionItems = async () => getItems(true);
   const loadListedItems = async () => getItems(false);
 
-  useEffect(async () => {
+  const loadItems = async () => {
     const items = await Promise.allSettled([loadListedItems(), loadAuctionItems()]);
     const fulfilledItems = items.filter(item => item.status === 'fulfilled');
+    const listedItemList = fulfilledItems[0].value;
+    const auctionItemList = fulfilledItems[1].value;
     const itemsFlatten = fulfilledItems.map(i => i.value).flat(1);
-    setListedItems(itemsFlatten);
+    setListedItems(listedItemList);
+    setAuctionItems(auctionItemList);
+    setMarketplaceItems(itemsFlatten);
     setLoading(false);
-  }, [profileId]);
+  };
+
+  useEffect(async () => {
+    await loadItems();
+  }, [profileId, listedCurrentPage, auctionCurrentPage]);
 
   if (loading) {
     return <LoadingSpinner />;
   }
-  return <NFTShowcase NFTs={listedItems} loadItems={loadListedItems} selectedTab={selectedTab} />;
+  console.log(listedCurrentPage);
+  if (selectedTab === 'Home') {
+    return (
+      <>
+        <button type="button" onClick={() => setListedCurrentPage(prev => Math.max(1, prev - 1))}>
+          Prev
+        </button>
+        <NFTShowcase NFTs={listedItems} loadItems={loadItems} selectedTab={selectedTab} />
+        <button type="button" onClick={() => setListedCurrentPage(prev => prev + 1)}>
+          Next
+        </button>
+        <NFTShowcase NFTs={auctionItems} loadItems={loadItems} selectedTab={selectedTab} />
+      </>
+    );
+  }
+  return <NFTShowcase NFTs={marketplaceItems} loadItems={loadItems} selectedTab={selectedTab} />;
 };
 
 export default ListNFTSPage;
