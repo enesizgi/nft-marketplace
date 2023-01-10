@@ -14,6 +14,7 @@ contract Marketplace is ReentrancyGuard {
     uint public immutable feePercent; // the fee percentage on sales
     uint public itemCount;
     uint public auctionItemCount;
+    // TODO @Enes: We need to keep the current items at the state offered/auctionStarted for frontend.
 
     struct Item {
         uint itemId;
