@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 // TODO @Enes: Remove all eslint disables
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import './NavigationBar.css';
 import AccountBox from './AccountBox';
@@ -84,13 +84,7 @@ const NavigationBar = () => {
       )}
       <Search />
       <div className="navigationItem accountBox">
-        {isLoadingContracts || !userID ? (
-          <button onClick={handleInitMarketplace}>Connect Wallet</button>
-        ) : (
-          <Link to={`/user/${userID}`}>
-            <AccountBox />
-          </Link>
-        )}
+        {isLoadingContracts || !userID ? <button onClick={handleInitMarketplace}>Connect Wallet</button> : <AccountBox />}
       </div>
     </div>
   );

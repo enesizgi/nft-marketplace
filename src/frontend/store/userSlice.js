@@ -35,9 +35,10 @@ const userSlice = createSlice({
       state.slug = slug;
       state.coverPhoto = coverPhoto;
       state.profilePhoto = profilePhoto;
-    }
+    },
+    resetUser: () => initialState
   }
 });
 
 export default userSlice.reducer;
-export const { setUserID, setUsername, setUserSlug, setUserCoverPhoto, setUserProfilePhoto, setUser } = userSlice.actions;
+export const { setUserID, setUsername, setUserSlug, setUserCoverPhoto, setUserProfilePhoto, setUser, resetUser } = userSlice.actions;

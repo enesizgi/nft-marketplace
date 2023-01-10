@@ -7,10 +7,9 @@ const nftSlice = createSlice({
   name: 'nft',
   initialState,
   reducers: {
-    setNFT: (state, action) => 
+    setNFT: (state, action) =>
       // eslint-disable-next-line no-return-assign
-       action.payload
-    
+      action.payload
   }
 });
 
