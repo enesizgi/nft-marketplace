@@ -205,4 +205,53 @@ contract Marketplace is ReentrancyGuard {
             item.winner
         );
     }
+
+    function cancelOffered(uint _itemId) external nonReentrant {
+        require(_itemId > 0, "Item id should be bigger than zero.");
+        require(items[_itemId].seller == msg.sender, "Only seller can cancel this item.");
+        require(!items[_itemId].sold, "Item is already sold.");
+
+        Item storage item = items[_itemId];
+        item.sold = true;
+        // Transfer NFT back to seller
+        item.nft.transferFrom(address(this), msg.sender, item.tokenId);
+        // Delete item from items mapping
+
+        // TODO @Enes: Replace this event later. It will break our item activity in this way.
+        emit Bought(
+            _itemId,
+            address(item.nft),
+            item.tokenId,
+            item.price,
+            item.seller,
+            msg.sender
+        );
+    }
+
+    function cancelAuction(uint _auctionId) external payable nonReentrant {
+        require(_auctionId > 0, "Auction id should be bigger than zero.");
+        require(auctionItems[_auctionId].seller == msg.sender, "Only seller can cancel this auction.");
+        require(!auctionItems[_auctionId].claimed, "Auction is already claimed.");
+        require(block.timestamp < auctionItems[_auctionId].timeToEnd, "Auction should not be ended.");
+
+        AuctionItem storage item = auctionItems[_auctionId];
+        // Transfer NFT to msg.sender
+        item.nft.transferFrom(address(this), item.seller, item.tokenId);
+        if (item.deposited > 0) {
+            payable(item.winner).transfer(item.deposited);
+        }
+
+        item.claimed = true;
+
+        // TODO @Enes: Replace this event later. Item activity will break in this way.
+        emit AuctionEnded(
+            _auctionId,
+            address(item.nft),
+            item.tokenId,
+            item.price,
+            item.seller,
+            item.winner
+        );
+
+    }
 }
