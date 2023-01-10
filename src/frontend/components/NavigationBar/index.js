@@ -9,7 +9,7 @@ import { classNames } from '../../utils';
 import { initMarketplace } from '../../store/actionCreators';
 import { getDeviceType, getIsLeftPanelOpened, getIsLoadingContracts, getUserId } from '../../store/selectors';
 import { setLeftPanelOpened } from '../../store/uiSlice';
-import Search from '../../Search';
+import Search from '../Search';
 
 const NavigationBar = () => {
   const dispatch = useDispatch();
