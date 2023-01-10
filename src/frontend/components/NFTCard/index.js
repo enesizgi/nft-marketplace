@@ -5,8 +5,9 @@ import { useSelector } from 'react-redux';
 import ScNFTCard from './ScNFTCard';
 import { getMarketplaceContract, getNFTContract, getUserId } from '../../store/selectors';
 import AddressDisplay from '../AddressDisplay';
+import imagePlaceholder from '../../assets/image-placeholder.png';
 
-const NFTCard = ({ item, loadItems, selectedTab }) => {
+const NFTCard = ({ item, loadItems, selectedTab, loading }) => {
   const userId = useSelector(getUserId);
   const marketplaceContract = useSelector(getMarketplaceContract);
   const nftContract = useSelector(getNFTContract);
@@ -84,11 +85,9 @@ const NFTCard = ({ item, loadItems, selectedTab }) => {
 
   return (
     <ScNFTCard onMouseEnter={handleHoverCard} onMouseLeave={handleHoverLeave} onClick={handleGoToDetailPage}>
-      {item.url && (
-        <div className="nft-image">
-          <img src={item.url} alt="nftImage" />
-        </div>
-      )}
+      <div className="nft-image">
+        <img src={item.url ?? imagePlaceholder} alt="nftImage" className={`${!item.url && loading ? 'shimmer' : ''}`} />
+      </div>
       <div className="nft-info">
         <div className="nft-info-name">
           <span className="nft-info-name-itemName">{item.name}</span>

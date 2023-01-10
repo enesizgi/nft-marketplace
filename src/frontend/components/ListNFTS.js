@@ -1,14 +1,62 @@
 import React, { useState, useEffect } from 'react';
+import { TfiArrowCircleRight, TfiArrowCircleLeft } from 'react-icons/tfi';
+import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import API from '../modules/api';
 import NFTShowcase from './NFTShowcase';
 import { getMarketplaceContract, getNFTContract } from '../store/selectors';
 import LoadingSpinner from './LoadingSpinner';
 
+const ScListNFTS = styled.div`
+  .nft-slider-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  svg {
+    height: 100%;
+    width: 3%;
+    color: var(--blue);
+  }
+
+  nav.indicators {
+    width: 100%;
+    text-align: center;
+  }
+
+  nav.indicators ul {
+    display: inline-block;
+    text-align: center;
+    position: relative;
+  }
+
+  nav.indicators ul li button.current {
+    background-color: var(--blue);
+  }
+
+  nav.indicators ul li button {
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    margin: 0 10px;
+    background-color: rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+  }
+
+  nav.indicators ul li {
+    display: inline-block;
+    width: 20px;
+    margin: 0 10px;
+  }
+`;
+
 const ListNFTSPage = ({ profileId, selectedTab }) => {
   const [loading, setLoading] = useState(true);
   const [marketplaceItems, setMarketplaceItems] = useState([]);
   const [listedItems, setListedItems] = useState([]);
+  const [listedItemCount, setListedItemCount] = useState(0);
+  const [auctionItemCount, setAuctionItemCount] = useState(0);
   const [auctionItems, setAuctionItems] = useState([]);
   /* eslint-disable no-unused-vars */
   const [listedCurrentPage, setListedCurrentPage] = useState(1);
@@ -19,6 +67,8 @@ const ListNFTSPage = ({ profileId, selectedTab }) => {
 
   const getItems = async isAuctionItems => {
     const itemCount = isAuctionItems ? await marketplaceContract.auctionItemCount() : await marketplaceContract.itemCount();
+    if (isAuctionItems) setAuctionItemCount(parseInt(itemCount._hex, 16));
+    else setListedItemCount(parseInt(itemCount._hex, 16));
     const currentPage = isAuctionItems ? auctionCurrentPage : listedCurrentPage;
     const items = [];
     for (let cursor = 0; itemCount - (currentPage - 1 + cursor) * 5 >= 1; cursor += 1) {
@@ -84,25 +134,63 @@ const ListNFTSPage = ({ profileId, selectedTab }) => {
   };
 
   useEffect(async () => {
+    setLoading(true);
     await loadItems();
   }, [profileId, listedCurrentPage, auctionCurrentPage]);
 
   if (loading) {
     return <LoadingSpinner />;
   }
-  console.log(listedCurrentPage);
+
+  const indicatorClickHandler = (isAuction, index) => {
+    if (isAuction) setAuctionCurrentPage(index);
+    else setListedCurrentPage(index);
+  };
+
+  const placeHolderItems = [{}, {}, {}, {}, {}];
   if (selectedTab === 'Home') {
     return (
-      <>
-        <button type="button" onClick={() => setListedCurrentPage(prev => Math.max(1, prev - 1))}>
-          Prev
-        </button>
-        <NFTShowcase NFTs={listedItems} loadItems={loadItems} selectedTab={selectedTab} />
-        <button type="button" onClick={() => setListedCurrentPage(prev => prev + 1)}>
-          Next
-        </button>
-        <NFTShowcase NFTs={auctionItems} loadItems={loadItems} selectedTab={selectedTab} />
-      </>
+      <ScListNFTS>
+        <div className="nft-slider-container">
+          <TfiArrowCircleLeft onClick={() => setListedCurrentPage(prev => Math.max(1, prev - 1))} />
+          <NFTShowcase NFTs={loading ? placeHolderItems : listedItems} loadItems={loadItems} selectedTab={selectedTab} loading={loading} />
+          <TfiArrowCircleRight onClick={() => setListedCurrentPage(prev => Math.min(Math.ceil(listedItemCount / 5), prev + 1))} />
+        </div>
+        <nav className="indicators">
+          <ul>
+            {[...Array(Math.ceil(listedItemCount / 5) + 1).keys()].slice(1).map(value => (
+              <li key={value}>
+                <button
+                  type="button"
+                  onClick={() => indicatorClickHandler(false, value)}
+                  className={`${listedCurrentPage === value ? 'current' : ''}`}
+                  aria-label={`Page ${value}`}
+                />
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <div className="nft-slider-container">
+          <TfiArrowCircleLeft onClick={() => setAuctionCurrentPage(prev => Math.max(1, prev - 1))} />
+          <NFTShowcase NFTs={loading ? placeHolderItems : auctionItems} loadItems={loadItems} selectedTab={selectedTab} loading={loading} />
+          <TfiArrowCircleRight onClick={() => setAuctionCurrentPage(prev => Math.min(Math.ceil(auctionItemCount / 5), prev + 1))} />
+        </div>
+        <nav className="indicators">
+          <ul>
+            {[...Array(Math.ceil(auctionItemCount / 5) + 1).keys()].slice(1).map(value => (
+              <li key={value}>
+                <button
+                  type="button"
+                  aria-label={`Page ${value}`}
+                  key={value}
+                  onClick={() => indicatorClickHandler(true, value)}
+                  className={`${auctionCurrentPage === value ? 'current' : ''}`}
+                />
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </ScListNFTS>
     );
   }
   return <NFTShowcase NFTs={marketplaceItems} loadItems={loadItems} selectedTab={selectedTab} />;

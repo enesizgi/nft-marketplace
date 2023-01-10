@@ -20,10 +20,10 @@ const ScNFTShowcase = styled.div`
   }
 `;
 
-const NFTShowcase = ({ NFTs, loadItems, selectedTab }) => (
+const NFTShowcase = ({ NFTs, loadItems, selectedTab, loading }) => (
   <ScNFTShowcase>
     {NFTs.map(item => (
-      <NFTCard key={`${item.url}-${Math.random()}`} item={item} loadItems={loadItems} selectedTab={selectedTab} />
+      <NFTCard key={`${item.url}-${Math.random()}`} item={item} loadItems={loadItems} selectedTab={selectedTab} loading={loading} />
     ))}
   </ScNFTShowcase>
 );

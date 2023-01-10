@@ -22,7 +22,7 @@ const ScAddressDisplay = styled.a.attrs(props => ({
 
 const AddressDisplay = ({ address, className, label }) => {
   const navigate = useNavigate();
-  const lowerAddress = address.toLowerCase();
+  const lowerAddress = address?.toLowerCase();
   const handleGoToAddress = e => {
     e.stopPropagation();
     navigate(`/user/${lowerAddress}`);

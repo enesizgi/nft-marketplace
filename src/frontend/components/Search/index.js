@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import Styled from 'styled-components';
+import styled from 'styled-components';
 import { FaSearch } from 'react-icons/fa';
 
-const ScSearchBar = Styled.div`
+const ScSearchBar = styled.div`
   .search-form {
     position: relative;
     width: 0; /* Start with a small width */
@@ -52,7 +52,7 @@ const ScSearchBar = Styled.div`
   .search-container {
     display: flex;
     align-items: center;
-    margin-right : auto;
+    margin-right: auto;
   }
 `;
 

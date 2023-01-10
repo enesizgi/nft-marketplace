@@ -28,6 +28,7 @@ module.exports = {
     'class-methods-use-this': 0,
     'react/prop-types': 0,
     'jsx-a11y/click-events-have-key-events': 0,
-    'no-noninteractive-element-interactions': 0
+    'no-noninteractive-element-interactions': 0,
+    'no-underscore-dangle': ['error', { allow: ['_hex'] }]
   }
 };
