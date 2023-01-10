@@ -9,6 +9,7 @@ import { loadNFT, setCurrentPath, setIsLoading } from './uiSlice';
 import { NFT_ACTIVITY_TYPES } from '../constants';
 import { getMarketplaceContractFn, getNFTContractFn } from '../components/utils';
 import { setNFT } from './nftSlice';
+import { initProfile } from './actionCreators';
 
 /* eslint-disable */
 const listenerMiddleware = createListenerMiddleware();
@@ -184,13 +185,18 @@ const handleInitNFTState = async (listenerApi, tokenID) => {
 const handlePathChanges = async (action, listenerApi) => {
   const pathName = window.location.pathname;
   const isInNFTPage = pathName.startsWith('/nft/');
-  // const isInProfilePage = pathName.startsWith('/profile/');
+  const isInProfilePage = pathName.startsWith('/user/');
 
   if (isInNFTPage) {
     const tokenID = pathName.split('/')[3];
     listenerApi.dispatch(setIsLoading(true));
     await handleInitNFTState(listenerApi, tokenID);
     listenerApi.dispatch(setIsLoading(false));
+  }
+  if (isInProfilePage) {
+    // Initialize profile again even for the same id to see the updates.
+    const pathId = pathName.split('/')[2];
+    listenerApi.dispatch(initProfile(pathId));
   }
 };
 
