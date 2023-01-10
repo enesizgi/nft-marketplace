@@ -9,6 +9,7 @@ import API from '../modules/api';
 import NFTShowcase from './NFTShowcase';
 import { getChainID, getNFTContract, getUserID } from '../store/selectors';
 import { JSON_RPC_PROVIDER } from '../constants';
+import LoadingSpinner from './LoadingSpinner';
 
 const OwnedPage = ({ profileID, selectedTab }) => {
   const [loading, setLoading] = useState(true);
@@ -134,11 +135,7 @@ const OwnedPage = ({ profileID, selectedTab }) => {
     await loadOwnedItems();
   }, []);
   if (loading) {
-    return (
-      <main style={{ padding: '1rem 0' }}>
-        <h2>Loading...</h2>
-      </main>
-    );
+    return <LoadingSpinner />;
   }
   return <NFTShowcase NFTs={ownedItems} loadItems={loadOwnedItems} selectedTab={selectedTab} />;
 };

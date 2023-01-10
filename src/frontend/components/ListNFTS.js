@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import API from '../modules/api';
 import NFTShowcase from './NFTShowcase';
 import { getMarketplaceContract, getNFTContract } from '../store/selectors';
+import LoadingSpinner from './LoadingSpinner';
 
 const ListNFTSPage = ({ profileID, selectedTab }) => {
   const [loading, setLoading] = useState(true);
@@ -82,11 +83,7 @@ const ListNFTSPage = ({ profileID, selectedTab }) => {
   }, [profileID]);
 
   if (loading) {
-    return (
-      <main style={{ padding: '1rem 0' }}>
-        <h2>Loading...</h2>
-      </main>
-    );
+    return <LoadingSpinner />;
   }
   return <NFTShowcase NFTs={listedItems} loadItems={loadListedItems} selectedTab={selectedTab} />;
 };
