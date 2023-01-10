@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { ReactComponent as DefaultProfilePhoto } from '../../assets/default-profile-photo.svg';
 import LogoutIcon from '../../assets/logout-icon.svg';
 import CreateIcon from '../../assets/add_circle_outline_white_24dp.svg';
-import { getUserID, getUserProfilePhoto } from '../../store/selectors';
+import { getUserId, getUserProfilePhoto } from '../../store/selectors';
 import { resetUser } from '../../store/userSlice';
 
 const ScAccountBox = styled.div`
@@ -99,7 +99,7 @@ const ScAccountBox = styled.div`
 const AccountBox = () => {
   const [isDropdownOpened, setDropdownOpened] = useState(false);
   const profilePhoto = useSelector(getUserProfilePhoto);
-  const userId = useSelector(getUserID);
+  const userId = useSelector(getUserId);
   const dispatch = useDispatch();
 
   const handleLogout = () => {

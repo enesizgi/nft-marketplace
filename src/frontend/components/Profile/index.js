@@ -3,19 +3,19 @@ import { useSelector } from 'react-redux';
 import UserNotFound from './UserNotFound';
 import ProfileHeader from './ProfileHeader';
 import ProfileContent from './ProfileContent';
-import { getProfileID } from '../../store/selectors';
+import { getProfileId } from '../../store/selectors';
 
 const Profile = () => {
-  const profileID = useSelector(getProfileID);
+  const profileId = useSelector(getProfileId);
 
-  if (!profileID) {
+  if (!profileId) {
     return <UserNotFound />;
   }
 
   return (
     <>
-      <ProfileHeader id={profileID} />
-      <ProfileContent id={profileID} />
+      <ProfileHeader id={profileId} />
+      <ProfileContent id={profileId} />
     </>
   );
 };

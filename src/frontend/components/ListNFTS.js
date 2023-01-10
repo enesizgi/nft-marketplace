@@ -5,7 +5,7 @@ import NFTShowcase from './NFTShowcase';
 import { getMarketplaceContract, getNFTContract } from '../store/selectors';
 import LoadingSpinner from './LoadingSpinner';
 
-const ListNFTSPage = ({ profileID, selectedTab }) => {
+const ListNFTSPage = ({ profileId, selectedTab }) => {
   const [loading, setLoading] = useState(true);
   const [listedItems, setListedItems] = useState([]);
   const marketplaceContract = useSelector(getMarketplaceContract);
@@ -23,7 +23,7 @@ const ListNFTSPage = ({ profileID, selectedTab }) => {
       auctionItemsIds.map(async indx => {
         const i = await marketplaceContract.auctionItems(indx);
         if (i.claimed) return null;
-        if (selectedTab !== 'Home' && i.seller.toLowerCase() !== profileID) return null;
+        if (selectedTab !== 'Home' && i.seller.toLowerCase() !== profileId) return null;
         // get uri url from nft contract
         const uri = await nftContract.tokenURI(i.tokenId);
         const cid = uri.split('ipfs://')[1];
@@ -51,7 +51,7 @@ const ListNFTSPage = ({ profileID, selectedTab }) => {
       offeredItemIds.map(async indx => {
         const i = await marketplaceContract.items(indx);
         if (i.sold) return null;
-        if (selectedTab !== 'Home' && i.seller.toLowerCase() !== profileID) return null;
+        if (selectedTab !== 'Home' && i.seller.toLowerCase() !== profileId) return null;
         // get uri url from nft contract
         const uri = await nftContract.tokenURI(i.tokenId);
         const cid = uri.split('ipfs://')[1];
@@ -78,7 +78,7 @@ const ListNFTSPage = ({ profileID, selectedTab }) => {
     const itemsFlatten = fulfilledItems.map(i => i.value).flat(1);
     setListedItems(itemsFlatten);
     setLoading(false);
-  }, [profileID]);
+  }, [profileId]);
 
   if (loading) {
     return <LoadingSpinner />;

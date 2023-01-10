@@ -3,11 +3,11 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { useSelector } from 'react-redux';
 import ScNFTCard from './ScNFTCard';
-import { getMarketplaceContract, getNFTContract, getUserID } from '../../store/selectors';
+import { getMarketplaceContract, getNFTContract, getUserId } from '../../store/selectors';
 import AddressDisplay from '../AddressDisplay';
 
 const NFTCard = ({ item, loadItems, selectedTab }) => {
-  const userID = useSelector(getUserID);
+  const userId = useSelector(getUserId);
   const marketplaceContract = useSelector(getMarketplaceContract);
   const nftContract = useSelector(getNFTContract);
 
@@ -25,7 +25,7 @@ const NFTCard = ({ item, loadItems, selectedTab }) => {
   };
 
   const sellMarketItem = async () => {
-    const isApproved = await nftContract.isApprovedForAll(userID, marketplaceContract.address);
+    const isApproved = await nftContract.isApprovedForAll(userId, marketplaceContract.address);
     if (!isApproved) {
       await (await nftContract.setApprovalForAll(marketplaceContract.address, true)).wait();
     }
@@ -39,23 +39,23 @@ const NFTCard = ({ item, loadItems, selectedTab }) => {
 
   const inProfilePage = location.pathname.includes('/user');
 
-  const profileID = inProfilePage && location.pathname.split('/')[2];
+  const profileId = inProfilePage && location.pathname.split('/')[2];
 
   const handleHoverCard = () => {
     switch (selectedTab) {
       case 'Listed':
-        if (profileID !== userID && item.auctionId === undefined) {
+        if (profileId !== userId && item.auctionId === undefined) {
           setShowBuyButton(true);
         }
         break;
       case 'Purchased':
-        if (profileID === userID) setShowSellButton(true);
+        if (profileId === userId) setShowSellButton(true);
         break;
       case 'Owned':
-        if (profileID === userID) setShowSellButton(true);
+        if (profileId === userId) setShowSellButton(true);
         break;
       case 'Home':
-        if (item.seller !== userID && item.auctionId === undefined) setShowBuyButton(true);
+        if (item.seller !== userId && item.auctionId === undefined) setShowBuyButton(true);
         break;
       default:
         break;

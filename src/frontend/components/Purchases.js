@@ -6,7 +6,7 @@ import NFTShowcase from './NFTShowcase';
 import { getMarketplaceContract, getNFTContract } from '../store/selectors';
 import LoadingSpinner from './LoadingSpinner';
 
-const PurchasesPage = ({ profileID, selectedTab }) => {
+const PurchasesPage = ({ profileId, selectedTab }) => {
   const [loading, setLoading] = useState(true);
   const [purchases, setPurchases] = useState([]);
   const nftContract = useSelector(getNFTContract);
@@ -14,9 +14,9 @@ const PurchasesPage = ({ profileID, selectedTab }) => {
 
   const loadPurchasedItems = async () => {
     // Fetch purchased items from marketplace by quering Offered events with the buyer set as the user
-    const boughtFilter = marketplaceContract.filters.Bought(null, null, null, null, null, profileID);
+    const boughtFilter = marketplaceContract.filters.Bought(null, null, null, null, null, profileId);
     const boughtResults = await marketplaceContract.queryFilter(boughtFilter);
-    const offeredFilter = marketplaceContract.filters.Offered(null, null, null, null, profileID);
+    const offeredFilter = marketplaceContract.filters.Offered(null, null, null, null, profileId);
     const offeredResults = await marketplaceContract.queryFilter(offeredFilter);
 
     const sortedEvents = [...boughtResults, ...offeredResults].sort((a, b) => b.blockNumber - a.blockNumber);

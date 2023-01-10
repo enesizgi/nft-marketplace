@@ -17,8 +17,8 @@ const NFTDetailActivity = () => {
           <th>From</th>
           <th>To</th>
         </tr>
-        {Object.entries(transactions).map(([transactionID, transaction]) => (
-          <tr className="nft-activity-content" key={transactionID}>
+        {Object.entries(transactions).map(([transactionId, transaction]) => (
+          <tr className="nft-activity-content" key={transactionId}>
             <td className="nft-activity-content-item">{transaction.type}</td>
             <td className="nft-activity-content-item">{transaction.price && `${transaction.price} ETH`}</td>
             <td className="nft-activity-content-item">

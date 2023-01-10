@@ -4,13 +4,13 @@ import styled from 'styled-components';
 import { ethers } from 'ethers';
 import {
   getFormattedPrice,
-  getItemID,
+  getItemId,
   getMarketplaceContract,
   getNFTContract,
   getNFTOwner,
   getNFTSeller,
-  getTokenID,
-  getUserID
+  getTokenId,
+  getUserId
 } from '../../store/selectors';
 import AuctionButton from '../AuctionButton';
 import { loadNFT } from '../../store/uiSlice';
@@ -82,10 +82,10 @@ const ScSaleButton = styled.div`
 const SaleButton = () => {
   const dispatch = useDispatch();
   const owner = useSelector(getNFTOwner);
-  const userID = useSelector(getUserID);
+  const userId = useSelector(getUserId);
   const seller = useSelector(getNFTSeller);
-  const tokenID = useSelector(getTokenID);
-  const itemID = useSelector(getItemID);
+  const tokenId = useSelector(getTokenId);
+  const itemId = useSelector(getItemId);
   const formattedPrice = useSelector(getFormattedPrice);
   const nftContract = useSelector(getNFTContract);
   const marketplaceContract = useSelector(getMarketplaceContract);
@@ -93,8 +93,8 @@ const SaleButton = () => {
   const [isAuctionSelected, setIsAuctionSelected] = useState(false);
   const [isSellSelected, setIsSellSelected] = useState(false);
   const [sellPrice, setSellPrice] = useState('');
-  const isOwner = owner && userID && owner.toLowerCase() === userID.toLowerCase();
-  const isSeller = seller && userID && seller.toLowerCase() === userID.toLowerCase();
+  const isOwner = owner && userId && owner.toLowerCase() === userId.toLowerCase();
+  const isSeller = seller && userId && seller.toLowerCase() === userId.toLowerCase();
 
   const handleSelectAuction = () => {
     setIsAuctionSelected(true);
@@ -107,22 +107,22 @@ const SaleButton = () => {
   };
 
   const handleSellNFT = async () => {
-    const isApproved = await nftContract.isApprovedForAll(userID, marketplaceContract.address);
+    const isApproved = await nftContract.isApprovedForAll(userId, marketplaceContract.address);
     if (!isApproved) {
       await (await nftContract.setApprovalForAll(marketplaceContract.address, true)).wait();
     }
     // add nft to marketplace
     const listingPrice = ethers.utils.parseEther(sellPrice.toString());
-    await (await marketplaceContract.makeItem(nftContract.address, tokenID, listingPrice)).wait();
+    await (await marketplaceContract.makeItem(nftContract.address, tokenId, listingPrice)).wait();
     dispatch(loadNFT());
   };
 
   const handleBuy = async () => {
-    await (await marketplaceContract.purchaseItem(itemID, { value: ethers.utils.parseEther(formattedPrice) })).wait();
+    await (await marketplaceContract.purchaseItem(itemId, { value: ethers.utils.parseEther(formattedPrice) })).wait();
     dispatch(loadNFT());
   };
 
-  if (!userID) {
+  if (!userId) {
     return null;
   }
 

@@ -12,19 +12,19 @@ export const getUI = state => state.ui;
 
 export const getNFT = state => state.nft;
 
-export const getUserID = createSelector(getUser, ({ id }) => id.toLowerCase());
+export const getUserId = createSelector(getUser, ({ id }) => id.toLowerCase());
 
 export const getUserSlug = createSelector(getUser, ({ slug }) => slug);
 
 export const getUsername = createSelector(getUser, ({ name }) => name);
 
-export const getChainID = createSelector(getMarketplace, ({ chainID }) => chainID);
+export const getChainId = createSelector(getMarketplace, ({ chainId }) => chainId);
 
-export const getDefaultChainID = createSelector(getMarketplace, ({ defaultChainID }) => defaultChainID);
+export const getDefaultChainId = createSelector(getMarketplace, ({ defaultChainId }) => defaultChainId);
 
-export const getMarketplaceContract = createSelector(getUserID, getChainID, getDefaultChainID, getMarketplaceContractFn);
+export const getMarketplaceContract = createSelector(getUserId, getChainId, getDefaultChainId, getMarketplaceContractFn);
 
-export const getNFTContract = createSelector(getUserID, getChainID, getDefaultChainID, getNFTContractFn);
+export const getNFTContract = createSelector(getUserId, getChainId, getDefaultChainId, getNFTContractFn);
 
 export const getIsLoadingContracts = createSelector(getMarketplace, ({ isLoadingContracts }) => isLoadingContracts);
 
@@ -32,7 +32,7 @@ export const getUserProfilePhoto = createSelector(getUser, ({ profilePhoto }) =>
 
 export const getUserCoverPhoto = createSelector(getUser, ({ coverPhoto }) => coverPhoto);
 
-export const getProfileID = createSelector(getProfile, ({ id }) => id);
+export const getProfileId = createSelector(getProfile, ({ id }) => id);
 
 export const getProfileName = createSelector(getProfile, ({ name }) => name);
 
@@ -42,7 +42,7 @@ export const getProfilePhoto = createSelector(getProfile, ({ profilePhoto }) => 
 
 export const getCoverPhoto = createSelector(getProfile, ({ coverPhoto }) => coverPhoto);
 
-export const getIsProfileOwner = createSelector([getUserID, getProfileID], (userID, profileID) => userID === profileID);
+export const getIsProfileOwner = createSelector([getUserId, getProfileId], (userId, profileId) => userId === profileId);
 
 export const getDeviceType = createSelector(getUI, ({ deviceType }) => deviceType);
 
@@ -72,7 +72,7 @@ export const getNFTDescription = createSelector(getNFTMetadata, ({ description }
 
 export const getNFTTransactions = createSelector(getNFT, ({ transactions }) => transactions);
 
-export const getTokenID = createSelector(getNFT, ({ tokenId }) => tokenId);
+export const getTokenId = createSelector(getNFT, ({ tokenId }) => tokenId);
 
 export const getPriceOfNFT = createSelector(getNFT, ({ price }) => price);
 
@@ -80,8 +80,8 @@ export const getTotalPriceOfNFT = createSelector(getNFT, ({ totalPrice }) => tot
 
 export const getFormattedPrice = createSelector(getNFT, ({ totalPrice }) => (totalPrice ? ethers.utils.formatEther(totalPrice.toString()) : ''));
 
-export const getItemID = createSelector(getNFT, ({ itemId }) => itemId);
+export const getItemId = createSelector(getNFT, ({ itemId }) => itemId);
 
-export const getAuctionID = createSelector(getNFT, ({ auctionId }) => auctionId);
+export const getAuctionId = createSelector(getNFT, ({ auctionId }) => auctionId);
 
 export const getTimeToEnd = createSelector(getNFT, ({ timeToEnd }) => timeToEnd);

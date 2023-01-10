@@ -7,13 +7,13 @@ import { DEVICE_TYPES } from '../../constants';
 import { ReactComponent as MenuIcon } from '../../assets/menu-icon.svg';
 import { classNames } from '../../utils';
 import { initMarketplace } from '../../store/actionCreators';
-import { getDeviceType, getIsLeftPanelOpened, getIsLoadingContracts, getUserID } from '../../store/selectors';
+import { getDeviceType, getIsLeftPanelOpened, getIsLoadingContracts, getUserId } from '../../store/selectors';
 import { setLeftPanelOpened } from '../../store/uiSlice';
 import Search from '../../Search';
 
 const NavigationBar = () => {
   const dispatch = useDispatch();
-  const userID = useSelector(getUserID);
+  const userId = useSelector(getUserId);
   const deviceType = useSelector(getDeviceType);
   const isLeftPanelOpened = useSelector(getIsLeftPanelOpened);
   const isLoadingContracts = useSelector(getIsLoadingContracts);
@@ -37,7 +37,7 @@ const NavigationBar = () => {
           isMobile
         })}
       >
-        NFT Marketplace
+        NFTAO
       </Link>
       {!isDesktop && (
         <button
@@ -56,7 +56,7 @@ const NavigationBar = () => {
       )}
       <Search />
       <div className="navigationItem accountBox">
-        {isLoadingContracts || !userID ? (
+        {isLoadingContracts || !userId ? (
           <button type="button" onClick={handleInitMarketplace}>
             Connect Wallet
           </button>

@@ -2,8 +2,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  chainID: null,
-  defaultChainID: '0x5',
+  chainId: null,
+  defaultChainId: '0x5',
   isLoadingContracts: true
 };
 
@@ -16,8 +16,8 @@ const marketplaceSlice = createSlice({
       // eslint-disable-next-line no-return-assign
       keys.forEach(key => (state[key] = action.payload[key]));
     },
-    setChainID: (state, action) => {
-      state.chainID = action.payload;
+    setChainId: (state, action) => {
+      state.chainId = action.payload;
     },
     setIsLoadingContracts: (state, action) => {
       state.isLoadingContracts = action.payload;
@@ -26,4 +26,4 @@ const marketplaceSlice = createSlice({
 });
 
 export default marketplaceSlice.reducer;
-export const { setMarketplace, setChainID, setIsLoadingContracts } = marketplaceSlice.actions;
+export const { setMarketplace, setChainId, setIsLoadingContracts } = marketplaceSlice.actions;

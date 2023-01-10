@@ -58,7 +58,7 @@ class API {
 
   getUsername = async id => this.getRequest({ endpoint: '/user/name', qs: { id } });
 
-  getUserIDFromSlug = async slug => this.getRequest({ endpoint: '/user/id', qs: { slug } });
+  getUserIdFromSlug = async slug => this.getRequest({ endpoint: '/user/id', qs: { slug } });
 
   getProfilePhoto = async id => this.getRequest({ endpoint: '/user/profile-photo', qs: { id } });
 

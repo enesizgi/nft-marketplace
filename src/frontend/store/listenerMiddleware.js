@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import { setUser } from './userSlice';
 import API from '../modules/api';
 import { generateSignatureData } from '../utils';
-import { setChainID, setIsLoadingContracts } from './marketplaceSlice';
+import { setChainId, setIsLoadingContracts } from './marketplaceSlice';
 import { setProfile } from './profileSlice';
 import { loadNFT, setCurrentPath, setIsLoading } from './uiSlice';
 import { NFT_ACTIVITY_TYPES } from '../constants';
@@ -38,7 +38,7 @@ const setAccounts = async () => {
   return accounts[0];
 };
 
-const setChainId = async () => {
+const setChainIdOfAccount = async () => {
   const chainId = await window.ethereum.request({ method: 'eth_chainId' });
   sessionStorage.setItem('chainId', chainId);
   return chainId;
@@ -49,30 +49,30 @@ const handleInitMarketplace = async (action, listenerApi) => {
   const sessionChainId = sessionStorage.getItem('chainId');
 
   const id = sessionAccount || (await setAccounts());
-  const chainId = sessionChainId || (await setChainId());
+  const chainIdOfAccount = sessionChainId || (await setChainIdOfAccount());
 
-  listenerApi.dispatch(setChainID(chainId));
+  listenerApi.dispatch(setChainId(chainIdOfAccount));
 
   await userLoginFlow(id, listenerApi);
 
-  window.ethereum.on('chainChanged', chainID => {
-    sessionStorage.setItem('chainId', chainID);
-    listenerApi.dispatch(setChainID(chainID));
+  window.ethereum.on('chainChanged', chainId => {
+    sessionStorage.setItem('chainId', chainId);
+    listenerApi.dispatch(setChainId(chainId));
   });
 
   window.ethereum.on('accountsChanged', async accounts => {
-    const newAccountID = accounts[0];
+    const newAccountId = accounts[0];
     sessionStorage.setItem('account', accounts[0]);
-    await userLoginFlow(newAccountID, listenerApi);
+    await userLoginFlow(newAccountId, listenerApi);
     await handleInitMarketplace(action, listenerApi);
   });
 
   const {
-    user: { id: userID },
-    marketplace: { chainID, defaultChainID }
+    user: { id: userId },
+    marketplace: { chainId, defaultChainId }
   } = listenerApi.getState();
 
-  const marketplaceContract = await getMarketplaceContractFn(userID, chainID, defaultChainID);
+  const marketplaceContract = await getMarketplaceContractFn(userId, chainId, defaultChainId);
   const provider = new ethers.providers.Web3Provider(window.ethereum);
 
   const filter = {
@@ -97,29 +97,29 @@ const handleInitProfile = async (action, listenerApi) => {
   listenerApi.dispatch(setProfile({ ...response, id: response.id.toLowerCase() }));
 };
 
-const handleInitNFTState = async (listenerApi, tokenID) => {
+const handleInitNFTState = async (listenerApi, tokenId) => {
   const {
-    user: { id: userID },
-    marketplace: { chainID, defaultChainID },
-    nft: { metadata: currentMetadata, tokenId: currentTokenID }
+    user: { id: userId },
+    marketplace: { chainId, defaultChainId },
+    nft: { metadata: currentMetadata, tokenId: currentTokenId }
   } = listenerApi.getState();
 
-  const marketplaceContract = await getMarketplaceContractFn(userID, chainID, defaultChainID);
-  const nftContract = await getNFTContractFn(userID, chainID, defaultChainID);
-  const _nftOwner = await nftContract.ownerOf(tokenID);
+  const marketplaceContract = await getMarketplaceContractFn(userId, chainId, defaultChainId);
+  const nftContract = await getNFTContractFn(userId, chainId, defaultChainId);
+  const _nftOwner = await nftContract.ownerOf(tokenId);
   const owner = _nftOwner.toLowerCase();
-  const uri = await nftContract.tokenURI(tokenID);
+  const uri = await nftContract.tokenURI(tokenId);
   const cid = uri.split('ipfs://')[1];
-  const metadata = currentMetadata && tokenID === currentTokenID ? currentMetadata : await API.getFromIPFS(cid);
+  const metadata = currentMetadata && tokenId === currentTokenId ? currentMetadata : await API.getFromIPFS(cid);
 
   // TODO: Cache mechanism for transactions maybe?
-  const transferFilter = nftContract.filters.Transfer(ethers.constants.AddressZero, null, tokenID);
+  const transferFilter = nftContract.filters.Transfer(ethers.constants.AddressZero, null, tokenId);
   const transferQuery = nftContract.queryFilter(transferFilter);
 
-  const boughtFilter = marketplaceContract.filters.Bought(null, null, tokenID, null, null, null);
-  const offeredFilter = marketplaceContract.filters.Offered(null, null, tokenID, null, null);
-  const auctionFilter = marketplaceContract.filters.AuctionStarted(null, null, tokenID, null, null, null);
-  const auctionEndedFilter = marketplaceContract.filters.AuctionEnded(null, null, tokenID, null, null, null);
+  const boughtFilter = marketplaceContract.filters.Bought(null, null, tokenId, null, null, null);
+  const offeredFilter = marketplaceContract.filters.Offered(null, null, tokenId, null, null);
+  const auctionFilter = marketplaceContract.filters.AuctionStarted(null, null, tokenId, null, null, null);
+  const auctionEndedFilter = marketplaceContract.filters.AuctionEnded(null, null, tokenId, null, null, null);
   const boughtQuery = marketplaceContract.queryFilter(boughtFilter);
   const offeredQuery = marketplaceContract.queryFilter(offeredFilter);
   const auctionQuery = marketplaceContract.queryFilter(auctionFilter);
@@ -155,7 +155,7 @@ const handleInitNFTState = async (listenerApi, tokenID) => {
   // TODO: handle if data comes from ipfs
   const it = {
     metadata,
-    tokenId: tokenID,
+    tokenId: tokenId,
     ...(itemId ? { itemId: parseInt(itemId._hex, 16) } : {}),
     ...(i ?? {}),
     ...(totalPrice ? { totalPrice } : {}),
@@ -188,9 +188,9 @@ const handlePathChanges = async (action, listenerApi) => {
   const isInProfilePage = pathName.startsWith('/user/');
 
   if (isInNFTPage) {
-    const tokenID = pathName.split('/')[3];
+    const tokenId = pathName.split('/')[3];
     listenerApi.dispatch(setIsLoading(true));
-    await handleInitNFTState(listenerApi, tokenID);
+    await handleInitNFTState(listenerApi, tokenId);
     listenerApi.dispatch(setIsLoading(false));
   }
   if (isInProfilePage) {

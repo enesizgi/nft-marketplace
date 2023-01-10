@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { ethers } from 'ethers';
 import API from '../modules/api';
 import './MintNFTS.css';
-import { getMarketplaceContract, getNFTContract, getUserID } from '../store/selectors';
+import { getMarketplaceContract, getNFTContract, getUserId } from '../store/selectors';
 
 const MintNFTSPage = () => {
   const [image, setImage] = useState(''); // eslint-disable-line
@@ -12,7 +12,7 @@ const MintNFTSPage = () => {
   const [description, setDescription] = useState('');
   const [file, setFile] = useState(null);
 
-  const userID = useSelector(getUserID);
+  const userId = useSelector(getUserId);
   const marketplaceContract = useSelector(getMarketplaceContract);
   const nftContract = useSelector(getNFTContract);
 
@@ -35,7 +35,7 @@ const MintNFTSPage = () => {
     const id = await mintNFT(result);
 
     // approve marketplace to spend nft
-    const isApproved = await nftContract.isApprovedForAll(userID, marketplaceContract.address);
+    const isApproved = await nftContract.isApprovedForAll(userId, marketplaceContract.address);
     if (!isApproved) {
       await (await nftContract.setApprovalForAll(marketplaceContract.address, true)).wait();
     }

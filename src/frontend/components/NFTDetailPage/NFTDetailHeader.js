@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { getNFTName, getNFTOwner, getNFTSeller, getNFTURL, getUserID } from '../../store/selectors';
+import { getNFTName, getNFTOwner, getNFTSeller, getNFTURL, getUserId } from '../../store/selectors';
 import AddressDisplay from '../AddressDisplay';
 import ShareDropdown from './ShareDropdown';
 import './ShareDropdown.css';
@@ -47,12 +47,12 @@ const ScNFTDetailHeader = styled.div`
 `;
 
 const NFTDetailHeader = () => {
-  const userID = useSelector(getUserID);
+  const userId = useSelector(getUserId);
   const itemName = useSelector(getNFTName);
   const owner = useSelector(getNFTOwner);
   const seller = useSelector(getNFTSeller);
   const url = useSelector(getNFTURL);
-  const isOwnerPage = compare(owner, userID);
+  const isOwnerPage = compare(owner, userId);
 
   return (
     <ScNFTDetailHeader>

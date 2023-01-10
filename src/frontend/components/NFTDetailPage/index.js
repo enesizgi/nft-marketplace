@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { getDeviceType, getIsListed, getIsOnAuction, getNFTOwner, getUserID } from '../../store/selectors';
+import { getDeviceType, getIsListed, getIsOnAuction, getNFTOwner, getUserId } from '../../store/selectors';
 import AuctionButton from '../AuctionButton';
 import NFTDetailBox from './NFTDetailBox';
 import NFTDetailImage from './NFTDetailImage';
@@ -9,16 +9,17 @@ import NFTDetailActivity from './NFTDetailActivity';
 import { DEVICE_TYPES } from '../../constants';
 import ScNFTDetailPage from './ScNFTDetailPage';
 import SaleButton from './SaleButton';
+import LoadingSpinner from '../LoadingSpinner';
 
 const NFTDetailPage = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const deviceType = useSelector(getDeviceType);
-  const userID = useSelector(getUserID);
+  const userId = useSelector(getUserId);
   const owner = useSelector(getNFTOwner);
   const isListed = useSelector(getIsListed);
   const isOnAuction = useSelector(getIsOnAuction);
-  const isOwner = owner?.toLowerCase() === userID.toLowerCase();
+  const isOwner = owner?.toLowerCase() === userId.toLowerCase();
 
   useEffect(() => {
     if (owner) {
@@ -27,11 +28,7 @@ const NFTDetailPage = () => {
   }, [owner]);
 
   if (isLoading) {
-    return (
-      <main style={{ padding: '1rem 0' }}>
-        <h2>Loading...</h2>
-      </main>
-    );
+    return <LoadingSpinner />;
   }
 
   return (

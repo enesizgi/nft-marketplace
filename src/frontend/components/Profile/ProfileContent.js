@@ -78,9 +78,9 @@ const ProfileContent = ({ id }) => {
           </button>
         ))}
       </div>
-      {selectedTab === 'Listed' && <ListNFTSPage profileID={id} selectedTab={selectedTab} />}
-      {selectedTab === 'Purchased' && <PurchasesPage profileID={id} selectedTab={selectedTab} />}
-      {selectedTab === 'Owned' && <OwnedPage profileID={id} selectedTab={selectedTab} />}
+      {selectedTab === 'Listed' && <ListNFTSPage profileId={id} selectedTab={selectedTab} />}
+      {selectedTab === 'Purchased' && <PurchasesPage profileId={id} selectedTab={selectedTab} />}
+      {selectedTab === 'Owned' && <OwnedPage profileId={id} selectedTab={selectedTab} />}
     </ScProfileContent>
   );
 };
