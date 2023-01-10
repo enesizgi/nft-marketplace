@@ -79,6 +79,7 @@
 
 .navigationItem.menu {
   order: -1;
+  flex-shrink: 0;
 }
 
 .menu-icon {

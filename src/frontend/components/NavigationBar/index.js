@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 // TODO @Enes: Remove all eslint disables
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import './NavigationBar.css';
 import AccountBox from './AccountBox';
@@ -13,18 +13,8 @@ import { getDeviceType, getIsLeftPanelOpened, getIsLoadingContracts, getUserID }
 import { setLeftPanelOpened } from '../../store/uiSlice';
 import Search from '../../Search';
 
-/* eslint-disable react/button-has-type */
-// TODO @Enes: Remove above eslint disable
-
-/* eslint-disable jsx-a11y/no-static-element-interactions,jsx-a11y/click-events-have-key-events */
-// TODO @Emre: Remove above eslint disable
-
-const pages = [{ path: '/', name: 'Home' }];
-
 const NavigationBar = () => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
-
   const userID = useSelector(getUserID);
   const deviceType = useSelector(getDeviceType);
   const isLeftPanelOpened = useSelector(getIsLeftPanelOpened);
@@ -39,7 +29,8 @@ const NavigationBar = () => {
 
   return (
     <div className="navigationItemContainer">
-      <div
+      <Link
+        to="/"
         className={classNames({
           navigationItem: true,
           logoPlaceHolder: true,
@@ -49,27 +40,10 @@ const NavigationBar = () => {
         })}
       >
         NFT Marketplace
-      </div>
-      {isDesktop ? (
-        <>
-          {pages.map(page => (
-            <button
-              key={page.path}
-              className={classNames({
-                navigationItem: true,
-                isDesktop,
-                isTablet,
-                isMobile
-              })}
-              type="button"
-              onClick={() => navigate(page.path)}
-            >
-              {page.name}
-            </button>
-          ))}
-        </>
-      ) : (
-        <div
+      </Link>
+      {!isDesktop && (
+        <button
+          type="button"
           className={classNames({
             navigationItem: true,
             menu: true,
@@ -80,11 +54,17 @@ const NavigationBar = () => {
           onClick={toggleLeftPanel}
         >
           <MenuIcon className="navigation-item menu-icon" alt="menuIcon" />
-        </div>
+        </button>
       )}
       <Search />
       <div className="navigationItem accountBox">
-        {isLoadingContracts || !userID ? <button onClick={handleInitMarketplace}>Connect Wallet</button> : <AccountBox />}
+        {isLoadingContracts || !userID ? (
+          <button type="button" onClick={handleInitMarketplace}>
+            Connect Wallet
+          </button>
+        ) : (
+          <AccountBox />
+        )}
       </div>
     </div>
   );
