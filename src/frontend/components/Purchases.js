@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-// TODO @Enes: Remove all eslint disables
 import React, { useEffect, useState } from 'react';
 import sortedUniqBy from 'lodash/sortedUniqBy';
 import { useSelector } from 'react-redux';
@@ -15,7 +13,6 @@ const PurchasesPage = ({ profileID, selectedTab }) => {
   const marketplaceContract = useSelector(getMarketplaceContract);
 
   const loadPurchasedItems = async () => {
-    // eslint-disable-next-line max-len
     // Fetch purchased items from marketplace by quering Offered events with the buyer set as the user
     const boughtFilter = marketplaceContract.filters.Bought(null, null, null, null, null, profileID);
     const boughtResults = await marketplaceContract.queryFilter(boughtFilter);

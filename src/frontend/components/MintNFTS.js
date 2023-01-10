@@ -1,6 +1,3 @@
-/* eslint-disable react/prop-types */
-
-// TODO @Enes: Remove this eslint disable
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ethers } from 'ethers';

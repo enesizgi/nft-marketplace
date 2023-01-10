@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-// TODO @Enes: Remove all eslint disables
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';

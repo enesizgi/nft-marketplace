@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-// TODO @Enes: Remove all eslint disables
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import API from '../modules/api';

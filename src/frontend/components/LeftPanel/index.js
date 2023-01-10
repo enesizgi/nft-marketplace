@@ -49,8 +49,6 @@ const ScLeftPanel = styled.div`
   }
 `;
 
-/* eslint-disable jsx-a11y/no-static-element-interactions,jsx-a11y/click-events-have-key-events */
-// TODO @Emre: Remove above eslint disable
 const LeftPanel = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -79,9 +77,9 @@ const LeftPanel = () => {
     <ScLeftPanel ref={nodeRef} isLeftPanelOpened={isLeftPanelOpened}>
       <CloseIcon className="close-icon" onClick={toggleLeftPanel} />
       {Object.values(PAGE_LINKS).map(pageLink => (
-        <div className="pageLink" key={pageLink} onClick={() => handleNavigateToPage(pageLink)}>
+        <button type="button" className="pageLink" key={pageLink} onClick={() => handleNavigateToPage(pageLink)}>
           <p>{PAGE_NAMES[pageLink]}</p>
-        </div>
+        </button>
       ))}
     </ScLeftPanel>
   );
