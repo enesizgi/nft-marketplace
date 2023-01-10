@@ -119,11 +119,11 @@ const AccountBox = () => {
       </button>
       {isDropdownOpened && (
         <div className="dropdown-content">
-          <Link to={`/user/${userId}`} className="dropdown-content-item">
+          <Link to={`/user/${userId}`} className="dropdown-content-item" onClick={() => setDropdownOpened(!isDropdownOpened)}>
             <DefaultProfilePhoto className="dropdown-content-item-icon" />
             Profile
           </Link>
-          <Link to="/mint-nfts" className="dropdown-content-item">
+          <Link to="/mint-nfts" className="dropdown-content-item" onClick={() => setDropdownOpened(!isDropdownOpened)}>
             <img alt="create" src={CreateIcon} className="dropdown-content-item-icon" />
             Create
           </Link>
