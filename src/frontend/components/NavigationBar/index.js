@@ -11,6 +11,7 @@ import { classNames } from '../../utils';
 import { initMarketplace } from '../../store/actionCreators';
 import { getDeviceType, getIsLeftPanelOpened, getIsLoadingContracts, getUserID } from '../../store/selectors';
 import { setLeftPanelOpened } from '../../store/uiSlice';
+import Search from '../../Search';
 
 /* eslint-disable react/button-has-type */
 // TODO @Enes: Remove above eslint disable
@@ -81,6 +82,7 @@ const NavigationBar = () => {
           <MenuIcon className="navigation-item menu-icon" alt="menuIcon" />
         </div>
       )}
+      <Search />
       <div className="navigationItem accountBox">
         {isLoadingContracts || !userID ? (
           <button onClick={handleInitMarketplace}>Connect Wallet</button>
