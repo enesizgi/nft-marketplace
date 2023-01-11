@@ -9,13 +9,9 @@ module.exports = {
       files: ['src/frontend/*.js', 'index.js']
     }
   ],
-  parser: '@babel/eslint-parser',
   parserOptions: {
     ecmaVersion: 'latest',
-    sourceType: 'module',
-    babelOptions: {
-      presets: ['@babel/preset-react']
-    }
+    sourceType: 'module'
   },
   plugins: ['react'],
   rules: {

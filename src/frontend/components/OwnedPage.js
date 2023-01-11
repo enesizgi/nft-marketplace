@@ -50,7 +50,7 @@ const OwnedPage = ({ profileId, selectedTab }) => {
     return new ethers.Contract(address, abi, provider);
   };
   const loadChainNFTs = async () => {
-    const ETHERSCAN_API_KEY = process.env.REACT_APP_ETHERSCAN_API_KEY;
+    const ETHERSCAN_API_KEY = import.meta.env.VITE_ETHERSCAN_API_KEY;
     if (!ETHERSCAN_API_KEY) return;
     const network = 'goerli';
 
