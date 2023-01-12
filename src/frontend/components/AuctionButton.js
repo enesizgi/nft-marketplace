@@ -58,6 +58,25 @@ const ScAuctionButton = styled.div`
   .address:hover {
     font-weight: bold;
   }
+
+  // TODO @Enes: Check these two classes later.
+  .sell-button {
+    width: 30%;
+    @media screen and (max-width: 768px) {
+      width: 100%;
+    }
+    font-size: 24px;
+    background: var(--blue);
+    color: #fff;
+    border: 0;
+    border-radius: 10px;
+    padding: 10px;
+    cursor: pointer;
+  }
+
+  .buy {
+    margin: 20px 0;
+  }
 `;
 
 const AuctionButton = () => {
@@ -111,6 +130,11 @@ const AuctionButton = () => {
     navigate(`/user/${id}`);
   };
 
+  const handleCancelAuction = async () => {
+    await (await marketplaceContract.cancelAuction(auctionId)).wait();
+    dispatch(loadNFT());
+  };
+
   if (!userId) {
     return null;
   }
@@ -140,6 +164,11 @@ const AuctionButton = () => {
             {winner.toLowerCase() === userId ? 'You' : winner}
           </button>
         </div>
+      )}
+      {auctionId && !isAuctionOver && seller.toLowerCase() === userId && (
+        <button type="button" className="sell-button buy" onClick={handleCancelAuction}>
+          Cancel
+        </button>
       )}
       {!auctionId && owner === userId && (
         <>

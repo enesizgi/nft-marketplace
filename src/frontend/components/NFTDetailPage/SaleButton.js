@@ -122,6 +122,11 @@ const SaleButton = () => {
     dispatch(loadNFT());
   };
 
+  const handleCancel = async () => {
+    await (await marketplaceContract.cancelOffered(itemId)).wait();
+    dispatch(loadNFT());
+  };
+
   if (!userId) {
     return null;
   }
@@ -156,7 +161,7 @@ const SaleButton = () => {
       {!isOwner && (
         <div className="item">
           <div className="text1">{formattedPrice} ETH</div>
-          <button type="button" className="sell-button buy" onClick={handleBuy}>
+          <button type="button" className="sell-button buy" onClick={isSeller ? handleCancel : handleBuy}>
             {isSeller ? 'Cancel' : 'Buy'}
           </button>
         </div>
