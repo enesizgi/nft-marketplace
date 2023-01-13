@@ -1,9 +1,11 @@
-require('@nomicfoundation/hardhat-toolbox'); // eslint-disable-line import/no-extraneous-dependencies
+require('@nomicfoundation/hardhat-toolbox');
+require('@nomiclabs/hardhat-etherscan');
+
 const dotenv = require('dotenv');
 
 dotenv.config();
 
-const { ALCHEMY_API_KEY, GOERLI_PRIVATE_KEY, DISABLE_AUTOMINING } = process.env;
+const { ALCHEMY_API_KEY, GOERLI_PRIVATE_KEY, DISABLE_AUTOMINING, VITE_ETHERSCAN_API_KEY } = process.env;
 
 module.exports = {
   solidity: '0.8.4',
@@ -29,5 +31,12 @@ module.exports = {
         }
       }
     })
-  }
+  },
+  ...(VITE_ETHERSCAN_API_KEY && {
+    etherscan: {
+      apiKey: {
+        goerli: VITE_ETHERSCAN_API_KEY
+      }
+    }
+  })
 };
