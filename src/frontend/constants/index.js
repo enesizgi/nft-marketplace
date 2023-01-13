@@ -7,6 +7,12 @@ import MarketplaceAbiGoerli from '../contractsData/goerli/Marketplace.json';
 import NFTAddressGoerli from '../contractsData/goerli/NFT-address.json';
 import NFTAbiGoerli from '../contractsData/goerli/NFT.json';
 
+export const theme = {
+  primary: '#4628ff',
+  blue: '#0089a8',
+  buttonBackground: '#23252a'
+};
+
 export const DEVICE_TYPES = {
   MOBILE: 'mobile',
   TABLET: 'tablet',

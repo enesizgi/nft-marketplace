@@ -28,7 +28,7 @@ const ScSaleButton = styled.div`
     }
     margin-right: 10px;
     font-size: 24px;
-    background: var(--blue);
+    background: ${({ theme }) => theme.blue};
     color: #fff;
     border: 0;
     border-radius: 10px;
@@ -40,13 +40,13 @@ const ScSaleButton = styled.div`
     margin-bottom: 20px;
     display: flex;
     align-items: end;
-    border: 3px dashed var(--blue);
+    border: 3px dashed ${({ theme }) => theme.blue};
     border-radius: 16px;
     padding: 16px;
     > button {
       margin-left: 20px;
       height: 40px;
-      background: var(--blue);
+      background: ${({ theme }) => theme.blue};
       width: 100px;
       font-size: 18px;
       font-weight: 600;

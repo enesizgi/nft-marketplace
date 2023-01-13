@@ -19,7 +19,7 @@ import { loadNFT } from '../store/uiSlice';
 
 const ScAuctionButton = styled.div`
   margin-bottom: 20px;
-  border: 3px dashed var(--blue);
+  border: 3px dashed ${({ theme }) => theme.blue};
   border-radius: 16px;
   padding: 16px;
 
@@ -29,7 +29,7 @@ const ScAuctionButton = styled.div`
 
   .nftActionButton {
     background: none;
-    border: 2px solid var(--blue);
+    border: 2px solid ${({ theme }) => theme.blue};
     cursor: pointer;
     padding: 8px 16px;
     font-size: 16px;
@@ -37,7 +37,7 @@ const ScAuctionButton = styled.div`
   }
 
   .nftActionButton:hover {
-    background: var(--blue);
+    background: ${({ theme }) => theme.blue};
     color: white;
   }
 
@@ -52,7 +52,7 @@ const ScAuctionButton = styled.div`
     cursor: pointer;
     padding-left: 8px;
     font-size: 16px;
-    color: var(--blue);
+    color: ${({ theme }) => theme.blue};
   }
 
   .address:hover {
@@ -66,7 +66,7 @@ const ScAuctionButton = styled.div`
       width: 100%;
     }
     font-size: 24px;
-    background: var(--blue);
+    background: ${({ theme }) => theme.blue};
     color: #fff;
     border: 0;
     border-radius: 10px;

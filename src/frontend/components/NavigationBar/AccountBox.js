@@ -7,8 +7,10 @@ import LogoutIcon from '../../assets/logout-icon.svg';
 import CreateIcon from '../../assets/add_circle_outline_white_24dp.svg';
 import { getUserId, getUserProfilePhoto } from '../../store/selectors';
 import { resetUser } from '../../store/userSlice';
+import Dropdown from '../Dropdown';
 
 const ScAccountBox = styled.div`
+  width: 100%;
   position: relative;
   z-index: 100;
   height: 100%;
@@ -26,12 +28,20 @@ const ScAccountBox = styled.div`
 
     &-content {
       display: inline-block;
-      width: 100%;
       height: 100%;
       box-sizing: border-box;
       border: 2px solid #0089a8;
       border-radius: 100%;
       position: relative;
+      transform: translateX(40px);
+
+      @media screen and (max-width: 768px) {
+        transform: translateX(20px);
+      }
+
+      @media screen and (max-width: 480px) {
+        transform: translateX(10px);
+      }
 
       &::after {
         ${({ isDropdownOpened }) => (!isDropdownOpened ? 'display: none;' : '')}
@@ -42,55 +52,7 @@ const ScAccountBox = styled.div`
         content: ' ';
         width: 10px;
         height: 10px;
-        background: var(--blue);
-      }
-    }
-  }
-
-  &:hover .dropdown-content {
-    display: flex;
-  }
-
-  .dropdown-content {
-    width: 250px;
-    position: relative;
-    flex-direction: column;
-    transform: translateX(-170px);
-    border: 2px solid var(--blue);
-    border-radius: 10px;
-    overflow: hidden;
-
-    @media screen and (max-width: 480px) {
-      width: 150px;
-      transform: translateX(-80px);
-    }
-
-    &-item {
-      width: 100%;
-      padding: 8px;
-      z-index: 1;
-      display: flex;
-      background-color: var(--button-background);
-      font-size: 20px;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      transition: all 0.2s ease;
-      text-decoration: none;
-
-      &:visited {
-        color: #fff;
-      }
-
-      &:hover {
-        background-color: var(--blue);
-      }
-
-      &-icon {
-        width: 32px;
-        height: 32px;
-        padding-right: 8px;
-        fill: #fff;
+        background: ${({ theme }) => theme.blue};
       }
     }
   }
@@ -118,7 +80,7 @@ const AccountBox = () => {
         )}
       </button>
       {isDropdownOpened && (
-        <div className="dropdown-content">
+        <Dropdown>
           <Link to={`/user/${userId}`} className="dropdown-content-item" onClick={() => setDropdownOpened(!isDropdownOpened)}>
             <DefaultProfilePhoto className="dropdown-content-item-icon" />
             Profile
@@ -131,7 +93,7 @@ const AccountBox = () => {
             <img alt="logout" src={LogoutIcon} className="dropdown-content-item-icon" />
             Logout
           </button>
-        </div>
+        </Dropdown>
       )}
     </ScAccountBox>
   );

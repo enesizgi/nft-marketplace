@@ -5,7 +5,7 @@ import styled from 'styled-components';
 const ScAddressDisplay = styled.a.attrs(props => ({
   className: props.className
 }))`
-  color: var(--blue);
+  color: ${({ theme }) => theme.blue};
   display: inline-block;
   max-width: 100%;
   vertical-align: middle;

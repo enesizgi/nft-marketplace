@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ethers } from 'ethers';
-import API from '../modules/api';
-import './MintNFTS.css';
-import { getMarketplaceContract, getNFTContract, getUserId } from '../store/selectors';
+import API from '../../modules/api';
+import { getMarketplaceContract, getNFTContract, getUserId } from '../../store/selectors';
+import ScMintNFTSPage from './ScMintNFTSPage';
 
 const MintNFTSPage = () => {
   const [image, setImage] = useState(''); // eslint-disable-line
@@ -66,7 +66,7 @@ const MintNFTSPage = () => {
   };
 
   return (
-    <div className="mintContainer">
+    <ScMintNFTSPage className="mintContainer">
       <label htmlFor="images" className="drop-container">
         <span className="drop-title">Upload your NFT</span>
         <input type="file" id="images" name="file" onChange={uploadToIPFS} accept="image/*" required />
@@ -87,15 +87,15 @@ const MintNFTSPage = () => {
         </div>
       </div>
       <div className="buttonContainer">
-        <button type="button" className="button-37" onClick={createNFT(false)}>
+        <button type="button" onClick={createNFT(false)}>
           Mint NFT
         </button>
-        <button type="button" className="button-37 isGreen" onClick={createNFT(true)}>
+        <button type="button" className="isGreen" onClick={createNFT(true)}>
           Mint and List
         </button>
       </div>
       {image && <img src={image.url} alt="nft-input" width="300px" />}
-    </div>
+    </ScMintNFTSPage>
   );
 };
 

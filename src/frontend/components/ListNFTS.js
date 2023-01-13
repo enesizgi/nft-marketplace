@@ -23,7 +23,7 @@ const ScListNFTSPage = styled.div`
     svg {
       height: 100%;
       width: 3%;
-      color: var(--blue);
+      color: ${({ theme }) => theme.blue};
       opacity: 0.5;
       transition: all 0.2s ease-in-out;
     }
@@ -44,7 +44,7 @@ const ScListNFTSPage = styled.div`
     }
 
     nav.indicators ul li button.current {
-      background-color: var(--blue);
+      background-color: ${({ theme }) => theme.blue};
     }
 
     nav.indicators ul li button {

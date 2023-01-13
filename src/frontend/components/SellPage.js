@@ -44,7 +44,7 @@ const ScSellPage = styled.div`
     > button {
       margin-left: 20px;
       height: 40px;
-      background: var(--blue);
+      background: ${({ theme }) => theme.blue};
       width: 100px;
       font-size: 18px;
       font-weight: 600;

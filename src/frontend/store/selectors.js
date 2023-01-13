@@ -22,6 +22,8 @@ export const getChainId = createSelector(getMarketplace, ({ chainId }) => chainI
 
 export const getDefaultChainId = createSelector(getMarketplace, ({ defaultChainId }) => defaultChainId);
 
+export const getChainIdWithDefault = createSelector(getChainId, getDefaultChainId, (chainId, defaultChainId) => chainId || defaultChainId);
+
 export const getMarketplaceContract = createSelector(getUserId, getChainId, getDefaultChainId, getMarketplaceContractFn);
 
 export const getNFTContract = createSelector(getUserId, getChainId, getDefaultChainId, getNFTContractFn);

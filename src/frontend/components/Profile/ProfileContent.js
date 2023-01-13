@@ -15,7 +15,7 @@ const ScProfileContent = styled.div`
   padding: 0 2%;
   .profile-content-header {
     display: flex;
-    border-bottom: 3px solid var(--blue);
+    border-bottom: 3px solid ${({ theme }) => theme.blue};
     margin-bottom: 20px;
     height: 60px;
     @media screen and (max-width: 480px) {

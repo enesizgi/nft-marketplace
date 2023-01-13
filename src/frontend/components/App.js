@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { ThemeProvider } from 'styled-components';
 import { setDeviceType } from '../store/uiSlice';
 import { getDeviceType } from '../store/selectors';
-import { DEVICE_TYPES } from '../constants';
+import { DEVICE_TYPES, theme } from '../constants';
 import HomePage from './Home';
-import MintNFTSPage from './MintNFTS';
+import MintNFTSPage from './MintNFTSPage';
 import ListNFTSPage from './ListNFTS';
 import PurchasesPage from './Purchases';
 import NavigationBar from './NavigationBar';
@@ -49,18 +50,20 @@ const App = () => {
     <BrowserRouter>
       <RouteListener />
       <GlobalStyle />
-      <div className="App">
-        {deviceType !== DEVICE_TYPES.DESKTOP && <LeftPanel />}
-        <NavigationBar />
-        <Routes>
-          <Route exact path="/" element={<HomePage />} />
-          <Route path="/user/*" element={<Profile />} />
-          <Route path="/mint-nfts" element={<MintNFTSPage />} />
-          <Route path="/my-listed-nfts" element={<ListNFTSPage />} />
-          <Route path="/my-purchases" element={<PurchasesPage />} />
-          <Route path="/nft/*" element={<NFTDetailPage />} />
-        </Routes>
-      </div>
+      <ThemeProvider theme={theme}>
+        <div className="App">
+          {deviceType !== DEVICE_TYPES.DESKTOP && <LeftPanel />}
+          <NavigationBar />
+          <Routes>
+            <Route exact path="/" element={<HomePage />} />
+            <Route path="/user/*" element={<Profile />} />
+            <Route path="/mint-nfts" element={<MintNFTSPage />} />
+            <Route path="/my-listed-nfts" element={<ListNFTSPage />} />
+            <Route path="/my-purchases" element={<PurchasesPage />} />
+            <Route path="/nft/*" element={<NFTDetailPage />} />
+          </Routes>
+        </div>
+      </ThemeProvider>
     </BrowserRouter>
   );
 };

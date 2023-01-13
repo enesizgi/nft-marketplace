@@ -10,7 +10,7 @@ const ScLoadingSpinner = Styled.div`
  
     .loading-spinner {
       border: 8px solid rgba(0, 137, 168, 0.3);
-      border-top: 8px solid var(--blue);
+      border-top: 8px solid ${({ theme }) => theme.blue};
       border-radius: 50%;
       width: 60px;
       height: 60px;
