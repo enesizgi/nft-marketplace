@@ -25,6 +25,7 @@ const ScNetworkSelector = styled.div`
   }
   .dropdown-container {
     z-index: 100;
+    position: relative;
     button:first-child {
       border-top-left-radius: 8px;
       border-top-right-radius: 8px;
