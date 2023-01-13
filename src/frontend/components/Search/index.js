@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { FaSearch } from 'react-icons/fa';
 
@@ -12,7 +12,10 @@ const ScSearchBar = styled.div`
 
   .search-form.expanded {
     width: 250px; /* Expand to a larger width when clicked */
-    border-color: #0089a8;
+    border-color: ${({ theme }) => theme.blue};
+    input:focus-visible {
+      outline: unset;
+    }
   }
 
   .search-input {
@@ -21,7 +24,7 @@ const ScSearchBar = styled.div`
     padding: 12px 20px;
     font-size: 16px;
     box-sizing: border-box;
-    border: 2px solid #0089a8;
+    border: 2px solid ${({ theme }) => theme.blue};
     background-color: transparent;
     color: white;
     transition: all 0.3s ease-in-out;
@@ -35,14 +38,17 @@ const ScSearchBar = styled.div`
     width: 50px;
     height: 100%;
     padding: 0;
-    background-color: #23252a;
-    color: #fff;
+    color: white;
     cursor: pointer;
     font-size: 20px;
     border: none;
     display: flex;
     align-items: center;
     justify-content: center;
+
+    svg {
+      color: ${({ theme }) => theme.blue};
+    }
   }
 
   .faSearchIcon {
@@ -56,32 +62,39 @@ const ScSearchBar = styled.div`
   }
 `;
 
-const Search = ({ onSearch }) => {
+const Search = () => {
   const [expanded, setExpanded] = useState(false);
   const [searchText, setSearchText] = useState('');
+  const searchInputRef = useRef(null);
 
   const handleChange = event => {
     setSearchText(event.target.value);
   };
 
-  const handleSubmit = event => {
-    event.preventDefault();
-    onSearch(searchText);
+  const handleButtonClick = () => {
+    setExpanded(prev => !prev);
   };
 
-  const handleButtonClick = () => {
-    setExpanded(!expanded);
-  };
+  useEffect(() => {
+    if (expanded) {
+      searchInputRef.current.focus();
+    }
+  }, [expanded]);
 
   return (
     <ScSearchBar>
       <div className="search-container">
         <button type="button" className="search-button" onClick={handleButtonClick}>
-          <FaSearch style={{ color: '#0089a8' }} />
+          <FaSearch />
         </button>
-        <form className={`search-form ${expanded ? 'expanded' : ''}`} onSubmit={handleSubmit}>
-          <input type="text" placeholder="Search..." value={searchText} onChange={handleChange} className="search-input" />
-        </form>
+        <button
+          type="button"
+          className={`search-form ${expanded ? 'expanded' : ''}`}
+          onFocus={() => console.log('focused')}
+          onBlur={() => setExpanded(false)}
+        >
+          <input ref={searchInputRef} type="text" placeholder="Search..." value={searchText} onChange={handleChange} className="search-input" />
+        </button>
       </div>
     </ScSearchBar>
   );

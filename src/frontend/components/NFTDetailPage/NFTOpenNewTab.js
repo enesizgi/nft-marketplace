@@ -9,8 +9,8 @@ const ScOpenLinkButton = styled.div`
   float: right;
 
   .openbtn {
-    background-color: #0089a8;
-    border: 3px solid #0089a8;
+    background-color: ${({ theme }) => theme.blue};
+    border: 3px solid ${({ theme }) => theme.blue};
     border-radius: 17px;
     box-shadow: rgb(0 0 0 / 10%) 0 2px 4px 0;
     box-sizing: border-box;

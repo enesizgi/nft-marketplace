@@ -47,6 +47,6 @@ const ScDropdown = styled.div`
     }
   }
 `;
-const Dropdown = ({ children }) => <ScDropdown className="dropdown-content test">{children}</ScDropdown>;
+const Dropdown = ({ children }) => <ScDropdown className="dropdown-content">{children}</ScDropdown>;
 
 export default Dropdown;

@@ -48,8 +48,8 @@ const ScMintNFTSPage = styled.div`
   }
 
   button {
-    background-color: #0089a8;
-    border: 1px solid #0089a8;
+    background-color: ${({ theme }) => theme.blue};
+    border: 1px solid ${({ theme }) => theme.blue};
     border-radius: 4px;
     box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px 0;
     box-sizing: border-box;
@@ -82,7 +82,7 @@ const ScMintNFTSPage = styled.div`
   }
 
   .input-flat {
-    background: #0089a8;
+    background: ${({ theme }) => theme.blue};
     padding: 5px;
     color: white;
     max-width: 100px;
@@ -93,7 +93,7 @@ const ScMintNFTSPage = styled.div`
 
   .input-control {
     border: none;
-    border-bottom: 2px solid #0089a8;
+    border-bottom: 2px solid ${({ theme }) => theme.blue};
     outline: none;
     padding: 5px;
     -webkit-transition: all 700ms ease-out;
@@ -127,7 +127,7 @@ const ScMintNFTSPage = styled.div`
   input[type='file']::file-selector-button {
     margin-right: 20px;
     border: none;
-    background: #0089a8;
+    background: ${({ theme }) => theme.blue};
     padding: 10px 20px;
     border-radius: 10px;
     color: #fff;
@@ -136,7 +136,7 @@ const ScMintNFTSPage = styled.div`
   }
 
   input[type='file']::file-selector-button:hover {
-    background: #0089a8;
+    background: ${({ theme }) => theme.blue};
   }
 `;
 

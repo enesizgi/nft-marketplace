@@ -5,7 +5,7 @@ const ScProfileHeader = styled.div`
   height: 50%;
   margin-bottom: 20px;
   @media screen and (max-width: 768px) {
-    height: 40%
+    height: 40%;
   }
   @media screen and (max-width: 480px) {
     height: 30%;
@@ -26,7 +26,7 @@ const ScProfileHeader = styled.div`
         height: 100%;
       }
       @media screen and (max-width: 480px) {
-        height: 60%:
+        height: 60%;
       }
     }
     .profile-photo {
@@ -42,7 +42,7 @@ const ScProfileHeader = styled.div`
         width: 150px;
         height: 150px;
       }
-      border: 5px solid #0089a8;
+      border: 5px solid ${({ theme }) => theme.blue};
       border-radius: 100%;
       margin-left: 5%;
       overflow: hidden;
@@ -52,7 +52,7 @@ const ScProfileHeader = styled.div`
         height: 100%;
       }
       &-default {
-        fill: #23252a;
+        fill: ${({ theme }) => theme.buttonBackground};
         background: #fff;
       }
     }

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 
-// eslint-disable-next-line import/prefer-default-export
 export const useClickOutsideAlert = (ref, callback, args = []) => {
   useEffect(() => {
     const handleClickOutside = e => {

@@ -45,7 +45,7 @@ const ScProfileContent = styled.div`
     &-title:hover {
       cursor: pointer;
       transform: translateX(5px);
-      border-bottom: 2px solid #0089a8;
+      border-bottom: 2px solid ${({ theme }) => theme.blue};
       opacity: 1;
     }
   }

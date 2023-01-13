@@ -10,6 +10,8 @@ import { initMarketplace } from '../../store/actionCreators';
 import { getDeviceType, getIsLeftPanelOpened, getIsLoadingContracts, getUserId } from '../../store/selectors';
 import { setLeftPanelOpened } from '../../store/uiSlice';
 import Search from '../Search';
+import CoolButton from './CoolButton';
+import NetworkSelector from './NetworkSelector';
 
 const ScNavigationBar = styled.div`
   width: 100%;
@@ -19,7 +21,7 @@ const ScNavigationBar = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  background-color: ${({ theme }) => theme.buttonBackground};
+  background: linear-gradient(rgba(21, 24, 39, 1) 0%, rgba(31, 35, 54, 1) 35%, rgba(51, 56, 80, 1) 100%);
 
   .navigationItem {
     height: 100%;
@@ -145,15 +147,14 @@ const NavigationBar = () => {
         </button>
       )}
       <Search />
-      <div className="navigationItem accountBox">
-        {isLoadingContracts || !userId ? (
-          <button type="button" onClick={handleInitMarketplace}>
-            Connect Wallet
-          </button>
-        ) : (
+      <NetworkSelector />
+      {isLoadingContracts || !userId ? (
+        <CoolButton onClick={handleInitMarketplace}>Connect</CoolButton>
+      ) : (
+        <div className="navigationItem accountBox">
           <AccountBox />
-        )}
-      </div>
+        </div>
+      )}
     </ScNavigationBar>
   );
 };

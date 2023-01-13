@@ -87,7 +87,7 @@ const ScNFTCard = styled.div`
       }
       &-sell,
       &-buy {
-        background: #0089a8;
+        background: ${({ theme }) => theme.blue};
         width: 100%;
         animation: 0.4s ease 0s 1 slide;
         height: 100%;
