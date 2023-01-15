@@ -102,7 +102,8 @@ const NetworkSelector = () => {
     <ScNetworkSelector>
       <div className="title-container">
         <CoolButton className="title-container-title" onClick={() => setDropdownOpened(prev => !prev)}>
-          {logoType === 'svg' ? <Logo /> : <img src={Logo} alt="network logo" />}
+          {logoType === 'svg' && <Logo />}
+          {logoType && logoType !== 'svg' && <img src={Logo} alt="network logo" />}
           <div className="network-name">{CHAIN_PARAMS[chainId]?.chainName ?? 'Unknown'}</div>
         </CoolButton>
       </div>
