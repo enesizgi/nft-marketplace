@@ -147,13 +147,15 @@ const NavigationBar = () => {
         </button>
       )}
       <Search />
-      <NetworkSelector />
       {isLoadingContracts || !userId ? (
         <CoolButton onClick={handleInitMarketplace}>Connect</CoolButton>
       ) : (
-        <div className="navigationItem accountBox">
-          <AccountBox />
-        </div>
+        <>
+          <NetworkSelector />
+          <div className="navigationItem accountBox">
+            <AccountBox />
+          </div>
+        </>
       )}
     </ScNavigationBar>
   );

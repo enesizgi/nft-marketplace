@@ -7,6 +7,7 @@ import MarketplaceAbiGoerli from '../contractsData/goerli/Marketplace.json';
 import NFTAddressGoerli from '../contractsData/goerli/NFT-address.json';
 import NFTAbiGoerli from '../contractsData/goerli/NFT.json';
 import EthereumLogo from '../assets/ethereum-logo.png';
+import HardhatLogo from '../assets/hardhat-logo.png';
 import { ReactComponent as PolygonLogo } from '../assets/polygon-logo.svg';
 
 export const theme = {
@@ -88,6 +89,16 @@ export const CHAIN_PARAMS = {
       decimals: 18
     },
     blockExplorerUrls: ['https://polygonscan.com/']
+  },
+  '0x7a69': {
+    chainId: '0x7a69',
+    rpcUrls: ['http://localhost:8545'],
+    chainName: 'Localhost',
+    nativeCurrency: {
+      name: 'Ether',
+      symbol: 'ETH', // 2-6 characters long
+      decimals: 18
+    }
   }
 };
 
@@ -99,5 +110,9 @@ export const NETWORK_LOGOS = {
   '0x89': {
     type: 'svg',
     src: PolygonLogo
+  },
+  '0x7a69': {
+    type: 'png',
+    src: HardhatLogo
   }
 };

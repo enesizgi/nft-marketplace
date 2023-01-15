@@ -5,6 +5,7 @@ import OnOutsideClick from 'react-outclick';
 import CoolButton from './CoolButton';
 import { ReactComponent as PolygonLogo } from '../../assets/polygon-logo.svg';
 import EthereumLogo from '../../assets/ethereum-logo.png';
+import HardhatLogo from '../../assets/hardhat-logo.png';
 import { CHAIN_PARAMS, NETWORK_LOGOS } from '../../constants';
 import { getChainIdWithDefault } from '../../store/selectors';
 
@@ -80,7 +81,6 @@ const NetworkSelector = () => {
       // This error code indicates that the chain has not been added to MetaMask
       // if it is not, then install it into the user MetaMask
       if (error.code === 4902) {
-        console.log(CHAIN_PARAMS[networkId]);
         try {
           await window.ethereum.request({
             method: 'wallet_addEthereumChain',
@@ -96,6 +96,7 @@ const NetworkSelector = () => {
   };
 
   const { type: logoType, src: Logo } = NETWORK_LOGOS[chainId] || {};
+  const isLocalhost = window.location.hostname === 'localhost';
 
   return (
     <ScNetworkSelector>
@@ -108,6 +109,12 @@ const NetworkSelector = () => {
       {isDropdownOpened && (
         <OnOutsideClick onOutsideClick={() => setDropdownOpened(false)}>
           <div className="dropdown-container">
+            {isLocalhost && (
+              <button type="button" className="dropdown-container-network" onClick={handleNetworkChange('0x7a69')}>
+                <img src={HardhatLogo} alt="ethereum-logo" />
+                <div className="dropdown-container-network-title">Localhost</div>
+              </button>
+            )}
             <button type="button" className="dropdown-container-network" onClick={handleNetworkChange('0x5')}>
               <img src={EthereumLogo} alt="ethereum-logo" />
               <div className="dropdown-container-network-title">Goerli</div>
