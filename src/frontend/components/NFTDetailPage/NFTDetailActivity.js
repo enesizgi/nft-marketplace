@@ -29,7 +29,7 @@ const NFTDetailActivity = () => {
             </td>
             <td className="nft-activity-content-item">
               <ScContractAddress>
-                <AddressDisplay address={`${transaction.to.slice(0, 6)}...${transaction.to.slice(transaction.to.length - 4)}`} />
+                <AddressDisplay address={transaction.to} isShortAddress />
               </ScContractAddress>
             </td>
           </tr>

@@ -41,7 +41,7 @@ const NFTDetailBox = () => {
             <span className="detail-name">{detailName}</span>
             {detailName === 'Contract Address' && blockExplorer ? (
               <ScContractAddress className="detail-span">
-                <AddressDisplay address={`${detail.slice(0, 6)}...${detail.slice(detail.length - 4)}`} onClick={onNftAddressClick} />
+                <AddressDisplay address={detail} isShortAddress onClick={onNftAddressClick} />
               </ScContractAddress>
             ) : (
               <span className="detail-span">{detail}</span>

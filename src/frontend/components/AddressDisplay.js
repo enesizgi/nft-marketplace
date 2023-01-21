@@ -20,9 +20,10 @@ const ScAddressDisplay = styled.a.attrs(props => ({
   }
 `;
 
-const AddressDisplay = ({ address, className, label, onClick }) => {
+const AddressDisplay = ({ address, className, label, onClick, isShortAddress }) => {
   const navigate = useNavigate();
   const lowerAddress = address?.toLowerCase();
+  const displayAddress = isShortAddress ? `${lowerAddress.slice(0, 6)}...${lowerAddress.slice(lowerAddress.length - 4)}` : lowerAddress;
   const handleGoToAddress = e => {
     e.stopPropagation();
     navigate(`/user/${lowerAddress}`);
@@ -30,7 +31,7 @@ const AddressDisplay = ({ address, className, label, onClick }) => {
   return (
     <ScAddressDisplay className={className} onClick={onClick || handleGoToAddress}>
       <span className="label">{label && `${label}: `}</span>
-      {lowerAddress}
+      {displayAddress}
     </ScAddressDisplay>
   );
 };
