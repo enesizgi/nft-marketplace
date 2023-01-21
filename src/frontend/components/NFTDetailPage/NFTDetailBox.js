@@ -1,59 +1,33 @@
 /* eslint-disable no-underscore-dangle */
 import React from 'react';
 import { useSelector } from 'react-redux';
-import styled from 'styled-components';
-import { getNFTContract, getNFTDescription, getTokenId } from '../../store/selectors';
+import { getChainId, getNFTContract, getNFTDescription, getTokenId } from '../../store/selectors';
 import DetailsDropdown from '../DetailsDropdown';
-
-const ScNFTDetailBox = styled.div`
-  .details-container {
-    width: 100%;
-    padding: 20px;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    :hover {
-      background: rgba(35, 37, 42, 0.1);
-      transition: 0.2s ease;
-    }
-  }
-
-  .detail-name {
-    line-height: 100%;
-    font-size: 16px;
-    font-weight: 600;
-    width: 40%;
-    word-wrap: break-word;
-  }
-  .detail-span {
-    max-width: 100%;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    line-height: 100%;
-    width: 60%;
-    text-align: end;
-    vertical-align: middle;
-    font-size: 16px;
-  }
-
-  .description-text {
-    padding: 20px;
-    font-size: 16px;
-    word-wrap: break-word;
-  }
-`;
+import AddressDisplay from '../AddressDisplay';
+import { CHAIN_PARAMS } from '../../constants';
+import ScContractAddress from './ScContractAddress';
+import ScNFTDetailBox from './ScNFTDetailBox';
 
 // TODO: Add redux
 const NFTDetailBox = () => {
   const nftContract = useSelector(getNFTContract);
   const description = useSelector(getNFTDescription);
   const tokenId = useSelector(getTokenId);
+  const chainId = useSelector(getChainId);
+
+  const blockExplorer = CHAIN_PARAMS[chainId]?.blockExplorerUrls?.at(0);
 
   const NFTDetails = {
     'Contract Address': nftContract.address,
     'Token ID': tokenId,
     'Token Standard': 'ERC-721',
     Chain: 'Ethereum'
+  };
+
+  const onNftAddressClick = () => {
+    if (blockExplorer) {
+      window.open(`${blockExplorer}/address/${nftContract.address}`, '_blank');
+    }
   };
 
   return (
@@ -65,7 +39,13 @@ const NFTDetailBox = () => {
         {Object.entries(NFTDetails).map(([detailName, detail]) => (
           <div className="details-container" key={detailName}>
             <span className="detail-name">{detailName}</span>
-            <span className="detail-span">{detail}</span>
+            {detailName === 'Contract Address' && blockExplorer ? (
+              <ScContractAddress className="detail-span">
+                <AddressDisplay address={`${detail.slice(0, 6)}...${detail.slice(detail.length - 4)}`} onClick={onNftAddressClick} />
+              </ScContractAddress>
+            ) : (
+              <span className="detail-span">{detail}</span>
+            )}
           </div>
         ))}
       </DetailsDropdown>

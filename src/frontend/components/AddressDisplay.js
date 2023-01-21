@@ -20,7 +20,7 @@ const ScAddressDisplay = styled.a.attrs(props => ({
   }
 `;
 
-const AddressDisplay = ({ address, className, label }) => {
+const AddressDisplay = ({ address, className, label, onClick }) => {
   const navigate = useNavigate();
   const lowerAddress = address?.toLowerCase();
   const handleGoToAddress = e => {
@@ -28,7 +28,7 @@ const AddressDisplay = ({ address, className, label }) => {
     navigate(`/user/${lowerAddress}`);
   };
   return (
-    <ScAddressDisplay className={className} onClick={handleGoToAddress}>
+    <ScAddressDisplay className={className} onClick={onClick || handleGoToAddress}>
       <span className="label">{label && `${label}: `}</span>
       {lowerAddress}
     </ScAddressDisplay>

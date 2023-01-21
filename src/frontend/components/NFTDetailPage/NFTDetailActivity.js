@@ -4,6 +4,7 @@ import DetailsDropdown from '../DetailsDropdown';
 import ScNFTDetailActivity from './ScNFTDetailActivity';
 import AddressDisplay from '../AddressDisplay';
 import { getNFTTransactions } from '../../store/selectors';
+import ScContractAddress from './ScContractAddress';
 
 const NFTDetailActivity = () => {
   const transactions = useSelector(getNFTTransactions);
@@ -22,10 +23,14 @@ const NFTDetailActivity = () => {
             <td className="nft-activity-content-item">{transaction.type}</td>
             <td className="nft-activity-content-item">{transaction.price && `${transaction.price} ETH`}</td>
             <td className="nft-activity-content-item">
-              <AddressDisplay className="nft-activity-content-item-link" address={transaction.from} />
+              <ScContractAddress>
+                <AddressDisplay address={transaction.from} />
+              </ScContractAddress>
             </td>
             <td className="nft-activity-content-item">
-              <AddressDisplay className="nft-activity-content-item-link" address={transaction.to} />
+              <ScContractAddress>
+                <AddressDisplay address={`${transaction.to.slice(0, 6)}...${transaction.to.slice(transaction.to.length - 4)}`} />
+              </ScContractAddress>
             </td>
           </tr>
         ))}
