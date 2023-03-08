@@ -9,6 +9,7 @@ const ScOpenLinkButton = styled.div`
   float: right;
 
   .openbtn {
+    display: flex;
     background-color: ${({ theme }) => theme.blue};
     border: 3px solid ${({ theme }) => theme.blue};
     border-radius: 17px;
@@ -22,7 +23,6 @@ const ScOpenLinkButton = styled.div`
     outline: none;
     outline: 0;
     padding: 4px 6px;
-    margin-right: 16px;
     text-align: center;
     transform: translateY(0);
     transition: transform 150ms, box-shadow 150ms;

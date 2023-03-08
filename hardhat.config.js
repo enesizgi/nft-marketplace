@@ -1,3 +1,4 @@
+require('hardhat-ethernal');
 require('@nomicfoundation/hardhat-toolbox');
 require('@nomiclabs/hardhat-etherscan');
 
@@ -38,5 +39,13 @@ module.exports = {
         goerli: VITE_ETHERSCAN_API_KEY
       }
     }
-  })
+  }),
+  ...(process.env.ETHERNAL_EMAIL &&
+    process.env.ETHERNAL_PASSWORD && {
+      ethernal: {
+        email: process.env.ETHERNAL_EMAIL,
+        password: process.env.ETHERNAL_PASSWORD,
+        uploadAst: true
+      }
+    })
 };

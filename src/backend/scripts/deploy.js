@@ -1,5 +1,6 @@
 /* global ethers,artifacts */
 /* eslint no-undef: "error" */
+import hre from 'hardhat';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -9,8 +10,9 @@ dotenv.config();
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
+const network = process.env.HARDHAT_NETWORK || 'localhost';
 
-const saveFrontendFiles = (contract, name, network = process.env.HARDHAT_NETWORK || 'localhost') => {
+const saveFrontendFiles = (contract, name) => {
   const contractsDir = `${dirname}/../../frontend/contractsData/${network}`;
 
   if (!fs.existsSync(contractsDir)) {
@@ -24,19 +26,27 @@ const saveFrontendFiles = (contract, name, network = process.env.HARDHAT_NETWORK
 };
 
 const main = async () => {
-  const [deployer] = await ethers.getSigners();
+  const [deployer] = await hre.ethers.getSigners();
 
   console.log('Deploying contracts with the account:', deployer.address);
   console.log('Account balance:', (await deployer.getBalance()).toString());
 
-  const NFT = await ethers.getContractFactory('NFT');
-  const Marketplace = await ethers.getContractFactory('Marketplace');
-
-  const marketplace = await Marketplace.deploy(1);
-  const nft = await NFT.deploy();
-
-  saveFrontendFiles(nft, 'NFT');
-  saveFrontendFiles(marketplace, 'Marketplace');
+  for await (const contractData of [
+    { name: 'Marketplace', args: [1] },
+    { name: 'NFT', args: [] }
+  ]) {
+    const contract = await hre.ethers.getContractFactory(contractData.name);
+    const contractInstance = await contract.deploy(...contractData.args);
+    try {
+      await hre.ethernal.push({
+        name: contractData.name,
+        address: contractInstance.address
+      });
+    } catch (e) {
+      console.log('Error pushing to Ethernal', e);
+    }
+    saveFrontendFiles(contractInstance, contractData.name);
+  }
 };
 
 main()

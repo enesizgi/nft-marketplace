@@ -7,6 +7,7 @@ module.exports = {
   parserOptions: {
     requireConfigFile: false
   },
+  ignorePatterns: ['scripts/deploy.js'],
   rules: {
     'import/no-extraneous-dependencies': 0,
     'no-console': 0,

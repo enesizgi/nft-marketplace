@@ -97,13 +97,13 @@ const SaleButton = () => {
   const isSeller = seller && userId && seller.toLowerCase() === userId.toLowerCase();
 
   const handleSelectAuction = () => {
-    setIsAuctionSelected(true);
+    setIsAuctionSelected(prev => !prev);
     setIsSellSelected(false);
   };
 
   const handleSelectSell = () => {
     setIsAuctionSelected(false);
-    setIsSellSelected(true);
+    setIsSellSelected(prev => !prev);
   };
 
   const handleSellNFT = async () => {

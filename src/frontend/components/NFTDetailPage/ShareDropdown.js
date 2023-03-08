@@ -7,7 +7,7 @@ import { FaShareAltSquare, FaFacebook, FaLinkedin, FaTwitterSquare, FaWhatsappSq
 const ShareDropdown = ({ url, title }) => {
   return (
     <Dropdown>
-      <Dropdown.Toggle variant="secondary" id="share-dropdown">
+      <Dropdown.Toggle variant="secondary" id="share-dropdown" style={{ display: 'flex' }}>
         <FaShareAltSquare style={{ fontSize: '20px', color: '#ffffff' }} />
       </Dropdown.Toggle>
 
