@@ -24,11 +24,12 @@ const ScSaleButton = styled.div`
   }
   .sell-button {
     width: 30%;
-    @media screen and (max-width: 768px) {
-      width: 100%;
-    }
     margin-right: 10px;
     font-size: 24px;
+    @media screen and (max-width: 768px) {
+      width: 100%;
+      margin: 0;
+    }
   }
 
   .buy {

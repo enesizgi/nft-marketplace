@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { createPortal } from 'react-dom';
 import { ReactComponent as CloseIcon } from '../assets/close-icon-2.svg';
 import { useClickOutsideAlert } from '../hooks';
+import { classNames } from '../utils';
 
 const ScModal = styled.div`
   position: fixed;
@@ -19,7 +20,7 @@ const ScModal = styled.div`
   flex-direction: column;
   align-items: center;
 
-  .modal-content {
+  .modalContent {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -31,6 +32,15 @@ const ScModal = styled.div`
     background: #fff;
     border-radius: 10px;
     position: relative;
+
+    &.fullPage {
+      height: 100vh;
+      width: 100vw;
+      padding-left: 20px;
+      padding-right: 20px;
+      margin: 0;
+    }
+
     > * {
       max-height: 100%;
       max-width: 100%;
@@ -60,6 +70,13 @@ const ScModal = styled.div`
       border-radius: 50%;
       padding: 7px;
       cursor: pointer;
+
+      @media screen and (max-width: 768px) {
+        left: 20px;
+        right: 0;
+        padding-left: 0;
+      }
+
       > svg {
         width: 100%;
         height: 100%;
@@ -68,13 +85,19 @@ const ScModal = styled.div`
   }
 `;
 
-const Modal = ({ children, onClose }) => {
+const Modal = ({ children, onClose, fullPage }) => {
   const modalRef = useRef();
   useClickOutsideAlert(modalRef, onClose, []);
 
   return createPortal(
     <ScModal>
-      <div className="modal-content" ref={modalRef}>
+      <div
+        className={classNames({
+          modalContent: true,
+          fullPage
+        })}
+        ref={modalRef}
+      >
         <button type="button" onClick={onClose} className="modal-close">
           <CloseIcon />
         </button>

@@ -1,15 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { getNFTMetadata } from '../../store/selectors';
+import { getDeviceType, getNFTMetadata } from '../../store/selectors';
 import { classNames } from '../../utils';
-import { NFT_LISTING_TYPES, theme } from '../../constants';
+import { DEVICE_TYPES, NFT_LISTING_TYPES, theme } from '../../constants';
 import Modal from '../Modal';
 import LoadingSpinner from '../LoadingSpinner';
 import Button from '../Button';
 
 const ScSellModal = styled.div`
   width: 100%;
+  @media screen and (max-width: 768px) {
+    height: 100%;
+  }
+
   display: flex;
   flex-direction: column;
 
@@ -45,6 +49,7 @@ const ScSellModal = styled.div`
     width: 40%;
     justify-content: space-around;
     align-items: center;
+    margin: 20px 0;
   }
 
   .nftSellOptionsButton {
@@ -102,29 +107,54 @@ const ScSellModal = styled.div`
       }
     }
   }
-
-  .sell-modal-button {
+  .sell-modal-footer {
+    display: flex;
+    flex-direction: column;
     margin-top: auto;
+    > span {
+      color: red;
+    }
+    > button {
+      margin-top: 10px;
+    }
   }
 `;
 
 const SellModal = ({ isLoading, setShowSellModal, handleSellNFT, handleStartAuction }) => {
   const { name, description, image } = useSelector(getNFTMetadata);
   const [selectedOption, setSelectedOption] = useState(NFT_LISTING_TYPES.FIXED_PRICE);
+  const deviceType = useSelector(getDeviceType);
   const [sellPrice, setSellPrice] = useState('');
   const [expireTime, setExpireTime] = useState('');
   const [minimumBid, setMinimumBid] = useState('');
+  const [error, setError] = useState('');
 
   const handleSellButtonClick = () => {
     if (selectedOption === NFT_LISTING_TYPES.FIXED_PRICE) {
+      if (!sellPrice) {
+        setError('You must enter a price to list this item.');
+        return;
+      }
       handleSellNFT(sellPrice);
-    } else {
+    } else if (!!expireTime && !!minimumBid) {
       handleStartAuction(expireTime, minimumBid);
+    } else {
+      setError('You must enter a minimum bid and expiration time for the auction.');
     }
   };
 
+  useEffect(() => {
+    if (!!sellPrice || (!!expireTime && !!minimumBid)) {
+      setError('');
+    }
+  }, [sellPrice, expireTime, minimumBid]);
+
+  useEffect(() => {
+    setError('');
+  }, [selectedOption]);
+
   return (
-    <Modal onClose={() => setShowSellModal(false)}>
+    <Modal onClose={() => setShowSellModal(false)} fullPage={deviceType === DEVICE_TYPES.MOBILE}>
       {isLoading ? (
         <LoadingSpinner />
       ) : (
@@ -185,9 +215,12 @@ const SellModal = ({ isLoading, setShowSellModal, handleSellNFT, handleStartAuct
               </div>
             </div>
           )}
-          <Button onClick={handleSellButtonClick} className="sell-modal-button">
-            Sell Item
-          </Button>
+          <div className="sell-modal-footer">
+            <span className="sell-modal-error">{error}</span>
+            <Button onClick={handleSellButtonClick} className="sell-modal-button">
+              Sell Item
+            </Button>
+          </div>
         </ScSellModal>
       )}
     </Modal>

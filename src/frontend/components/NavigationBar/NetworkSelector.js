@@ -6,13 +6,15 @@ import CoolButton from './CoolButton';
 import { ReactComponent as PolygonLogo } from '../../assets/polygon-logo.svg';
 import EthereumLogo from '../../assets/ethereum-logo.png';
 import HardhatLogo from '../../assets/hardhat-logo.png';
-import { CHAIN_PARAMS, NETWORK_LOGOS } from '../../constants';
-import { getChainIdWithDefault } from '../../store/selectors';
+import { CHAIN_PARAMS, DEVICE_TYPES, NETWORK_LOGOS } from '../../constants';
+import { getChainIdWithDefault, getDeviceType } from '../../store/selectors';
 
 const ScNetworkSelector = styled.div`
   height: 100%;
+
   .title-container {
     display: flex;
+    justify-content: center;
     align-items: center;
     height: 100%;
     div {
@@ -60,12 +62,16 @@ const ScNetworkSelector = styled.div`
     width: 24px;
     height: 24px;
     margin-right: 12px;
+    @media screen and (max-width: 480px) {
+      margin-right: 0;
+    }
   }
 `;
 
 const NetworkSelector = () => {
   const [isDropdownOpened, setDropdownOpened] = useState(false);
   const chainId = useSelector(getChainIdWithDefault);
+  const deviceType = useSelector(getDeviceType);
 
   // TODO @Enes: Reload homepage after changing network
   // TODO @Enes: Add localhost to networks
@@ -104,7 +110,7 @@ const NetworkSelector = () => {
         <CoolButton className="title-container-title" onClick={() => setDropdownOpened(prev => !prev)}>
           {logoType === 'svg' && <Logo />}
           {logoType && logoType !== 'svg' && <img src={Logo} alt="network logo" />}
-          <div className="network-name">{CHAIN_PARAMS[chainId]?.chainName ?? 'Unknown'}</div>
+          {deviceType !== DEVICE_TYPES.MOBILE && <div className="network-name">{CHAIN_PARAMS[chainId]?.chainName ?? 'Unknown'}</div>}
         </CoolButton>
       </div>
       {isDropdownOpened && (

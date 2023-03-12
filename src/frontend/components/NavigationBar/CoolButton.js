@@ -4,7 +4,7 @@ import styled from 'styled-components';
 const ScCoolButton = styled.div`
   background-color: rgba(76, 130, 251, 0.24);
   border-radius: 9999px;
-  margin-right: 16px;
+
   button {
     display: flex;
     align-items: center;
@@ -13,7 +13,7 @@ const ScCoolButton = styled.div`
     cursor: pointer;
     font-size: 16px;
     font-weight: 600;
-    padding: 8px 16px;
+    padding: 8px 8px;
     transition: all 125ms ease-in 0s;
 
     &:hover {

@@ -4,7 +4,8 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { FaEthereum } from 'react-icons/fa';
 import Modal from '../Modal';
-import { getNFTURL } from '../../store/selectors';
+import { getDeviceType, getNFTURL } from '../../store/selectors';
+import { DEVICE_TYPES } from '../../constants';
 
 const ScNFTDetailImage = styled.div`
   display: flex;
@@ -30,6 +31,7 @@ const ScNFTDetailImage = styled.div`
 const NFTDetailImage = () => {
   const [showModal, setShowModal] = useState(false);
   const url = useSelector(getNFTURL);
+  const deviceType = useSelector(getDeviceType);
 
   const handleOpenImage = () => {
     setShowModal(true);
@@ -42,7 +44,7 @@ const NFTDetailImage = () => {
       </div>
       {url && <img className="nft-detail-image" src={url} alt="nftImage" onClick={handleOpenImage} />}
       {showModal && (
-        <Modal onClose={() => setShowModal(false)}>
+        <Modal onClose={() => setShowModal(false)} fullPage={deviceType === DEVICE_TYPES.MOBILE}>
           <img src={url} alt="nftImage" onClick={handleOpenImage} />
         </Modal>
       )}

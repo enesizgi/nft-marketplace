@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { BiRefresh } from 'react-icons/bi';
-import { getNFTName, getNFTOwner, getNFTSeller, getNFTURL, getUserId } from '../../store/selectors';
+import { getIsListed, getIsOnAuction, getNFTName, getNFTOwner, getNFTSeller, getNFTURL, getUserId } from '../../store/selectors';
 import AddressDisplay from '../AddressDisplay';
 import ShareDropdown from './ShareDropdown';
 import './ShareDropdown.css';
 import NewTab from './NFTOpenNewTab';
 import { compare } from '../../utils';
 import { loadNFT } from '../../store/uiSlice';
+import SaleButton from './SaleButton';
+import AuctionButton from '../AuctionButton';
 
 const ScNFTDetailHeader = styled.div`
   margin-bottom: 20px;
@@ -19,6 +21,7 @@ const ScNFTDetailHeader = styled.div`
 
   @media screen and (max-width: 768px) {
     padding: 0;
+    margin-bottom: 0;
   }
 
   .nft-header-name {
@@ -70,6 +73,8 @@ const NFTDetailHeader = () => {
   const owner = useSelector(getNFTOwner);
   const seller = useSelector(getNFTSeller);
   const url = useSelector(getNFTURL);
+  const isListed = useSelector(getIsListed);
+  const isOnAuction = useSelector(getIsOnAuction);
   const isOwnerPage = compare(owner, userId);
 
   const [isWindowFocused, setIsWindowFocused] = useState(true);
@@ -128,6 +133,8 @@ const NFTDetailHeader = () => {
           </div>
         )}
       </div>
+      {(isListed || isOwnerPage) && <SaleButton />}
+      {isOnAuction && <AuctionButton />}
     </ScNFTDetailHeader>
   );
 };
