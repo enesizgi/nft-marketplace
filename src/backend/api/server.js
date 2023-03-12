@@ -9,7 +9,8 @@ import { readFileSync } from 'fs';
 import { writeFile, readFile } from 'fs/promises';
 import * as dotenv from 'dotenv';
 import https from 'https';
-import pool from '../config/db.js';
+import * as mongoose from 'mongoose';
+import Nft from '../models/nft.js';
 import userRouter from '../routes/userRoute.js';
 import { apiBaseURL, apiProtocol } from '../constants.js';
 
@@ -53,12 +54,17 @@ app.post('/upload-to-ipfs', upload.array('files'), async (req, res) => {
     res.json({ ...metadata, cid, url: `${apiProtocol}://${apiBaseURL}/${req.files[0].path}` });
     try {
       const metadataFilePath = `assets/nfts/${req.files[0].filename}.json`.split('/');
-      const insertValues = [
-        [cid, JSON.stringify(imageFilePath)],
-        [cid, JSON.stringify(metadataFilePath)]
-      ];
 
-      await pool.query(`INSERT INTO nft (cid, path) VALUES ?`, [insertValues]);
+      await Nft.insertMany([
+        {
+          cid,
+          path: JSON.stringify(imageFilePath)
+        },
+        {
+          cid,
+          path: JSON.stringify(metadataFilePath)
+        }
+      ]);
     } catch (err) {
       console.log(err);
     }
@@ -70,28 +76,27 @@ app.post('/upload-to-ipfs', upload.array('files'), async (req, res) => {
 
 app.get('/get-from-ipfs', async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT nft.cid as cid, nft.path as path FROM nft WHERE nft.cid = ?', [req.query.cid]);
-    if (rows.length) {
-      const imageFilePath = rows.filter(i => JSON.parse(i.path).pop().split('.').pop() !== 'json')[0].path;
-      const jsonFilePath = rows.filter(i => JSON.parse(i.path).pop().split('.').pop() === 'json')[0].path;
+    const nft = req.query.cid ? await Nft.find({ cid: req.query.cid }).lean() : [];
+    if (nft.length) {
+      const imageFilePath = nft.filter(i => JSON.parse(i.path).pop().split('.').pop() !== 'json')[0].path;
+      const jsonFilePath = nft.filter(i => JSON.parse(i.path).pop().split('.').pop() === 'json')[0].path;
       const data = await readFile(JSON.parse(jsonFilePath).join('/'));
       const metadata = JSON.parse(data);
-      res.send({
+      return res.send({
         ...metadata,
-        cid: rows[0].cid,
+        cid: nft[0].cid,
         path: JSON.parse(imageFilePath),
         isIPFS: false,
         url: `${apiProtocol}://${apiBaseURL}/${JSON.parse(imageFilePath).join('/')}`
       });
-      return;
     }
 
     const response = await client.get(req.query.cid);
     const files = await response.files();
-    res.json({ isIPFS: true, files });
+    return res.json({ isIPFS: true, files });
   } catch (err) {
-    res.status(500).send();
     console.log(err);
+    return res.status(500).send();
   }
 });
 
@@ -100,6 +105,7 @@ app.use(userRouter);
 app.use('/assets/images', express.static(path.join(dirname, '/assets/images')));
 app.use('/assets/nfts', express.static(path.join(dirname, '/assets/nfts')));
 
+mongoose.connect(process.env.MONGO_URI, {});
 if (apiBaseURL.includes('localhost')) {
   app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`)); // eslint-disable-line
 } else {

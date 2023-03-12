@@ -1,21 +1,24 @@
 import express from 'express';
 import { ethers } from 'ethers';
+import Nft from '../models/nft.js';
+// eslint-disable-next-line
 import pool from '../config/db.js';
 
 const router = express.Router();
+// Currently we are not using nftRoute file, but if we decide to use it, we need to migrate this to MongoDB.
+
 //  list all nft's in DB
 router.get('/nft', async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM nft', [req.query.id]);
-    if (rows.length) {
-      res.send(rows[0]);
-    } else {
-      // default response for the demo: will be changed
-      res.status(404).send();
+    const nft = req.query.id ? await Nft.find({ cid: req.query.id }).limit(1).lean() : [];
+    if (nft.length) {
+      return res.send(nft[0]);
     }
+    // default response for the demo: will be changed
+    return res.status(404).send();
   } catch (err) {
     console.log(err);
-    res.status(500).send();
+    return res.status(500).send();
   }
 });
 

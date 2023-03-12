@@ -2,7 +2,8 @@ import express from 'express';
 import multer from 'multer';
 import { ethers } from 'ethers';
 import fs from 'fs';
-import pool from '../config/db.js';
+import User from '../models/user.js';
+import Image from '../models/image.js';
 import { apiBaseURL, apiProtocol } from '../constants.js';
 
 const router = express.Router();
@@ -48,8 +49,8 @@ const verifyMessage = async (req, res, next) => {
 
 const userValidator = async (req, res, next) => {
   try {
-    const [rows] = await pool.query('SELECT u.walletId FROM user u WHERE u.walletId = ?', [req.query.id]);
-    if (!rows.length) {
+    const user = req.query.id ? await User.find({ walletId: req.query.id }).limit(1).lean() : [];
+    if (!user.length) {
       return res.status(404).send('User not found');
     }
   } catch (err) {
@@ -69,21 +70,21 @@ const upload = multer({
 // TODO: Merge /user/check and /user/create endpoints. Create user if not exists. And after creating user, return user data.
 router.get('/user/check', async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT u.walletId as id FROM user u WHERE u.walletId = ?', [req.query.id]);
-    if (rows.length) {
-      res.send(rows[0]);
-    } else {
-      res.status(404).send('User not found');
+    const user = req.query.id ? await User.find({ walletId: req.query.id }).limit(1).lean() : [];
+    if (user.length) {
+      const { walletId: id, _id, ...rest } = user[0];
+      return res.send({ id, ...rest });
     }
+    return res.status(404).send('User not found');
   } catch (err) {
     console.log(err);
-    res.status(500).send();
+    return res.status(500).send();
   }
 });
 
 router.post('/user/create', verifyMessage, async (req, res) => {
   try {
-    await pool.query('INSERT INTO user VALUES (?,?,?,?)', [null, req.query.id, null, 'Unnamed']);
+    await User.create({ walletId: req.query.id, slug: null, name: 'Unnamed' });
     return res.status(201).send({ status: 'User saved successfully', id: req.query.id });
   } catch (err) {
     console.log(err);
@@ -95,22 +96,24 @@ router.get('/user', async (req, res) => {
   try {
     const searchKey = req.query.id ? 'walletId' : 'slug';
     const value = req.query.id || req.query.slug;
-    const [rows] = await pool.query(`SELECT u.walletId as id, u.slug as slug, u.name as name FROM user u WHERE u.${searchKey} = ?`, [value]);
-    const [imageRows] = await pool.query(
-      'SELECT i.user_id as id, i.image_path as url, i.type as type FROM image i WHERE i.user_id = ? AND (i.type = ? OR i.type = ?)',
-      [rows[0].id, imageType.ProfilePhoto, imageType.CoverPhoto]
-    );
+    const user = req.query.id
+      ? await User.find({ [searchKey]: value })
+          .limit(1)
+          .lean()
+      : [];
+    const images = user.length ? await Image.find({ user_id: user[0].walletId }).lean() : [];
     const imageObj = {};
-    imageRows.forEach(row => {
+    images.forEach(row => {
       if (row.type === imageType.ProfilePhoto) {
-        imageObj.profilePhoto = `${apiProtocol}://${apiBaseURL}/${row.url}`;
+        imageObj.profilePhoto = `${apiProtocol}://${apiBaseURL}/${row.image_path}`;
       } else if (row.type === imageType.CoverPhoto) {
-        imageObj.coverPhoto = `${apiProtocol}://${apiBaseURL}/${row.url}`;
+        imageObj.coverPhoto = `${apiProtocol}://${apiBaseURL}/${row.image_path}`;
       }
     });
 
-    if (rows.length) {
-      res.send({ ...rows[0], ...imageObj });
+    if (user.length) {
+      const { _id, walletId: id, ...rest } = user[0];
+      res.send({ ...rest, ...imageObj, id });
     } else {
       // default response for the demo: will be changed
       res.status(404).send();
@@ -123,46 +126,47 @@ router.get('/user', async (req, res) => {
 
 router.get('/user/slug', async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT u.walletId as id, u.slug as slug FROM user u WHERE u.walletId = ?', [req.query.id]);
-    if (rows.length) {
-      res.send(rows[0]);
-    } else {
-      // default response for the demo: will be changed
-      res.status(404).send();
+    const user = req.query.id ? await User.find({ walletId: req.query.id }).limit(1).lean() : [];
+    if (user.length) {
+      const { walletId: id, _id, ...rest } = user[0];
+      return res.send({ id, ...rest });
     }
+    // default response for the demo: will be changed
+    return res.status(404).send();
   } catch (err) {
     console.log(err);
-    res.status(500).send();
+    return res.status(500).send();
   }
 });
 
 router.get('/user/id', async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT u.slug as slug, u.walletId as id FROM user u WHERE u.slug = ?', [req.query.slug]);
-    if (rows.length) {
-      res.send(rows[0]);
-    } else {
-      // default response for the demo: will be changed
-      res.status(404).send();
+    const user = req.query.id ? await User.find({ slug: req.query.slug }).limit(1).lean() : [];
+    if (user.length) {
+      const { walletId: id, _id, ...rest } = user[0];
+      return res.send({ id, ...rest });
     }
+    // default response for the demo: will be changed
+    return res.status(404).send();
   } catch (err) {
     console.log(err);
-    res.status(500).send();
+    return res.status(500).send();
   }
 });
 
 async function uploadPhoto(req, id, url, type) {
   const absolutePath = `${apiProtocol}://${apiBaseURL}/${url}`;
-  const [rows] = await pool.query('SELECT i.image_path as path FROM image i WHERE i.user_id = ? AND i.type = ?', [id, type]);
-  if (rows.length) {
-    await pool.query('UPDATE image i SET image_path = ? WHERE i.user_id = ? AND i.type = ?', [url, id, type]);
+  const image = id && type ? await Image.find({ user_id: id, type }).limit(1) : [];
+  if (image.length) {
+    image.image_path = url;
+    await image.save();
     // DELETE OLD FILE
-    fs.unlink(rows[0].path, error => {
+    fs.unlink(image[0].image_path, error => {
       if (error) console.log('Error occured while deleting file ', error);
     });
     return absolutePath;
   }
-  await pool.query('INSERT INTO image VALUES (?,?,?,?)', [null, id, url, type]);
+  await Image.create({ user_id: id, image_path: url, type });
   return absolutePath;
 }
 
@@ -205,12 +209,11 @@ router.post('/user/upload-cover-photo', userValidator, verifyMessage, upload.sin
 
 router.get('/user/profile-photo', async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT i.user_id as id, i.image_path as url FROM image i WHERE i.user_id = ? AND i.type = ?', [
-      req.query.id,
-      imageType.ProfilePhoto
-    ]);
-    if (rows.length) {
-      res.send({ ...rows[0], url: `${apiProtocol}://${apiBaseURL}/${rows[0].url}` });
+    const image =
+      req.query.id && imageType.ProfilePhoto ? await Image.find({ user_id: req.query.id, type: imageType.ProfilePhoto }).limit(1).lean() : [];
+    if (image.length) {
+      const { _id, user_id: id, image_path: url, ...rest } = image[0];
+      res.send({ ...rest, id, url: `${apiProtocol}://${apiBaseURL}/${image[0].url}` });
     } else {
       // TODO: Return default avatar
       res.status(404).send();
@@ -223,12 +226,11 @@ router.get('/user/profile-photo', async (req, res) => {
 
 router.get('/user/cover-photo', async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT i.user_id as id, i.image_path as url FROM image i WHERE i.user_id = ? AND i.type = ?', [
-      req.query.id,
-      imageType.CoverPhoto
-    ]);
-    if (rows.length) {
-      res.send({ ...rows[0], url: `${apiProtocol}://${apiBaseURL}/${rows[0].url}` });
+    const image =
+      req.query.id && imageType.ProfilePhoto ? await Image.find({ user_id: req.query.id, type: imageType.CoverPhoto }).limit(1).lean() : [];
+    if (image.length) {
+      const { _id, user_id: id, image_path: url, ...rest } = image[0];
+      res.send({ ...rest, id, url: `${apiProtocol}://${apiBaseURL}/${image[0].url}` });
     } else {
       // TODO: Return default cover
       res.status(404).send();
@@ -241,9 +243,10 @@ router.get('/user/cover-photo', async (req, res) => {
 
 router.get('/user/name', async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT u.walletId as id, u.name as name FROM user u WHERE u.walletId = ?', [req.query.id]);
-    if (rows.length) {
-      res.send(rows[0]);
+    const user = req.query.id ? await User.find({ walletId: req.query.id }).limit(1).lean() : [];
+    if (user.length) {
+      const { _id, walletId: id, ...rest } = user[0];
+      res.send({ id, ...rest });
     } else {
       // default response for the demo: will be changed
       res.status(404).send();
