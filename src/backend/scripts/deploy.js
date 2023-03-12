@@ -37,13 +37,15 @@ const main = async () => {
   ]) {
     const contract = await hre.ethers.getContractFactory(contractData.name);
     const contractInstance = await contract.deploy(...contractData.args);
-    try {
-      await hre.ethernal.push({
-        name: contractData.name,
-        address: contractInstance.address
-      });
-    } catch (e) {
-      console.log('Error pushing to Ethernal', e);
+    if (process.env.ETHERNAL_EMAIL && process.env.ETHERNAL_PASSWORD) {
+      try {
+        await hre.ethernal.push({
+          name: contractData.name,
+          address: contractInstance.address
+        });
+      } catch (e) {
+        console.log('Error pushing to Ethernal', e);
+      }
     }
     saveFrontendFiles(contractInstance, contractData.name);
   }
