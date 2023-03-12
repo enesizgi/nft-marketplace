@@ -42,6 +42,11 @@ export const NFT_ACTIVITY_TYPES = {
   SALE: 'Sale'
 };
 
+export const NFT_LISTING_TYPES = {
+  FIXED_PRICE: 'fixed_price',
+  AUCTION: 'auction'
+};
+
 export const CONTRACTS = {
   '0x5': {
     // Goerli

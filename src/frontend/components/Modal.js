@@ -25,8 +25,8 @@ const ScModal = styled.div`
     align-items: center;
     justify-content: center;
     width: 90%;
-    height: 90%;
     margin: auto;
+    padding: 60px 30px;
     overflow: hidden;
     background: #fff;
     border-radius: 10px;

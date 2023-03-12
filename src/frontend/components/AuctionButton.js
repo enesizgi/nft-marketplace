@@ -3,18 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { ethers } from 'ethers';
-import {
-  getAuctionId,
-  getMarketplaceContract,
-  getNFTContract,
-  getNFTOwner,
-  getNFTSeller,
-  getPriceOfNFT,
-  getTimeToEnd,
-  getTokenId,
-  getUserId,
-  getWinner
-} from '../store/selectors';
+import { getAuctionId, getMarketplaceContract, getNFTSeller, getPriceOfNFT, getTimeToEnd, getUserId, getWinner } from '../store/selectors';
 import { loadNFT } from '../store/uiSlice';
 
 const ScAuctionButton = styled.div`
@@ -81,35 +70,18 @@ const ScAuctionButton = styled.div`
 
 const AuctionButton = () => {
   const dispatch = useDispatch();
-  const nftContract = useSelector(getNFTContract);
   const marketplaceContract = useSelector(getMarketplaceContract);
   const userId = useSelector(getUserId);
-  const tokenId = useSelector(getTokenId);
   const auctionId = useSelector(getAuctionId);
   const price = useSelector(getPriceOfNFT);
-  const owner = useSelector(getNFTOwner);
   const winner = useSelector(getWinner);
   const seller = useSelector(getNFTSeller);
 
   const timeToEnd = useSelector(getTimeToEnd);
-  const [minimumBid, setMinimumBid] = React.useState(null);
-  const [expireTime, setExpireTime] = React.useState(null);
   const [makeBid, setMakeBid] = React.useState(null);
 
   const navigate = useNavigate();
-  const startAuctionHandler = async () => {
-    if (!expireTime || !minimumBid) return;
-    const minimumBidPrice = ethers.utils.parseEther(minimumBid.toString());
-    const untilDate = Math.floor(new Date(expireTime).getTime() / 1000);
-    if (untilDate < Math.floor(Date.now() / 1000)) return;
-    // approve marketplace to spend nft
-    const isApproved = await nftContract.isApprovedForAll(userId, marketplaceContract.address);
-    if (!isApproved) {
-      await (await nftContract.setApprovalForAll(marketplaceContract.address, true)).wait();
-    }
-    await (await marketplaceContract.startAuction(nftContract.address, tokenId, minimumBidPrice, untilDate)).wait();
-    dispatch(loadNFT());
-  };
+
   const makeBidHandler = async () => {
     if (makeBid <= parseInt(ethers.utils.formatEther(price.toString()), 10)) return;
     const bidPrice = ethers.utils.parseEther(makeBid.toString());
@@ -169,21 +141,6 @@ const AuctionButton = () => {
         <button type="button" className="sell-button buy" onClick={handleCancelAuction}>
           Cancel
         </button>
-      )}
-      {!auctionId && owner === userId && (
-        <>
-          <div className="item">
-            Minimum Bid: <input type="number" placeholder="Price in ETH" onChange={e => setMinimumBid(e.target.value)} />
-          </div>
-          <div className="item">
-            Expire Time: <input type="datetime-local" onChange={e => setExpireTime(e.target.value)} />
-          </div>
-          <div className="item">
-            <button type="button" className="nftActionButton" onClick={startAuctionHandler}>
-              Start Auction
-            </button>
-          </div>
-        </>
       )}
       {auctionId && seller.toLowerCase() !== userId && !isAuctionOver && (
         <>

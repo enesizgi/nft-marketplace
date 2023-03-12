@@ -25,6 +25,7 @@ module.exports = {
     'react/prop-types': 0,
     'jsx-a11y/click-events-have-key-events': 0,
     'no-noninteractive-element-interactions': 0,
-    'no-underscore-dangle': ['error', { allow: ['_hex'] }]
+    'no-underscore-dangle': ['error', { allow: ['_hex'] }],
+    'jsx-a11y/label-has-associated-control': 0
   }
 };
