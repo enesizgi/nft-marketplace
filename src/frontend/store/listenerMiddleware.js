@@ -196,7 +196,7 @@ const handleInitNFTState = async (listenerApi, tokenId) => {
       event: e.event,
       args: removeIndexKeys(serializeBigNumber(e.args)),
       type: isMintTransaction ? NFT_ACTIVITY_TYPES.MINT : NFT_ACTIVITY_TYPES.SALE,
-      price: isMintTransaction ? '' : ethers.utils.formatEther(e.args.price),
+      price: isMintTransaction ? '' : ethers.utils.formatEther(ethers.BigNumber.from(e.args.price.toString())),
       from: isMintTransaction ? 'Null' : e.args.seller,
       to: isMintTransaction ? e.to ?? e.args.to : e.args.buyer,
       blockNumber: e.blockNumber,
