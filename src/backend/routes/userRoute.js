@@ -49,8 +49,8 @@ const verifyMessage = async (req, res, next) => {
 
 const userValidator = async (req, res, next) => {
   try {
-    const user = req.query.id ? await User.find({ walletId: req.query.id }).limit(1).lean() : [];
-    if (!user.length) {
+    const user = req.query.id && (await User.findOne({ walletId: req.query.id }).lean());
+    if (!user) {
       return res.status(404).send('User not found');
     }
   } catch (err) {
@@ -70,9 +70,9 @@ const upload = multer({
 // TODO: Merge /user/check and /user/create endpoints. Create user if not exists. And after creating user, return user data.
 router.get('/user/check', async (req, res) => {
   try {
-    const user = req.query.id ? await User.find({ walletId: req.query.id }).limit(1).lean() : [];
-    if (user.length) {
-      const { walletId: id, _id, ...rest } = user[0];
+    const user = req.query.id && (await User.findOne({ walletId: req.query.id }).lean());
+    if (user) {
+      const { walletId: id, _id, ...rest } = user;
       return res.send({ id, ...rest });
     }
     return res.status(404).send('User not found');
@@ -96,12 +96,8 @@ router.get('/user', async (req, res) => {
   try {
     const searchKey = req.query.id ? 'walletId' : 'slug';
     const value = req.query.id || req.query.slug;
-    const user = req.query.id
-      ? await User.find({ [searchKey]: value })
-          .limit(1)
-          .lean()
-      : [];
-    const images = user.length ? await Image.find({ user_id: user[0].walletId }).lean() : [];
+    const user = req.query.id && (await User.findOne({ [searchKey]: value }).lean());
+    const images = user ? await Image.find({ user_id: user.walletId }).lean() : [];
     const imageObj = {};
     images.forEach(row => {
       if (row.type === imageType.ProfilePhoto) {
@@ -111,24 +107,22 @@ router.get('/user', async (req, res) => {
       }
     });
 
-    if (user.length) {
-      const { _id, walletId: id, ...rest } = user[0];
-      res.send({ ...rest, ...imageObj, id });
-    } else {
-      // default response for the demo: will be changed
-      res.status(404).send();
+    if (user) {
+      const { _id, walletId: id, ...rest } = user;
+      return res.send({ ...rest, ...imageObj, id });
     }
+    return res.status(404).send();
   } catch (err) {
     console.log(err);
-    res.status(500).send();
+    return res.status(500).send();
   }
 });
 
 router.get('/user/slug', async (req, res) => {
   try {
-    const user = req.query.id ? await User.find({ walletId: req.query.id }).limit(1).lean() : [];
-    if (user.length) {
-      const { walletId: id, _id, ...rest } = user[0];
+    const user = req.query.id && (await User.findOne({ walletId: req.query.id }).lean());
+    if (user) {
+      const { walletId: id, _id, ...rest } = user;
       return res.send({ id, ...rest });
     }
     // default response for the demo: will be changed
@@ -141,9 +135,9 @@ router.get('/user/slug', async (req, res) => {
 
 router.get('/user/id', async (req, res) => {
   try {
-    const user = req.query.id ? await User.find({ slug: req.query.slug }).limit(1).lean() : [];
-    if (user.length) {
-      const { walletId: id, _id, ...rest } = user[0];
+    const user = req.query.id && (await User.findOne({ slug: req.query.slug }).lean());
+    if (user) {
+      const { walletId: id, _id, ...rest } = user;
       return res.send({ id, ...rest });
     }
     // default response for the demo: will be changed
@@ -156,12 +150,11 @@ router.get('/user/id', async (req, res) => {
 
 async function uploadPhoto(req, id, url, type) {
   const absolutePath = `${apiProtocol}://${apiBaseURL}/${url}`;
-  const image = id && type ? await Image.find({ user_id: id, type }).limit(1) : [];
-  if (image.length) {
-    image.image_path = url;
-    await image.save();
+  const image = id && type && (await Image.findOne({ user_id: id, type }).lean());
+  if (image) {
+    await Image.updateOne({ user_id: id, type }, { image_path: url });
     // DELETE OLD FILE
-    fs.unlink(image[0].image_path, error => {
+    fs.unlink(image.image_path, error => {
       if (error) console.log('Error occured while deleting file ', error);
     });
     return absolutePath;
@@ -209,51 +202,43 @@ router.post('/user/upload-cover-photo', userValidator, verifyMessage, upload.sin
 
 router.get('/user/profile-photo', async (req, res) => {
   try {
-    const image =
-      req.query.id && imageType.ProfilePhoto ? await Image.find({ user_id: req.query.id, type: imageType.ProfilePhoto }).limit(1).lean() : [];
-    if (image.length) {
-      const { _id, user_id: id, image_path: url, ...rest } = image[0];
-      res.send({ ...rest, id, url: `${apiProtocol}://${apiBaseURL}/${image[0].url}` });
-    } else {
-      // TODO: Return default avatar
-      res.status(404).send();
+    const image = req.query.id && imageType.ProfilePhoto && (await Image.findOne({ user_id: req.query.id, type: imageType.ProfilePhoto }).lean());
+    if (image) {
+      const { _id, user_id: id, image_path: url, ...rest } = image;
+      return res.send({ ...rest, id, url: `${apiProtocol}://${apiBaseURL}/${image.url}` });
     }
+    return res.status(404).send();
   } catch (err) {
     console.log(err);
-    res.status(500).send();
+    return res.status(500).send();
   }
 });
 
 router.get('/user/cover-photo', async (req, res) => {
   try {
-    const image =
-      req.query.id && imageType.ProfilePhoto ? await Image.find({ user_id: req.query.id, type: imageType.CoverPhoto }).limit(1).lean() : [];
-    if (image.length) {
-      const { _id, user_id: id, image_path: url, ...rest } = image[0];
-      res.send({ ...rest, id, url: `${apiProtocol}://${apiBaseURL}/${image[0].url}` });
-    } else {
-      // TODO: Return default cover
-      res.status(404).send();
+    const image = req.query.id && imageType.ProfilePhoto && (await Image.findOne({ user_id: req.query.id, type: imageType.CoverPhoto }).lean());
+    if (image) {
+      const { _id, user_id: id, image_path: url, ...rest } = image;
+      return res.send({ ...rest, id, url: `${apiProtocol}://${apiBaseURL}/${image.url}` });
     }
+    return res.status(404).send();
   } catch (err) {
     console.log(err);
-    res.status(500).send();
+    return res.status(500).send();
   }
 });
 
 router.get('/user/name', async (req, res) => {
   try {
-    const user = req.query.id ? await User.find({ walletId: req.query.id }).limit(1).lean() : [];
+    const user = req.query.id && (await User.findOne({ walletId: req.query.id }).lean());
     if (user.length) {
-      const { _id, walletId: id, ...rest } = user[0];
-      res.send({ id, ...rest });
-    } else {
-      // default response for the demo: will be changed
-      res.status(404).send();
+      const { _id, walletId: id, ...rest } = user;
+      return res.send({ id, ...rest });
     }
+    return res.status(404).send();
   } catch (err) {
     console.log(err);
-    res.status(500).send();
+    return res.status(500).send();
   }
 });
 
