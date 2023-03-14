@@ -52,9 +52,15 @@ export const getDeviceType = createSelector(getUI, ({ deviceType }) => deviceTyp
 
 export const getIsLeftPanelOpened = createSelector(getUI, ({ leftPanelOpened }) => leftPanelOpened);
 
-export const getIsLoading = createSelector(getUI, ({ loading }) => loading);
+export const getLoadingInfo = createSelector(getUI, ({ loading }) => loading);
+
+export const getIsLoading = createSelector(getLoadingInfo, ({ isLoading }) => isLoading);
+
+export const getLoadingMessage = createSelector(getLoadingInfo, ({ message }) => message);
 
 export const getCurrentPath = createSelector(getUI, ({ currentPath }) => currentPath);
+
+export const getActiveModal = createSelector(getUI, ({ activeModal }) => activeModal);
 
 export const getNFTMetadata = createSelector(getNFT, ({ metadata }) => metadata);
 

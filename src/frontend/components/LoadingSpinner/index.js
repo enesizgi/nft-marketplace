@@ -3,6 +3,7 @@ import Styled from 'styled-components';
 
 const ScLoadingSpinner = Styled.div`
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     width: 100%;
@@ -17,6 +18,13 @@ const ScLoadingSpinner = Styled.div`
       animation: spin 0.8s linear infinite;
     }
     
+    .loading-message {
+      margin-top: 30px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: 600;
+    }
+    
     @keyframes spin {
       0% {
         transform: rotate(0deg);
@@ -27,9 +35,10 @@ const ScLoadingSpinner = Styled.div`
     }
 `;
 
-const LoadingSpinner = () => (
+const LoadingSpinner = ({ message }) => (
   <ScLoadingSpinner>
     <div className="loading-spinner" />
+    {message && <p className="loading-message">{message}</p>}
   </ScLoadingSpinner>
 );
 

@@ -47,6 +47,11 @@ export const NFT_LISTING_TYPES = {
   AUCTION: 'auction'
 };
 
+export const MODAL_TYPES = {
+  SELL: 'sell',
+  BUY: 'buy'
+};
+
 export const CONTRACTS = {
   '0x5': {
     // Goerli

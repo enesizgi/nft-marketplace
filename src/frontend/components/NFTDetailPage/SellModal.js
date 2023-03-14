@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { getDeviceType, getNFTMetadata } from '../../store/selectors';
+import { ethers } from 'ethers';
+import { getMarketplaceContract, getNFTContract, getNFTMetadata, getTokenId, getUserId } from '../../store/selectors';
 import { classNames } from '../../utils';
-import { DEVICE_TYPES, NFT_LISTING_TYPES, theme } from '../../constants';
-import Modal from '../Modal';
-import LoadingSpinner from '../LoadingSpinner';
+import { NFT_LISTING_TYPES, theme } from '../../constants';
 import Button from '../Button';
+import { loadNFT, setActiveModal, setLoading } from '../../store/uiSlice';
 
 const ScSellModal = styled.div`
   width: 100%;
@@ -120,14 +120,62 @@ const ScSellModal = styled.div`
   }
 `;
 
-const SellModal = ({ isLoading, setShowSellModal, handleSellNFT, handleStartAuction }) => {
-  const { name, description, image } = useSelector(getNFTMetadata);
+const SellModal = () => {
+  const { name, description, url } = useSelector(getNFTMetadata) || {};
   const [selectedOption, setSelectedOption] = useState(NFT_LISTING_TYPES.FIXED_PRICE);
-  const deviceType = useSelector(getDeviceType);
+  const tokenId = useSelector(getTokenId);
+  const userId = useSelector(getUserId);
+  const marketplaceContract = useSelector(getMarketplaceContract);
+  const nftContract = useSelector(getNFTContract);
+
   const [sellPrice, setSellPrice] = useState('');
   const [expireTime, setExpireTime] = useState('');
   const [minimumBid, setMinimumBid] = useState('');
   const [error, setError] = useState('');
+
+  const dispatch = useDispatch();
+
+  const handleSellNFT = async () => {
+    dispatch(setLoading({ isLoading: true, message: 'The item is getting prepared for sale...' }));
+    const isApproved = await nftContract.isApprovedForAll(userId, marketplaceContract.address);
+    if (!isApproved) {
+      await (await nftContract.setApprovalForAll(marketplaceContract.address, true)).wait();
+    }
+    // add nft to marketplace
+    const listingPrice = ethers.utils.parseEther(sellPrice.toString());
+    try {
+      await (await marketplaceContract.makeItem(nftContract.address, tokenId, listingPrice)).wait();
+      dispatch(setLoading(false));
+      dispatch(setActiveModal(''));
+      dispatch(loadNFT());
+    } catch (e) {
+      setError('Transaction denied!');
+      dispatch(setLoading(false));
+    }
+  };
+
+  const handleStartAuction = async () => {
+    dispatch(setLoading({ isLoading: true, message: 'Starting auction...' }));
+    if (!expireTime || !minimumBid) return;
+    const minimumBidPrice = ethers.utils.parseEther(minimumBid.toString());
+    const untilDate = Math.floor(new Date(expireTime).getTime() / 1000);
+    if (untilDate < Math.floor(Date.now() / 1000)) return;
+    // approve marketplace to spend nft
+    const isApproved = await nftContract.isApprovedForAll(userId, marketplaceContract.address);
+    if (!isApproved) {
+      await (await nftContract.setApprovalForAll(marketplaceContract.address, true)).wait();
+    }
+
+    try {
+      await (await marketplaceContract.startAuction(nftContract.address, tokenId, minimumBidPrice, untilDate)).wait();
+      dispatch(setLoading(false));
+      dispatch(setActiveModal(''));
+      dispatch(loadNFT());
+    } catch (e) {
+      setError('Transaction denied!');
+      dispatch(setLoading(false));
+    }
+  };
 
   const handleSellButtonClick = () => {
     if (selectedOption === NFT_LISTING_TYPES.FIXED_PRICE) {
@@ -154,76 +202,70 @@ const SellModal = ({ isLoading, setShowSellModal, handleSellNFT, handleStartAuct
   }, [selectedOption]);
 
   return (
-    <Modal onClose={() => setShowSellModal(false)} fullPage={deviceType === DEVICE_TYPES.MOBILE}>
-      {isLoading ? (
-        <LoadingSpinner />
-      ) : (
-        <ScSellModal>
-          <div className="nft-overview">
-            <img className="nft-overview-image" src={image} alt="nftImage" />
-            <div className="nft-overview-text">
-              <span className="nft-overview-text-name">{name}</span>
-              <span className="nft-overview-text-description">{description}</span>
-            </div>
+    <ScSellModal>
+      <div className="nft-overview">
+        <img className="nft-overview-image" src={url} alt="nftImage" />
+        <div className="nft-overview-text">
+          <span className="nft-overview-text-name">{name}</span>
+          <span className="nft-overview-text-description">{description}</span>
+        </div>
+      </div>
+      <div className="nft-sell-options">
+        <Button
+          className={classNames({
+            nftSellOptionsButton: true,
+            light: selectedOption !== NFT_LISTING_TYPES.FIXED_PRICE
+          })}
+          onClick={() => setSelectedOption(NFT_LISTING_TYPES.FIXED_PRICE)}
+        >
+          Fixed Price
+        </Button>
+        <Button
+          className={classNames({
+            nftSellOptionsButton: true,
+            light: selectedOption !== NFT_LISTING_TYPES.AUCTION
+          })}
+          onClick={() => setSelectedOption(NFT_LISTING_TYPES.AUCTION)}
+        >
+          Auction
+        </Button>
+      </div>
+      {/* TODO: fee calculations and price overview */}
+      {selectedOption === NFT_LISTING_TYPES.FIXED_PRICE && (
+        <div className="sell-fixed">
+          <label className="sell-fixed-label" htmlFor="sell-number">
+            Set a Price
+          </label>
+          <div className="sell-fixed-input">
+            <input id="sell-number" type="number" onChange={e => setSellPrice(e.target.value)} value={sellPrice} />
+            <span className="sell-fixed-input-eth">ETH</span>
           </div>
-          <div className="nft-sell-options">
-            <Button
-              className={classNames({
-                nftSellOptionsButton: true,
-                light: selectedOption !== NFT_LISTING_TYPES.FIXED_PRICE
-              })}
-              onClick={() => setSelectedOption(NFT_LISTING_TYPES.FIXED_PRICE)}
-            >
-              Fixed Price
-            </Button>
-            <Button
-              className={classNames({
-                nftSellOptionsButton: true,
-                light: selectedOption !== NFT_LISTING_TYPES.AUCTION
-              })}
-              onClick={() => setSelectedOption(NFT_LISTING_TYPES.AUCTION)}
-            >
-              Auction
-            </Button>
-          </div>
-          {/* TODO: fee calculations and price overview */}
-          {selectedOption === NFT_LISTING_TYPES.FIXED_PRICE && (
-            <div className="sell-fixed">
-              <label className="sell-fixed-label" htmlFor="sell-number">
-                Set a Price
-              </label>
-              <div className="sell-fixed-input">
-                <input id="sell-number" type="number" onChange={e => setSellPrice(e.target.value)} value={sellPrice} />
-                <span className="sell-fixed-input-eth">ETH</span>
-              </div>
-            </div>
-          )}
-          {selectedOption === NFT_LISTING_TYPES.AUCTION && (
-            <div className="sell-auction">
-              <label className="sell-auction-label" htmlFor="sell-auction-price">
-                Minimum Bid
-              </label>
-              <div className="sell-auction-input">
-                <input id="sell-auction-price" type="number" onChange={e => setMinimumBid(e.target.value)} value={minimumBid} />
-                <span className="sell-fixed-input-eth">ETH</span>
-              </div>
-              <label className="sell-auction-label" htmlFor="sell-auction-date">
-                Expire Time
-              </label>
-              <div className="sell-auction-input">
-                <input id="sell-auction-date" type="datetime-local" onChange={e => setExpireTime(e.target.value)} value={expireTime} />
-              </div>
-            </div>
-          )}
-          <div className="sell-modal-footer">
-            <span className="sell-modal-error">{error}</span>
-            <Button onClick={handleSellButtonClick} className="sell-modal-button">
-              Sell Item
-            </Button>
-          </div>
-        </ScSellModal>
+        </div>
       )}
-    </Modal>
+      {selectedOption === NFT_LISTING_TYPES.AUCTION && (
+        <div className="sell-auction">
+          <label className="sell-auction-label" htmlFor="sell-auction-price">
+            Minimum Bid
+          </label>
+          <div className="sell-auction-input">
+            <input id="sell-auction-price" type="number" onChange={e => setMinimumBid(e.target.value)} value={minimumBid} />
+            <span className="sell-fixed-input-eth">ETH</span>
+          </div>
+          <label className="sell-auction-label" htmlFor="sell-auction-date">
+            Expire Time
+          </label>
+          <div className="sell-auction-input">
+            <input id="sell-auction-date" type="datetime-local" onChange={e => setExpireTime(e.target.value)} value={expireTime} />
+          </div>
+        </div>
+      )}
+      <div className="sell-modal-footer">
+        <span className="sell-modal-error">{error}</span>
+        <Button onClick={handleSellButtonClick} className="sell-modal-button">
+          Sell Item
+        </Button>
+      </div>
+    </ScSellModal>
   );
 };
 

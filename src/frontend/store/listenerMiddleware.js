@@ -5,7 +5,7 @@ import API from '../modules/api';
 import { generateSignatureData } from '../utils';
 import { setChainId, setIsLoadingContracts } from './marketplaceSlice';
 import { setProfile } from './profileSlice';
-import { loadNFT, setCurrentPath, setIsLoading } from './uiSlice';
+import { loadNFT, setCurrentPath, setLoading } from './uiSlice';
 import { NFT_ACTIVITY_TYPES } from '../constants';
 import { getMarketplaceContractFn, getNFTContractFn } from '../components/utils';
 import { setNFT } from './nftSlice';
@@ -100,12 +100,14 @@ const handleInitProfile = async (action, listenerApi) => {
   listenerApi.dispatch(setProfile({ ...response, id: response.id.toLowerCase() }));
 };
 
-const handleInitNFTState = async (listenerApi, tokenId) => {
+const handleInitNFTState = async (action, listenerApi) => {
+  listenerApi.dispatch(setLoading(true));
   const {
     user: { id: userId },
     marketplace: { chainId, defaultChainId },
     nft: { metadata: currentMetadata, tokenId: currentTokenId, transactions: currentTransactions = [] }
   } = listenerApi.getState();
+  const tokenId = action.payload;
 
   const marketplaceContract = await getMarketplaceContractFn(userId, chainId, defaultChainId);
   const nftContract = await getNFTContractFn(userId, chainId, defaultChainId);
@@ -215,6 +217,7 @@ const handleInitNFTState = async (listenerApi, tokenId) => {
   const seller = isListed || isOnAuction ? lastEvent.args.seller.toLowerCase() : '';
 
   listenerApi.dispatch(setNFT({ ...finalItem, transactions: nftTransactionData, owner, seller, isListed, isOnAuction }));
+  listenerApi.dispatch(setLoading(false));
 };
 
 const handlePathChanges = async (action, listenerApi) => {
@@ -224,9 +227,7 @@ const handlePathChanges = async (action, listenerApi) => {
 
   if (isInNFTPage) {
     const tokenId = pathName.split('/')[3];
-    listenerApi.dispatch(setIsLoading(true));
-    await handleInitNFTState(listenerApi, tokenId);
-    listenerApi.dispatch(setIsLoading(false));
+    await handleInitNFTState({ payload: tokenId }, listenerApi);
   } else {
     // If we are not in NFT page, clear the state.
     // Also, don't clear the state if it is already cleared.
@@ -249,6 +250,11 @@ listenerMiddleware.startListening({
 listenerMiddleware.startListening({
   type: 'INIT_PROFILE',
   effect: handleInitProfile
+});
+
+listenerMiddleware.startListening({
+  type: 'INIT_NFT',
+  effect: handleInitNFTState
 });
 
 listenerMiddleware.startListening({

@@ -15,6 +15,7 @@ import GlobalStyle from './GlobalStyle';
 import LeftPanel from './LeftPanel';
 import NFTDetailPage from './NFTDetailPage';
 import RouteListener from './RouteListener';
+import ModalContainer from './ModalContainer';
 import { useWindowSize } from '../hooks';
 import { initMarketplace } from '../store/actionCreators';
 
@@ -63,6 +64,7 @@ const App = () => {
             <Route path="/nft/*" element={<NFTDetailPage />} />
           </Routes>
         </div>
+        <ModalContainer />
       </ThemeProvider>
     </BrowserRouter>
   );

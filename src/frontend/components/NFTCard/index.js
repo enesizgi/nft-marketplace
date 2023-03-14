@@ -1,40 +1,25 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import ScNFTCard from './ScNFTCard';
-import { getMarketplaceContract, getNFTContract, getUserId } from '../../store/selectors';
+import { getNFTContract, getUserId } from '../../store/selectors';
 import AddressDisplay from '../AddressDisplay';
 import imagePlaceholder from '../../assets/image-placeholder.png';
+import { initNFT } from '../../store/actionCreators';
+import { MODAL_TYPES } from '../../constants';
+import { setActiveModal } from '../../store/uiSlice';
 
-const NFTCard = ({ item, loadItems, selectedTab, loading }) => {
+const NFTCard = ({ item, selectedTab, loading }) => {
   const userId = useSelector(getUserId);
-  const marketplaceContract = useSelector(getMarketplaceContract);
   const nftContract = useSelector(getNFTContract);
 
-  // eslint-disable-next-line no-unused-vars
-  const [sellPrice, setSellPrice] = useState(null);
   const [showSellButton, setShowSellButton] = useState(false);
   const [showBuyButton, setShowBuyButton] = useState(false);
 
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-
-  const buyMarketItem = async itemToBuy => {
-    await (await marketplaceContract.purchaseItem(itemToBuy.itemId, { value: itemToBuy.totalPrice })).wait();
-    loadItems();
-  };
-
-  const sellMarketItem = async () => {
-    const isApproved = await nftContract.isApprovedForAll(userId, marketplaceContract.address);
-    if (!isApproved) {
-      await (await nftContract.setApprovalForAll(marketplaceContract.address, true)).wait();
-    }
-    // add nft to marketplace
-    const listingPrice = ethers.utils.parseEther(sellPrice.toString());
-    await (await marketplaceContract.makeItem(nftContract.address, item.tokenId, listingPrice)).wait();
-    loadItems();
-  };
 
   const formattedPrice = item.totalPrice && `${ethers.utils.formatEther(item.totalPrice)} ETH`;
 
@@ -75,12 +60,14 @@ const NFTCard = ({ item, loadItems, selectedTab, loading }) => {
 
   const handleBuyButtonClicked = e => {
     e.stopPropagation();
-    buyMarketItem(item);
+    dispatch(initNFT(item.tokenId));
+    dispatch(setActiveModal({ type: MODAL_TYPES.BUY, props: {} }));
   };
 
   const handleSellButtonClicked = e => {
     e.stopPropagation();
-    sellMarketItem();
+    dispatch(initNFT(item.tokenId));
+    dispatch(setActiveModal({ type: MODAL_TYPES.SELL, props: {} }));
   };
 
   return (

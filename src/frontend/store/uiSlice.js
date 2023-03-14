@@ -6,7 +6,8 @@ const initialState = {
   deviceType: DEVICE_TYPES.DESKTOP,
   leftPanelOpened: false,
   currentPath: '/',
-  loading: true
+  loading: { isLoading: false, message: '' },
+  activeModal: { type: '', props: {} }
 };
 
 const uiSlice = createSlice({
@@ -22,12 +23,23 @@ const uiSlice = createSlice({
     setCurrentPath: (state, action) => {
       state.currentPath = action.payload;
     },
-    setIsLoading: (state, action) => {
-      state.loading = action.payload;
+    setLoading: (state, action) => {
+      if (typeof action.payload === 'object') {
+        state.loading = action.payload;
+      } else {
+        state.loading = { isLoading: action.payload, message: '' };
+      }
+    },
+    setActiveModal: (state, action) => {
+      if (typeof action.payload === 'object') {
+        state.activeModal = action.payload;
+      } else {
+        state.activeModal = { type: '', props: {} };
+      }
     },
     loadNFT: () => {}
   }
 });
 
 export default uiSlice.reducer;
-export const { setDeviceType, setLeftPanelOpened, setCurrentPath, setIsLoading, loadNFT } = uiSlice.actions;
+export const { setDeviceType, setLeftPanelOpened, setCurrentPath, setLoading, setActiveModal, loadNFT } = uiSlice.actions;

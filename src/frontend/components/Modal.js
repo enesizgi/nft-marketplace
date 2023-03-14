@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { ReactComponent as CloseIcon } from '../assets/close-icon-2.svg';
 import { useClickOutsideAlert } from '../hooks';
 import { classNames } from '../utils';
+import LoadingSpinner from './LoadingSpinner';
 
 const ScModal = styled.div`
   position: fixed;
@@ -27,7 +28,7 @@ const ScModal = styled.div`
     justify-content: center;
     width: 90%;
     margin: auto;
-    padding: 60px 30px;
+    padding: 60px 30px 27px;
     overflow: hidden;
     background: #fff;
     border-radius: 10px;
@@ -36,8 +37,7 @@ const ScModal = styled.div`
     &.fullPage {
       height: 100vh;
       width: 100vw;
-      padding-left: 20px;
-      padding-right: 20px;
+      padding: 78px 20px 27px;
       margin: 0;
     }
 
@@ -85,8 +85,9 @@ const ScModal = styled.div`
   }
 `;
 
-const Modal = ({ children, onClose, fullPage }) => {
+const Modal = ({ children, onClose, fullPage, loadingInfo }) => {
   const modalRef = useRef();
+  const { isLoading, message } = loadingInfo;
   useClickOutsideAlert(modalRef, onClose, []);
 
   return createPortal(
@@ -101,7 +102,7 @@ const Modal = ({ children, onClose, fullPage }) => {
         <button type="button" onClick={onClose} className="modal-close">
           <CloseIcon />
         </button>
-        {children}
+        {isLoading ? <LoadingSpinner message={message} /> : children}
       </div>
     </ScModal>,
     document.getElementById('modal-root')
