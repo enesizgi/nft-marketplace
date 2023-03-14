@@ -18,6 +18,8 @@ const ProfileHeader = ({ id }) => {
 
   const updateSignedMessage = (signature, message) => {
     if (signedMessage?.signature !== signature) {
+      localStorage.setItem('signature', signature);
+      localStorage.setItem('signedMessage', message);
       dispatch(setSignedMessage({ signature, message }));
     }
   };
