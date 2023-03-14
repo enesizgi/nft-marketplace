@@ -10,12 +10,22 @@ export const classNames = classes => {
   return str.trim();
 };
 
-export const generateSignatureData = async (message = 'NFTAO') => {
+export const generateSignatureData = async (signedMessage = null, message = 'NFTAO') => {
+  if (signedMessage) {
+    const messageCreationDate = new Date(signedMessage.message.split(' ').pop());
+    const oneDayAgo = new Date();
+    oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+    if (messageCreationDate > oneDayAgo) {
+      return signedMessage;
+    }
+  }
+  const date = new Date().toISOString();
+  const messageWithDate = `${message} ${date}`;
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   await provider.send('eth_requestAccounts', []); // connects MetaMask
   const signer = provider.getSigner();
-  const signature = await signer.signMessage(message);
-  return { signature, message };
+  const signature = await signer.signMessage(messageWithDate);
+  return { signature, message: messageWithDate };
 };
 
 export const compare = (s1, s2) => s1 && s2 && s1.toLowerCase() === s2.toLowerCase();

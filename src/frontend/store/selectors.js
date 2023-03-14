@@ -34,6 +34,8 @@ export const getUserProfilePhoto = createSelector(getUser, ({ profilePhoto }) =>
 
 export const getUserCoverPhoto = createSelector(getUser, ({ coverPhoto }) => coverPhoto);
 
+export const getSignedMessage = createSelector(getUser, ({ signedMessage }) => signedMessage);
+
 export const getProfileId = createSelector(getProfile, ({ id }) => id);
 
 export const getProfileName = createSelector(getProfile, ({ name }) => name);

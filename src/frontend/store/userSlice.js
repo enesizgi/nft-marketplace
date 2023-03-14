@@ -6,7 +6,8 @@ const initialState = {
   slug: '',
   name: '',
   coverPhoto: '',
-  profilePhoto: ''
+  profilePhoto: '',
+  signedMessage: null
 };
 
 const userSlice = createSlice({
@@ -36,9 +37,13 @@ const userSlice = createSlice({
       state.coverPhoto = coverPhoto;
       state.profilePhoto = profilePhoto;
     },
+    setSignedMessage: (state, action) => {
+      state.signedMessage = action.payload;
+    },
     resetUser: () => initialState
   }
 });
 
 export default userSlice.reducer;
-export const { setUserId, setUsername, setUserSlug, setUserCoverPhoto, setUserProfilePhoto, setUser, resetUser } = userSlice.actions;
+export const { setUserId, setUsername, setUserSlug, setUserCoverPhoto, setUserProfilePhoto, setUser, setSignedMessage, resetUser } =
+  userSlice.actions;

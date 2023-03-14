@@ -1,23 +1,30 @@
 import React from 'react';
 import { string } from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
-import { setUserProfilePhoto, setUserCoverPhoto } from '../../store/userSlice';
+import { setUserProfilePhoto, setUserCoverPhoto, setSignedMessage } from '../../store/userSlice';
 import API from '../../modules/api';
 import ScProfileHeader from './ScProfileHeader';
 import ImageUpload from '../ImageUpload';
 import { ReactComponent as DefaultProfilePhoto } from '../../assets/default-profile-photo.svg';
 import { generateSignatureData } from '../../utils';
-import { getIsProfileOwner, getProfile } from '../../store/selectors';
+import { getIsProfileOwner, getProfile, getSignedMessage } from '../../store/selectors';
 import { initProfile } from '../../store/actionCreators';
 
 const ProfileHeader = ({ id }) => {
   const dispatch = useDispatch();
   const isProfileOwner = useSelector(getIsProfileOwner);
   const { name: username, profilePhoto, coverPhoto } = useSelector(getProfile);
+  const signedMessage = useSelector(getSignedMessage);
 
+  const updateSignedMessage = (signature, message) => {
+    if (signedMessage?.signature !== signature) {
+      dispatch(setSignedMessage({ signature, message }));
+    }
+  };
   const handleCoverPhotoUpload = async e => {
     e.preventDefault();
-    const { signature, message } = await generateSignatureData();
+    const { signature, message } = await generateSignatureData(signedMessage);
+    updateSignedMessage(signature, message);
     const file = e.target.files[0];
     if (file) {
       try {
@@ -34,7 +41,8 @@ const ProfileHeader = ({ id }) => {
 
   const handleProfilePhotoUpload = async e => {
     e.preventDefault();
-    const { signature, message } = await generateSignatureData();
+    const { signature, message } = await generateSignatureData(signedMessage);
+    updateSignedMessage(signature, message);
     const file = e.target.files[0];
     if (file) {
       try {

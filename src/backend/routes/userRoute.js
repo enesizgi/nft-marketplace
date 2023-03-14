@@ -1,10 +1,10 @@
 import express from 'express';
 import multer from 'multer';
-import { ethers } from 'ethers';
 import fs from 'fs';
 import User from '../models/user.js';
 import Image from '../models/image.js';
 import { apiBaseURL, apiProtocol } from '../constants.js';
+import { verifyMessage } from '../utils/index.js';
 
 const router = express.Router();
 
@@ -29,22 +29,6 @@ const fileFilter = (req, file, cb) => {
     return cb(null, false, new Error('Invalid mimetype'));
   }
   return cb(null, true);
-};
-
-const verifyMessage = async (req, res, next) => {
-  try {
-    if (!req.query.message || !req.query.signature) {
-      return res.status(400).send('Missing message or signature');
-    }
-    const recoveredAddress = await ethers.utils.verifyMessage(req.query.message, req.query.signature);
-    if (recoveredAddress.toLowerCase() !== req.query.id.toLowerCase()) {
-      return res.status(401).send('Message could not verified');
-    }
-  } catch (err) {
-    console.log(err);
-    return res.status(500).send();
-  }
-  return next();
 };
 
 const userValidator = async (req, res, next) => {
