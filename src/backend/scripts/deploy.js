@@ -13,7 +13,7 @@ const dirname = path.dirname(filename);
 const network = process.env.HARDHAT_NETWORK || 'localhost';
 
 const saveFrontendFiles = (contract, name) => {
-  const contractsDir = `${dirname}/../../frontend/contractsData/${network}`;
+  const contractsDir = `${dirname}/../contractsData/${network}`;
 
   if (!fs.existsSync(contractsDir)) {
     fs.mkdirSync(contractsDir);

@@ -2,7 +2,7 @@ import * as mongoose from 'mongoose';
 
 const NftStatusSchema = new mongoose.Schema(
   {
-    type: Number,
+    type: String,
     itemId: Number,
     nft: String,
     price: String,

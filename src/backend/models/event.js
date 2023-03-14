@@ -2,14 +2,19 @@ import * as mongoose from 'mongoose';
 
 const EventSchema = new mongoose.Schema(
   {
-    type: Number,
+    type: String,
     itemId: Number,
+    auctionId: Number,
     nft: String,
     price: String,
     tokenId: Number,
     seller: String,
     buyer: String,
-    timeToEnd: Date
+    timeToEnd: Date,
+    blockNumber: Number,
+    transactionIndex: Number,
+    transactionHash: String,
+    network: String
   },
   {
     typeKey: '$type',

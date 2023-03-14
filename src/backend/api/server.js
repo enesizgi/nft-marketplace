@@ -13,6 +13,7 @@ import * as mongoose from 'mongoose';
 import Nft from '../models/nft.js';
 import userRouter from '../routes/userRoute.js';
 import { apiBaseURL, apiProtocol } from '../constants.js';
+// import { fetchMarketplaceEvents } from '../utils/index.js';
 
 dotenv.config();
 const dirname = path.resolve();
@@ -106,6 +107,7 @@ app.use('/assets/images', express.static(path.join(dirname, '/assets/images')));
 app.use('/assets/nfts', express.static(path.join(dirname, '/assets/nfts')));
 
 mongoose.connect(process.env.MONGO_URI, {});
+// fetchMarketplaceEvents();
 if (apiBaseURL.includes('localhost')) {
   app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`)); // eslint-disable-line
 } else {
