@@ -130,9 +130,12 @@ const OwnedPage = ({ profileId, selectedTab }) => {
     }, []);
   };
 
-  useEffect(async () => {
-    await loadChainNFTs();
-    await loadOwnedItems();
+  useEffect(() => {
+    const load = async () => {
+      await loadChainNFTs();
+      await loadOwnedItems();
+    };
+    load();
   }, []);
   if (loading) {
     return <LoadingSpinner />;

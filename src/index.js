@@ -1,13 +1,16 @@
 import React from 'react';
-import { render } from 'react-dom';
 import { Provider } from 'react-redux';
+import { createRoot } from 'react-dom/client';
 import App from './frontend/components/App';
 import store from './frontend/store';
 
-const rootElement = document.getElementById('root');
-render(
+// After
+// root.render(<App tab="home" />);
+const container = document.getElementById('root');
+
+const root = createRoot(container); // createRoot(container!) if you use TypeScript
+root.render(
   <Provider store={store}>
     <App />
-  </Provider>,
-  rootElement
+  </Provider>
 );

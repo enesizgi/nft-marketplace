@@ -135,9 +135,12 @@ const SellModal = ({ tokenId }) => {
 
   const dispatch = useDispatch();
 
-  useEffect(async () => {
-    const metadata = await getNFTMetadata(tokenId);
-    setNFTMetadata(metadata);
+  useEffect(() => {
+    const runAsync = async () => {
+      const metadata = await getNFTMetadata(tokenId);
+      setNFTMetadata(metadata);
+    };
+    runAsync();
   }, []);
 
   const handleSellNFT = async () => {

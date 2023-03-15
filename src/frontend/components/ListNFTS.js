@@ -158,22 +158,31 @@ const ListNFTSPage = ({ profileId, selectedTab }) => {
     await Promise.allSettled([loadItems(false)(), loadItems(true)()]);
   };
 
-  useEffect(async () => {
-    setLoading(true);
-    await Promise.allSettled([loadItems(false)(), loadItems(true)()]);
-    setLoading(false);
+  useEffect(() => {
+    const runAsync = async () => {
+      setLoading(true);
+      await Promise.allSettled([loadItems(false)(), loadItems(true)()]);
+      setLoading(false);
+    };
+    runAsync();
   }, [profileId]);
 
-  useEffect(async () => {
-    setListedItemsLoading(true);
-    await loadItems(false)();
-    setListedItemsLoading(false);
+  useEffect(() => {
+    const runAsync = async () => {
+      setListedItemsLoading(true);
+      await loadItems(false)();
+      setListedItemsLoading(false);
+    };
+    runAsync();
   }, [listedCurrentPage]);
 
-  useEffect(async () => {
-    setAuctionItemsLoading(true);
-    await loadItems(true)();
-    setAuctionItemsLoading(false);
+  useEffect(() => {
+    const runAsync = async () => {
+      setAuctionItemsLoading(true);
+      await loadItems(true)();
+      setAuctionItemsLoading(false);
+    };
+    runAsync();
   }, [auctionCurrentPage]);
 
   if (loading) {

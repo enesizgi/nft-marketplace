@@ -38,13 +38,16 @@ const AddressDisplay = ({ address, className, label, onClick, isShortAddress }) 
     navigate(`/user/${lowerAddress}`);
   };
 
-  useEffect(async () => {
-    if (address && !showYou) {
-      const { name } = (await API.getUsername(address.toLowerCase())) || {};
-      if (name && name !== 'Unnamed') {
-        setDisplayed(name);
+  useEffect(() => {
+    const runAsync = async () => {
+      if (address && !showYou) {
+        const { name } = (await API.getUsername(address.toLowerCase())) || {};
+        if (name && name !== 'Unnamed') {
+          setDisplayed(name);
+        }
       }
-    }
+    };
+    runAsync();
   }, [address, showYou]);
 
   return (
