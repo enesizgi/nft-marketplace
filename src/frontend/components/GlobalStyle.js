@@ -29,15 +29,8 @@ const GlobalStyle = createGlobalStyle`
   }
   
   .App {
-    /* Consider top bar heights before changing */
-    position: fixed;
-    overflow: auto;
-    bottom: 0;
     width: 100%;
-    height: 88%;
-    @media screen and (max-width: 768px) {
-      height: calc(100% - 80px);
-    }
+    height: 100%;
   }
   
   button {
