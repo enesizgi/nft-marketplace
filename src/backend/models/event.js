@@ -18,7 +18,8 @@ const EventSchema = new mongoose.Schema(
   },
   {
     typeKey: '$type',
-    timestamps: { createdAt: 'doc_created_at', updatedAt: 'doc_updated_at' }
+    timestamps: { createdAt: 'doc_created_at', updatedAt: 'doc_updated_at' },
+    strict: false
   }
 );
 

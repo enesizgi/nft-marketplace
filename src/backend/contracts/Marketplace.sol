@@ -81,6 +81,14 @@ contract Marketplace is ReentrancyGuard {
         address indexed buyer
     );
 
+    event OfferCanceled(
+        uint itemId
+    );
+
+    event AuctionCanceled(
+        uint auctionId
+    );
+
     constructor(uint _feePercent) {
         feeAccount = payable(msg.sender);
         feePercent = _feePercent;
@@ -248,6 +256,9 @@ contract Marketplace is ReentrancyGuard {
         activeListedItemCount --;
         delete activeListedItemIds[_itemId - 1];
         // TODO @Enes: Replace this event later. It will break our item activity in this way.
+        emit OfferCanceled (
+            _itemId
+        );
     }
 
     function cancelAuction(uint _auctionId) external payable nonReentrant {
@@ -268,5 +279,8 @@ contract Marketplace is ReentrancyGuard {
         delete activeAuctionItemIds[_auctionId - 1];
 
         // TODO @Enes: Replace this event later. Item activity will break in this way.
+        emit AuctionCanceled (
+            _auctionId
+        );
     }
 }

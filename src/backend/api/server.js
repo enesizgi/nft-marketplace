@@ -13,7 +13,7 @@ import * as mongoose from 'mongoose';
 import Nft from '../models/nft.js';
 import userRouter from '../routes/userRoute.js';
 import { apiBaseURL, apiProtocol } from '../constants.js';
-// import { fetchMarketplaceEvents } from '../utils/index.js';
+import { fetchMarketplaceEvents } from '../utils/index.js';
 
 dotenv.config();
 const dirname = path.resolve();
@@ -106,8 +106,14 @@ app.use(userRouter);
 app.use('/assets/images', express.static(path.join(dirname, '/assets/images')));
 app.use('/assets/nfts', express.static(path.join(dirname, '/assets/nfts')));
 
-mongoose.connect(process.env.MONGO_URI, {});
-// fetchMarketplaceEvents();
+(async () => {
+  await mongoose.connect(process.env.MONGO_URI, {});
+  if (process.env.NODE_ENV === 'production') {
+    setInterval(async () => {
+      await fetchMarketplaceEvents();
+    }, 3000);
+  }
+})();
 if (apiBaseURL.includes('localhost')) {
   app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`)); // eslint-disable-line
 } else {
@@ -121,7 +127,7 @@ if (apiBaseURL.includes('localhost')) {
       },
       app
     )
-    .listen(3001, () => {
-      console.log('server is running at port 3001');
+    .listen(port, () => {
+      console.log(`server is running at port ${port}`);
     });
 }
