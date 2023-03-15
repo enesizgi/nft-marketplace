@@ -28,9 +28,10 @@ const ScAddressDisplay = styled.p.attrs(props => ({
 const AddressDisplay = ({ address, className, label, onClick, isShortAddress }) => {
   const userId = useSelector(getUserId);
   const navigate = useNavigate();
-  const lowerAddress = compare(userId, address) ? 'You' : address?.toLowerCase();
+  const lowerAddress = address?.toLowerCase();
   const displayAddress = isShortAddress ? `${lowerAddress.slice(0, 6)}...${lowerAddress.slice(lowerAddress.length - 4)}` : lowerAddress;
   const [displayed, setDisplayed] = useState(displayAddress);
+  const showYou = compare(lowerAddress, userId);
 
   const handleGoToAddress = e => {
     e.stopPropagation();
@@ -38,19 +39,19 @@ const AddressDisplay = ({ address, className, label, onClick, isShortAddress }) 
   };
 
   useEffect(async () => {
-    if (displayAddress !== 'You') {
-      const { name } = await API.getUsername(userId);
+    if (address && !showYou) {
+      const { name } = (await API.getUsername(address.toLowerCase())) || {};
       if (name && name !== 'Unnamed') {
         setDisplayed(name);
       }
     }
-  }, [userId]);
+  }, [address, showYou]);
 
   return (
     <ScAddressDisplay className={className}>
       <span className="label">{label && `${label}: `}</span>
       <button type="button" className="address" onClick={onClick || handleGoToAddress}>
-        {displayed}
+        {showYou ? 'You' : displayed}
       </button>
     </ScAddressDisplay>
   );

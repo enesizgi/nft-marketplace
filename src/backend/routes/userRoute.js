@@ -215,7 +215,7 @@ router.get('/user/cover-photo', async (req, res) => {
 router.get('/user/name', async (req, res) => {
   try {
     const user = req.query.id && (await User.findOne({ walletId: req.query.id }).lean());
-    if (Object.keys(user).length) {
+    if (user && Object.keys(user).length) {
       const { _id, walletId: id, ...rest } = user;
       return res.send({ id, ...rest });
     }
