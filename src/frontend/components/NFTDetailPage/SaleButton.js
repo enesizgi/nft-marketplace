@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { ethers } from 'ethers';
-import { getFormattedPrice, getItemId, getMarketplaceContract, getNFTOwner, getNFTSeller, getUserId } from '../../store/selectors';
+import { getFormattedPrice, getItemId, getMarketplaceContract, getNFTOwner, getNFTSeller, getTokenId, getUserId } from '../../store/selectors';
 import { loadNFT, setActiveModal } from '../../store/uiSlice';
 import Button from '../Button';
 import { MODAL_TYPES } from '../../constants';
@@ -33,6 +33,7 @@ const SaleButton = () => {
   const owner = useSelector(getNFTOwner);
   const userId = useSelector(getUserId);
   const seller = useSelector(getNFTSeller);
+  const tokenId = useSelector(getTokenId);
   const itemId = useSelector(getItemId);
   const formattedPrice = useSelector(getFormattedPrice);
   const marketplaceContract = useSelector(getMarketplaceContract);
@@ -58,7 +59,7 @@ const SaleButton = () => {
     <ScSaleButton>
       {isOwner && (
         <div className="sell-buttons">
-          <Button className="sell-button" onClick={() => dispatch(setActiveModal({ type: MODAL_TYPES.SELL, props: {} }))}>
+          <Button className="sell-button" onClick={() => dispatch(setActiveModal({ type: MODAL_TYPES.SELL, props: { tokenId } }))}>
             Sell Item
           </Button>
         </div>

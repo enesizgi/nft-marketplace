@@ -7,7 +7,8 @@ import { DEVICE_TYPES, MODAL_TYPES } from '../constants';
 import { setActiveModal } from '../store/uiSlice';
 
 const MODAL_COMPONENTS = {
-  [MODAL_TYPES.SELL]: SellModal
+  [MODAL_TYPES.SELL]: SellModal,
+  [MODAL_TYPES.IMAGE_PREVIEW]: ({ ...props }) => <img alt="previewImage" {...props} />
 };
 
 const ModalContainer = () => {

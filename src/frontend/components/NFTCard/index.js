@@ -6,9 +6,9 @@ import ScNFTCard from './ScNFTCard';
 import { getNFTContract, getUserId } from '../../store/selectors';
 import AddressDisplay from '../AddressDisplay';
 import imagePlaceholder from '../../assets/image-placeholder.png';
-import { initNFT } from '../../store/actionCreators';
 import { MODAL_TYPES } from '../../constants';
 import { setActiveModal } from '../../store/uiSlice';
+import { compare, serializeBigNumber } from '../../utils';
 
 const NFTCard = ({ item, selectedTab, loading }) => {
   const userId = useSelector(getUserId);
@@ -30,18 +30,18 @@ const NFTCard = ({ item, selectedTab, loading }) => {
   const handleHoverCard = () => {
     switch (selectedTab) {
       case 'Listed':
-        if (profileId !== userId && item.auctionId === undefined) {
+        if (!compare(profileId, userId) && item.auctionId === undefined) {
           setShowBuyButton(true);
         }
         break;
       case 'Purchased':
-        if (profileId === userId) setShowSellButton(true);
+        if (compare(profileId, userId)) setShowSellButton(true);
         break;
       case 'Owned':
-        if (profileId === userId) setShowSellButton(true);
+        if (compare(profileId, userId)) setShowSellButton(true);
         break;
       case 'Home':
-        if (item.seller !== userId && item.auctionId === undefined) setShowBuyButton(true);
+        if (!compare(item.seller, userId) && item.auctionId === undefined) setShowBuyButton(true);
         break;
       default:
         break;
@@ -60,14 +60,12 @@ const NFTCard = ({ item, selectedTab, loading }) => {
 
   const handleBuyButtonClicked = e => {
     e.stopPropagation();
-    dispatch(initNFT(item.tokenId));
-    dispatch(setActiveModal({ type: MODAL_TYPES.BUY, props: {} }));
+    dispatch(setActiveModal({ type: MODAL_TYPES.BUY, props: { tokenId: serializeBigNumber(item.tokenId) } }));
   };
 
   const handleSellButtonClicked = e => {
     e.stopPropagation();
-    dispatch(initNFT(item.tokenId));
-    dispatch(setActiveModal({ type: MODAL_TYPES.SELL, props: {} }));
+    dispatch(setActiveModal({ type: MODAL_TYPES.SELL, props: { tokenId: serializeBigNumber(item.tokenId) } }));
   };
 
   return (

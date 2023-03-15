@@ -2,7 +2,7 @@ import { createListenerMiddleware, isAnyOf } from '@reduxjs/toolkit';
 import { ethers } from 'ethers';
 import { setSignedMessage, setUser } from './userSlice';
 import API from '../modules/api';
-import { generateSignatureData } from '../utils';
+import { generateSignatureData, serializeBigNumber } from '../utils';
 import { setChainId, setIsLoadingContracts } from './marketplaceSlice';
 import { setProfile } from './profileSlice';
 import { loadNFT, setCurrentPath, setLoading } from './uiSlice';
@@ -175,12 +175,6 @@ const handleInitNFTState = async (action, listenerApi) => {
     ...(i ?? {}),
     ...(totalPrice ? { totalPrice } : {}),
     ...(i?.price ? { price: i.price } : {})
-  };
-
-  const serializeBigNumber = obj => {
-    return Object.entries(obj).reduce((acc, [key, value]) => {
-      return ethers.BigNumber.isBigNumber(value) ? { ...acc, [key]: parseInt(value._hex, 16) } : { ...acc, [key]: value };
-    }, {});
   };
 
   const removeIndexKeys = obj => {

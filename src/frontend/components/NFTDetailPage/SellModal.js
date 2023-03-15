@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { ethers } from 'ethers';
-import { getMarketplaceContract, getNFTContract, getNFTMetadata, getTokenId, getUserId } from '../../store/selectors';
+import { getMarketplaceContract, getNFTContract, getUserId } from '../../store/selectors';
 import { classNames } from '../../utils';
+import { getNFTMetadata } from '../utils';
 import { NFT_LISTING_TYPES, theme } from '../../constants';
 import Button from '../Button';
 import { loadNFT, setActiveModal, setLoading } from '../../store/uiSlice';
@@ -120,10 +121,9 @@ const ScSellModal = styled.div`
   }
 `;
 
-const SellModal = () => {
-  const { name, description, url } = useSelector(getNFTMetadata) || {};
+const SellModal = ({ tokenId }) => {
+  const [nftMetadata, setNFTMetadata] = useState({});
   const [selectedOption, setSelectedOption] = useState(NFT_LISTING_TYPES.FIXED_PRICE);
-  const tokenId = useSelector(getTokenId);
   const userId = useSelector(getUserId);
   const marketplaceContract = useSelector(getMarketplaceContract);
   const nftContract = useSelector(getNFTContract);
@@ -134,6 +134,11 @@ const SellModal = () => {
   const [error, setError] = useState('');
 
   const dispatch = useDispatch();
+
+  useEffect(async () => {
+    const metadata = await getNFTMetadata(tokenId);
+    setNFTMetadata(metadata);
+  }, []);
 
   const handleSellNFT = async () => {
     dispatch(setLoading({ isLoading: true, message: 'The item is getting prepared for sale...' }));
@@ -204,10 +209,10 @@ const SellModal = () => {
   return (
     <ScSellModal>
       <div className="nft-overview">
-        <img className="nft-overview-image" src={url} alt="nftImage" />
+        <img className="nft-overview-image" src={nftMetadata.url} alt="nftImage" />
         <div className="nft-overview-text">
-          <span className="nft-overview-text-name">{name}</span>
-          <span className="nft-overview-text-description">{description}</span>
+          <span className="nft-overview-text-name">{nftMetadata.name}</span>
+          <span className="nft-overview-text-description">{nftMetadata.description}</span>
         </div>
       </div>
       <div className="nft-sell-options">

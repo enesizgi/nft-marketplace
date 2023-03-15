@@ -28,4 +28,10 @@ export const generateSignatureData = async (signedMessage = null, message = 'NFT
   return { signature, message: messageWithDate };
 };
 
+export const serializeBigNumber = obj =>
+  Object.entries(obj).reduce(
+    (acc, [key, value]) => (ethers.BigNumber.isBigNumber(value) ? { ...acc, [key]: parseInt(value._hex, 16) } : { ...acc, [key]: value }),
+    {}
+  );
+
 export const compare = (s1, s2) => s1 && s2 && s1.toLowerCase() === s2.toLowerCase();

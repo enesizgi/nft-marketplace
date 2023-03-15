@@ -85,7 +85,7 @@ const ScModal = styled.div`
   }
 `;
 
-const Modal = ({ children, onClose, fullPage, loadingInfo }) => {
+const Modal = ({ children, onClose, fullPage, loadingInfo = {} }) => {
   const modalRef = useRef();
   const { isLoading, message } = loadingInfo;
   useClickOutsideAlert(modalRef, onClose, []);

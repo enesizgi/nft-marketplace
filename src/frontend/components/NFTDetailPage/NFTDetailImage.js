@@ -1,11 +1,11 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { FaEthereum } from 'react-icons/fa';
-import Modal from '../Modal';
-import { getDeviceType, getNFTURL } from '../../store/selectors';
-import { DEVICE_TYPES } from '../../constants';
+import { getNFTURL } from '../../store/selectors';
+import { MODAL_TYPES } from '../../constants';
+import { setActiveModal } from '../../store/uiSlice';
 
 const ScNFTDetailImage = styled.div`
   display: flex;
@@ -27,14 +27,13 @@ const ScNFTDetailImage = styled.div`
     }
   }
 `;
-// TODO: Add redux
+
 const NFTDetailImage = () => {
-  const [showModal, setShowModal] = useState(false);
   const url = useSelector(getNFTURL);
-  const deviceType = useSelector(getDeviceType);
+  const dispatch = useDispatch();
 
   const handleOpenImage = () => {
-    setShowModal(true);
+    dispatch(setActiveModal({ type: MODAL_TYPES.IMAGE_PREVIEW, props: { src: url } }));
   };
 
   return (
@@ -43,11 +42,6 @@ const NFTDetailImage = () => {
         <FaEthereum />
       </div>
       {url && <img className="nft-detail-image" src={url} alt="nftImage" onClick={handleOpenImage} />}
-      {showModal && (
-        <Modal onClose={() => setShowModal(false)} fullPage={deviceType === DEVICE_TYPES.MOBILE}>
-          <img src={url} alt="nftImage" onClick={handleOpenImage} />
-        </Modal>
-      )}
     </ScNFTDetailImage>
   );
 };
