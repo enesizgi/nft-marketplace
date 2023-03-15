@@ -36,7 +36,9 @@ artifacts
 .vscode
 
 apps/frontend/public/images
-src/backend/images
+apps/frontend/src/backend/images
 assets
 !apps/frontend/src/frontend/assets
 /.deps/
+/dist/
+/tmp/

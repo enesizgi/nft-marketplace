@@ -11,10 +11,10 @@ const { ALCHEMY_API_KEY, GOERLI_PRIVATE_KEY, DISABLE_AUTOMINING, VITE_ETHERSCAN_
 module.exports = {
   solidity: '0.8.4',
   paths: {
-    artifacts: './src/backend/artifacts',
-    sources: './src/backend/contracts',
-    cache: './src/backend/cache',
-    tests: './src/backend/test'
+    artifacts: './libs/contracts/src/artifacts',
+    sources: './libs/contracts/src/contracts',
+    cache: './libs/contracts/src/cache',
+    tests: './libs/contracts/src/test'
   },
   networks: {
     ...(ALCHEMY_API_KEY &&
