@@ -2,8 +2,8 @@ import ethers from 'ethers';
 import * as dotenv from 'dotenv';
 import { CONTRACTS } from '../constants_new/index.js';
 import Event from '../models/event.js';
+import NftStatus from '../models/nft_status.js';
 
-// eslint-disable-next-line import/prefer-default-export
 export const verifyMessage = async (req, res, next) => {
   try {
     if (!req.query.message || !req.query.signature) {
@@ -26,6 +26,49 @@ export const verifyMessage = async (req, res, next) => {
   return next();
 };
 
+export const getLastStatusOfNft = async events => {
+  const operations = events.map(event => {
+    switch (event.type) {
+      case 'Offered':
+        return {
+          insertOne: { type: 'Offered', itemId: event.itemId, nft: event.nft, tokenId: event.tokenId, price: event.price, seller: event.seller }
+        };
+      case 'Bought':
+        return {
+          updateOne: {
+            filter: { itemId: event.itemId },
+            update: { $set: { type: 'Bought', buyer: event.buyer, sold: true } },
+            upsert: true
+          }
+        };
+      case 'AuctionStarted':
+        return {
+          insertOne: {
+            type: 'AuctionStarted',
+            auctionId: event.auctionId,
+            nft: event.nft,
+            tokenId: event.tokenId,
+            price: event.price,
+            timeToEnd: event.timeToEnd,
+            seller: event.seller
+          }
+        };
+      case 'AuctionEnded':
+        return {
+          updateOne: {
+            filter: { auctionId: event.auctionId },
+            update: { $set: { type: 'AuctionEnded', buyer: event.buyer, claimed: true } },
+            upsert: true
+          }
+        };
+      default:
+        console.warn(`Unknown event type: ${event.type}`);
+        return null;
+    }
+  });
+  NftStatus.bulkWrite(operations.filter(operation => operation !== null));
+};
+
 export const fetchMarketplaceEvents = async () => {
   let insertData = [];
   try {
@@ -45,21 +88,21 @@ export const fetchMarketplaceEvents = async () => {
       } = event;
       return {
         type,
-        itemId: itemId ? ethers.BigNumber.from(itemId).toNumber() : itemId,
-        auctionId: auctionId ? ethers.BigNumber.from(auctionId).toNumber() : auctionId,
+        ...(itemId ? { itemId: ethers.BigNumber.from(itemId).toNumber() } : {}),
+        ...(auctionId ? { auctionId: ethers.BigNumber.from(auctionId).toNumber() } : {}),
         nft,
-        price: price ? ethers.BigNumber.from(price).toString() : price,
-        tokenId: tokenId ? ethers.BigNumber.from(tokenId).toNumber() : tokenId,
+        ...(price ? { price: ethers.BigNumber.from(price).toString() } : {}),
+        ...(tokenId ? { tokenId: ethers.BigNumber.from(tokenId).toNumber() } : {}),
         seller,
-        buyer,
-        timeToEnd: timeToEnd ? new Date(ethers.BigNumber.from(timeToEnd).toNumber()) : timeToEnd,
+        ...(buyer ? { buyer } : {}),
+        ...(timeToEnd ? { timeToEnd: new Date(ethers.BigNumber.from(timeToEnd).toNumber()) } : {}),
         blockNumber,
         transactionIndex,
         transactionHash,
         network: '0x5'
       };
     });
-    await Event.insertMany(insertData);
+    await Promise.all([Event.insertMany(insertData), getLastStatusOfNft(insertData)]);
   } catch (err) {
     console.log(err);
   }

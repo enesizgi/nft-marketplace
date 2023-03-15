@@ -4,15 +4,18 @@ const importJSON = async path => {
   const fileUrl = new URL(path, import.meta.url);
   return JSON.parse(await readFile(fileUrl, 'utf8'));
 };
-const NFTAddressGoerli = importJSON('../contractsData/goerli/NFT-address.json');
-const NFTAbiGoerli = importJSON('../contractsData/goerli/NFT.json');
-const MarketplaceAddressGoerli = importJSON('../contractsData/goerli/Marketplace-address.json');
-const MarketplaceAbiGoerli = importJSON('../contractsData/goerli/Marketplace.json');
-const NFTAddress = importJSON('../contractsData/localhost/NFT-address.json');
-const NFTAbi = importJSON('../contractsData/localhost/NFT.json');
-const MarketplaceAddress = importJSON('../contractsData/localhost/Marketplace-address.json');
-const MarketplaceAbi = importJSON('../contractsData/localhost/Marketplace.json');
 
+const [NFTAddressGoerli, NFTAbiGoerli, MarketplaceAddressGoerli, MarketplaceAbiGoerli, NFTAddress, NFTAbi, MarketplaceAddress, MarketplaceAbi] =
+  await Promise.all([
+    importJSON('../contractsData/goerli/NFT-address.json'),
+    importJSON('../contractsData/goerli/NFT.json'),
+    importJSON('../contractsData/goerli/Marketplace-address.json'),
+    importJSON('../contractsData/goerli/Marketplace.json'),
+    importJSON('../contractsData/localhost/NFT-address.json'),
+    importJSON('../contractsData/localhost/NFT.json'),
+    importJSON('../contractsData/localhost/Marketplace-address.json'),
+    importJSON('../contractsData/localhost/Marketplace.json')
+  ]);
 export const CONTRACTS = {
   '0x5': {
     // Goerli
