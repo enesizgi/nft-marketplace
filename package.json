@@ -5,10 +5,12 @@
   "dependencies": {
     "@chainlink/contracts": "^0.4.2",
     "@nomiclabs/hardhat-ethers": "^2.2.1",
+    "@nrwl/eslint-plugin-nx": "^15.8.6",
+    "@nrwl/nx": "^7.8.7",
     "@openzeppelin/contracts": "^4.8.2",
     "@reduxjs/toolkit": "^1.9.1",
     "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^12.1.5",
+    "@testing-library/react": "14.0.0",
     "@testing-library/user-event": "^13.5.0",
     "@vitejs/plugin-react": "^3.0.1",
     "body-parser": "^1.20.1",
@@ -18,7 +20,7 @@
     "dotenv": "^16.0.3",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-react": "^7.31.11",
+    "eslint-plugin-react": "7.32.2",
     "ethers": "^5.7.2",
     "express": "^4.18.2",
     "hardhat": "^2.12.2",
@@ -31,10 +33,11 @@
     "react-bootstrap": "^2.6.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.7.1",
+    "react-is": "18.2.0",
     "react-outclick": "^0.0.4",
     "react-redux": "^8.0.5",
     "react-router": "^6.4.3",
-    "react-router-dom": "^6.4.3",
+    "react-router-dom": "6.8.1",
     "react-share": "^4.4.1",
     "reselect": "^4.1.7",
     "styled-components": "^5.3.6",
@@ -48,12 +51,12 @@
     "hardhat": "npx hardhat node",
     "hardhat:deploy": "HARDHAT_NETWORK=localhost npx hardhat run src/backend/scripts/deploy.js",
     "hardhat:deploy:goerli": "HARDHAT_NETWORK=goerli npx hardhat run src/backend/scripts/deploy.js",
-    "api": "nodemon --watch .env --watch src/backend --ignore src/frontend --ignore assets --ignore src/backend/contractsData src/backend/api/server.js",
-    "api:dev": "nodemon --inspect --watch .env --watch src/backend --ignore src/frontend --ignore assets --ignore src/backend/contractsData src/backend/api/server.js",
+    "api": "nodemon --watch .env --watch src/backend --ignore apps/frontend/src/frontend --ignore assets --ignore src/backend/contractsData src/backend/api/server.js",
+    "api:dev": "nodemon --inspect --watch .env --watch src/backend --ignore apps/frontend/src/frontend --ignore assets --ignore src/backend/contractsData src/backend/api/server.js",
     "start": "vite",
     "start:all": "concurrently --names \"HARDHAT,API,FRONTEND\" -c auto --kill-others \"pnpm hardhat\" \"pnpm api:dev\" \"pnpm start\"",
-    "build": "vite build",
-    "lint": "eslint src/frontend"
+    "build": "nx exec -- vite build",
+    "lint": "nx exec -- eslint apps/frontend/src/frontend"
   },
   "eslintConfig": {
     "extends": [
@@ -86,19 +89,51 @@
     "@nomicfoundation/hardhat-network-helpers": "^1.0.0",
     "@nomicfoundation/hardhat-toolbox": "^2.0.0",
     "@nomiclabs/hardhat-etherscan": "^3.0.0",
+    "@nrwl/cypress": "15.8.6",
+    "@nrwl/js": "15.8.6",
+    "@nrwl/nx-cloud": "latest",
+    "@nrwl/react": "15.8.6",
+    "@nrwl/vite": "15.8.6",
     "@typechain/hardhat": "^6.1.2",
     "@types/mocha": "^9.1.0",
+    "@types/node": "18.14.2",
+    "@types/react": "18.0.28",
+    "@types/react-dom": "18.0.11",
+    "@types/react-is": "17.0.3",
+    "@types/react-router-dom": "5.3.3",
+    "@types/styled-components": "5.1.26",
+    "@vitest/coverage-c8": "~0.25.8",
+    "@vitest/ui": "^0.25.8",
+    "babel-plugin-styled-components": "1.10.7",
     "concurrently": "^7.6.0",
+    "cypress": "^12.2.0",
     "eslint": "8.22.0",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-jsx-a11y": "^6.6.1",
+    "eslint-plugin-cypress": "^2.10.3",
+    "eslint-plugin-import": "2.27.5",
+    "eslint-plugin-jsx-a11y": "6.7.1",
     "eslint-plugin-react-hooks": "^4.6.0",
     "hardhat-ethernal": "^3.1.0",
     "hardhat-gas-reporter": "^1.0.8",
+    "jsdom": "~20.0.3",
     "lint-staged": "^13.0.3",
     "nodemon": "^2.0.21",
+    "nx": "15.8.6",
     "prettier": "2.7.1",
+    "react-test-renderer": "18.2.0",
     "solidity-coverage": "^0.8.1",
+    "typescript": "~4.9.5",
+    "vite-plugin-eslint": "^1.8.1",
+    "vite-tsconfig-paths": "^4.0.2",
+    "vitest": "^0.25.8",
     "web3.storage": "^4.4.0"
+  },
+  "nx": {
+    "targets": {
+      "build": {
+        "outputs": [
+          "{projectRoot}/build"
+        ]
+      }
+    }
   }
 }

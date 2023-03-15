@@ -35,8 +35,8 @@ artifacts
 .idea
 .vscode
 
-public/images
+apps/frontend/public/images
 src/backend/images
 assets
-!src/frontend/assets
+!apps/frontend/src/frontend/assets
 /.deps/
