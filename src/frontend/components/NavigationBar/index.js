@@ -9,7 +9,6 @@ import { classNames } from '../../utils';
 import { initMarketplace } from '../../store/actionCreators';
 import { getDeviceType, getIsLeftPanelOpened, getIsLoadingContracts, getUserId } from '../../store/selectors';
 import { setLeftPanelOpened } from '../../store/uiSlice';
-import Search from '../Search';
 import CoolButton from './CoolButton';
 import NetworkSelector from './NetworkSelector';
 
@@ -21,13 +20,13 @@ const ScNavigationBar = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  padding: 0 16px;
   background: linear-gradient(rgba(21, 24, 39, 1) 0%, rgba(31, 35, 54, 1) 35%, rgba(51, 56, 80, 1) 100%);
 
   .navigationItem {
     height: 100%;
     box-sizing: border-box;
     color: white;
-    margin: 0 16px;
     font-size: 24px;
     text-decoration: none;
     display: flex;
@@ -83,7 +82,6 @@ const ScNavigationBar = styled.div`
 
   .accountBox {
     height: 80px;
-    width: 165px;
     flex-shrink: 0;
     text-align: center;
 
@@ -146,7 +144,8 @@ const NavigationBar = () => {
           <MenuIcon className="navigation-item menu-icon" alt="menuIcon" />
         </button>
       )}
-      <Search />
+      {/* TODO: consider overflow in navigation bar when search is implemented. */}
+      {/* <Search /> */}
       {isLoadingContracts || !userId ? (
         <CoolButton onClick={handleInitMarketplace}>Connect</CoolButton>
       ) : (

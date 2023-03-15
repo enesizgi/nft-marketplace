@@ -4,20 +4,9 @@ import styled from 'styled-components';
 const ScDropdown = styled.div`
   width: 180px;
   position: relative;
-  transform: translateX(-40px);
   border: 2px solid ${({ theme }) => theme.blue};
   border-radius: 10px;
   overflow: hidden;
-
-  @media screen and (max-width: 768px) {
-    width: 150px;
-    transform: translateX(-60px);
-  }
-
-  @media screen and (max-width: 480px) {
-    width: 150px;
-    transform: translateX(-80px);
-  }
 
   .dropdown-content-item {
     width: 100%;
@@ -30,6 +19,7 @@ const ScDropdown = styled.div`
     align-items: center;
     transition: all 0.2s ease;
     text-decoration: none;
+    color: #fff;
 
     &:visited {
       color: #fff;

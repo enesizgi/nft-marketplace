@@ -8,9 +8,13 @@ import EthereumLogo from '../../assets/ethereum-logo.png';
 import HardhatLogo from '../../assets/hardhat-logo.png';
 import { CHAIN_PARAMS, DEVICE_TYPES, NETWORK_LOGOS } from '../../constants';
 import { getChainIdWithDefault, getDeviceType } from '../../store/selectors';
+import Dropdown from '../Dropdown';
 
 const ScNetworkSelector = styled.div`
   height: 100%;
+  display: flex;
+  align-items: center;
+  position: relative;
 
   .title-container {
     display: flex;
@@ -26,45 +30,21 @@ const ScNetworkSelector = styled.div`
       }
     }
   }
-  .dropdown-container {
-    z-index: 100;
-    position: relative;
-    button:first-child {
-      border-top-left-radius: 8px;
-      border-top-right-radius: 8px;
-    }
-    button:last-child {
-      border-bottom-left-radius: 8px;
-      border-bottom-right-radius: 8px;
-    }
-    &-network {
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
-      background-color: rgba(31, 35, 54, 1);
-      padding: 12px;
-      width: 100%;
-      &-title {
-        color: rgb(76, 130, 251);
-        padding: 8px 0;
-        font-size: 16px;
-        font-weight: 600;
-      }
 
-      &:hover {
-        background-color: rgb(66 71 94);
-      }
-    }
-    transform: translate(-40px, -20px);
-  }
   svg,
   img {
-    width: 24px;
-    height: 24px;
+    width: 40px;
+    height: 40px;
     margin-right: 12px;
     @media screen and (max-width: 480px) {
       margin-right: 0;
     }
+  }
+
+  .dropdown-content {
+    position: absolute;
+    top: 100%;
+    right: 0;
   }
 `;
 
@@ -105,34 +85,34 @@ const NetworkSelector = () => {
   const isLocalhost = window.location.hostname === 'localhost';
 
   return (
-    <ScNetworkSelector>
-      <div className="title-container">
-        <CoolButton className="title-container-title" onClick={() => setDropdownOpened(prev => !prev)}>
-          {logoType === 'svg' && <Logo />}
-          {logoType && logoType !== 'svg' && <img src={Logo} alt="network logo" />}
-          {deviceType !== DEVICE_TYPES.MOBILE && <div className="network-name">{CHAIN_PARAMS[chainId]?.chainName ?? 'Unknown'}</div>}
-        </CoolButton>
-      </div>
-      {isDropdownOpened && (
-        <OnOutsideClick onOutsideClick={() => setDropdownOpened(false)}>
-          <div className="dropdown-container">
+    <ScNetworkSelector isDropdownOpened={isDropdownOpened}>
+      <OnOutsideClick onOutsideClick={() => setDropdownOpened(false)}>
+        <div className="title-container">
+          <CoolButton className="title-container-title" onClick={() => setDropdownOpened(!isDropdownOpened)}>
+            {logoType === 'svg' && <Logo />}
+            {logoType && logoType !== 'svg' && <img src={Logo} alt="network logo" className="title-container-logo" />}
+            {deviceType !== DEVICE_TYPES.MOBILE && <div className="network-name">{CHAIN_PARAMS[chainId]?.chainName ?? 'Unknown'}</div>}
+          </CoolButton>
+        </div>
+        {isDropdownOpened && (
+          <Dropdown>
             {isLocalhost && (
-              <button type="button" className="dropdown-container-network" onClick={handleNetworkChange('0x7a69')}>
-                <img src={HardhatLogo} alt="ethereum-logo" />
+              <button type="button" className="dropdown-content-item" onClick={handleNetworkChange('0x7a69')}>
+                <img src={HardhatLogo} alt="ethereum-logo" className="dropdown-content-item-icon" />
                 <div className="dropdown-container-network-title">Localhost</div>
               </button>
             )}
-            <button type="button" className="dropdown-container-network" onClick={handleNetworkChange('0x5')}>
-              <img src={EthereumLogo} alt="ethereum-logo" />
+            <button type="button" className="dropdown-content-item" onClick={handleNetworkChange('0x5')}>
+              <img src={EthereumLogo} alt="ethereum-logo" className="dropdown-content-item-icon" />
               <div className="dropdown-container-network-title">Goerli</div>
             </button>
-            <button type="button" className="dropdown-container-network" onClick={handleNetworkChange('0x89')}>
-              <PolygonLogo />
+            <button type="button" className="dropdown-content-item" onClick={handleNetworkChange('0x89')}>
+              <PolygonLogo className="dropdown-content-item-icon" />
               <div className="dropdown-container-network-title">Polygon</div>
             </button>
-          </div>
-        </OnOutsideClick>
-      )}
+          </Dropdown>
+        )}
+      </OnOutsideClick>
     </ScNetworkSelector>
   );
 };

@@ -10,6 +10,10 @@ import NFTSlider from './NFTSlider';
 const ScListNFTSPage = styled.div`
   margin: 16px;
 
+  @media screen and (max-width: 480px) {
+    margin: 5px;
+  }
+
   .nft-slider-container {
     margin-bottom: 16px;
 

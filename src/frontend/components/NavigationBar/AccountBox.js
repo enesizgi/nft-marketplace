@@ -12,9 +12,13 @@ import Dropdown from '../Dropdown';
 
 const ScAccountBox = styled.div`
   width: 100%;
-  position: relative;
   z-index: 100;
   height: 100%;
+  position: relative;
+  > div {
+    height: 100% !important;
+    width: 100% !important;
+  }
   .accountBox-default {
     fill: ${({ theme }) => theme.buttonBackground};
     background: #fff;
@@ -34,15 +38,6 @@ const ScAccountBox = styled.div`
       border: 2px solid ${({ theme }) => theme.blue};
       border-radius: 100%;
       position: relative;
-      transform: translateX(40px);
-
-      @media screen and (max-width: 768px) {
-        transform: translateX(20px);
-      }
-
-      @media screen and (max-width: 480px) {
-        transform: translateX(10px);
-      }
 
       &::after {
         ${({ isDropdownOpened }) => (!isDropdownOpened ? 'display: none;' : '')}
@@ -56,6 +51,12 @@ const ScAccountBox = styled.div`
         background: ${({ theme }) => theme.blue};
       }
     }
+  }
+
+  .dropdown-content {
+    position: absolute;
+    top: calc(100% + 5px);
+    right: 0;
   }
 `;
 
@@ -79,15 +80,15 @@ const AccountBox = () => {
 
   return (
     <ScAccountBox isDropdownOpened={isDropdownOpened}>
-      <button type="button" className="accountBox-image-content" onClick={() => setDropdownOpened(!isDropdownOpened)}>
-        {profilePhoto ? (
-          <img src={profilePhoto} className="accountBox-image" alt="accountImage" />
-        ) : (
-          <DefaultProfilePhoto className="accountBox-default" />
-        )}
-      </button>
-      {isDropdownOpened && (
-        <OnOutsideClick onOutsideClick={() => setDropdownOpened(false)}>
+      <OnOutsideClick onOutsideClick={() => setDropdownOpened(false)}>
+        <button type="button" className="accountBox-image-content" onClick={() => setDropdownOpened(!isDropdownOpened)}>
+          {profilePhoto ? (
+            <img src={profilePhoto} className="accountBox-image" alt="accountImage" />
+          ) : (
+            <DefaultProfilePhoto className="accountBox-default" />
+          )}
+        </button>
+        {isDropdownOpened && (
           <Dropdown>
             <Link to={`/user/${userId}`} className="dropdown-content-item" onClick={handleDropdownClick}>
               <DefaultProfilePhoto className="dropdown-content-item-icon" />
@@ -102,8 +103,8 @@ const AccountBox = () => {
               Logout
             </button>
           </Dropdown>
-        </OnOutsideClick>
-      )}
+        )}
+      </OnOutsideClick>
     </ScAccountBox>
   );
 };
