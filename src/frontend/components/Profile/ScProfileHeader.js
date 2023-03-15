@@ -25,9 +25,6 @@ const ScProfileHeader = styled.div`
         width: 100%;
         height: 100%;
       }
-      @media screen and (max-width: 480px) {
-        height: 60%;
-      }
     }
     .profile-photo {
       position: absolute;
@@ -39,8 +36,8 @@ const ScProfileHeader = styled.div`
         height: 175px;
       }
       @media screen and (max-width: 480px) {
-        width: 150px;
-        height: 150px;
+        width: 120px;
+        height: 120px;
       }
       border: 5px solid ${({ theme }) => theme.blue};
       border-radius: 100%;

@@ -13,6 +13,8 @@ import CoolButton from './CoolButton';
 import NetworkSelector from './NetworkSelector';
 
 const ScNavigationBar = styled.div`
+  position: fixed;
+  top: 0;
   width: 100%;
   height: 12%;
   box-sizing: border-box;
@@ -21,7 +23,12 @@ const ScNavigationBar = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 0 16px;
+  z-index: 1000;
   background: linear-gradient(rgba(21, 24, 39, 1) 0%, rgba(31, 35, 54, 1) 35%, rgba(51, 56, 80, 1) 100%);
+
+  @media screen and (max-width: 768px) {
+    height: 80px;
+  }
 
   .navigationItem {
     height: 100%;
@@ -94,10 +101,6 @@ const ScNavigationBar = styled.div`
       height: 60px;
       width: 60px;
     }
-  }
-
-  @media screen and (max-width: 768px) {
-    height: 80px;
   }
 `;
 

@@ -52,9 +52,9 @@ const App = () => {
       <RouteListener />
       <GlobalStyle />
       <ThemeProvider theme={theme}>
+        <NavigationBar />
         <div className="App">
           {deviceType !== DEVICE_TYPES.DESKTOP && <LeftPanel />}
-          <NavigationBar />
           <Routes>
             <Route exact path="/" element={<HomePage />} />
             <Route path="/user/*" element={<Profile />} />
