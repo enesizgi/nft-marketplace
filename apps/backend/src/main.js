@@ -5,7 +5,7 @@ import cors from 'cors';
 import { Web3Storage, getFilesFromPath } from 'web3.storage';
 import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
-import { readFileSync } from 'fs';
+import fs, { readFileSync } from 'fs';
 import { writeFile, readFile } from 'fs/promises';
 import * as dotenv from 'dotenv';
 import https from 'https';
@@ -103,8 +103,13 @@ app.get('/get-from-ipfs', async (req, res) => {
 
 app.use(userRouter);
 
-app.use('/assets/images', express.static(path.join(dirname, '/assets/images')));
-app.use('/assets/nfts', express.static(path.join(dirname, '/assets/nfts')));
+['/assets', '/assets/images', '/assets/nfts'].forEach(dir => {
+  if (!fs.existsSync(`${dirname}${dir}`)) {
+    fs.mkdirSync(`${dirname}${dir}`);
+  }
+});
+
+app.use('/assets', express.static(path.join(dirname, '/assets')));
 
 (async () => {
   await mongoose.connect(process.env.MONGO_URI, {});
