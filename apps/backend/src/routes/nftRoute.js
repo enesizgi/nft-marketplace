@@ -1,6 +1,6 @@
 import express from 'express';
 import Nft from '../models/nft';
-import { verifyMessage } from '../utils/index';
+import { verifyMessage } from '../utils';
 
 const router = express.Router();
 // Currently we are not using nftRoute file, but if we decide to use it, we need to migrate this to MongoDB.

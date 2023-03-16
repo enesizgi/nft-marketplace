@@ -1,8 +1,8 @@
-import ethers from 'ethers';
+import { ethers } from 'ethers';
 import * as dotenv from 'dotenv';
-import { CONTRACTS } from '../constants_new';
-import Event from '../models/event';
-import NftStatus from '../models/nft_status';
+import { CONTRACTS } from './constants_new';
+import Event from './models/event';
+import NftStatus from './models/nft_status';
 
 export const verifyMessage = async (req, res, next) => {
   try {

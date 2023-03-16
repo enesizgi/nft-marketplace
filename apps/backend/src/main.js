@@ -13,7 +13,7 @@ import * as mongoose from 'mongoose';
 import Nft from './models/nft';
 import userRouter from './routes/userRoute';
 import { apiBaseURL, apiProtocol } from './constants';
-import { fetchMarketplaceEvents } from './utils/index';
+import { fetchMarketplaceEvents } from './utils';
 
 dotenv.config();
 const dirname = path.resolve();

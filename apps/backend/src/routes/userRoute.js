@@ -4,7 +4,7 @@ import fs from 'fs';
 import User from '../models/user';
 import Image from '../models/image';
 import { apiBaseURL, apiProtocol } from '../constants';
-import { verifyMessage } from '../utils/index';
+import { verifyMessage } from '../utils';
 
 const router = express.Router();
 
