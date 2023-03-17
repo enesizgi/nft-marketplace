@@ -98,14 +98,14 @@ export const getLastStatusOfNft = async events => {
   await NftStatus.bulkWrite(updateEvents.filter(i => i));
 };
 
-export const fetchMarketplaceEvents = async () => {
+export const fetchMarketplaceEvents = async chainId => {
   let insertData = [];
   try {
     dotenv.config();
     const maxBlockNumber = await Event.find().sort({ blockNumber: -1 }).limit(1).lean();
     const fromBlock = maxBlockNumber[0] ? maxBlockNumber[0].blockNumber + 1 : 0;
-    const provider = new ethers.providers.EtherscanProvider(Number('0x5'), process.env.ETHERSCAN_API_KEY);
-    const marketplaceContract = new ethers.Contract(CONTRACTS['0x5'].MARKETPLACE.address, CONTRACTS['0x5'].MARKETPLACE.abi, provider);
+    const provider = new ethers.providers.EtherscanProvider(Number(chainId), process.env.ETHERSCAN_API_KEY);
+    const marketplaceContract = new ethers.Contract(CONTRACTS[chainId].MARKETPLACE.address, CONTRACTS[chainId].MARKETPLACE.abi, provider);
     const events = await marketplaceContract.queryFilter('*', fromBlock);
     insertData = events.map(event => {
       const {
@@ -128,7 +128,7 @@ export const fetchMarketplaceEvents = async () => {
         blockNumber,
         transactionIndex,
         transactionHash,
-        network: '0x5'
+        network: chainId
       };
     });
     await Promise.all([Event.insertMany(insertData), getLastStatusOfNft(insertData)]);

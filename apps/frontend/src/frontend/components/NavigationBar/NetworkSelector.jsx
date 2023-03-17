@@ -102,6 +102,10 @@ const NetworkSelector = () => {
                 <div className="dropdown-container-network-title">Localhost</div>
               </button>
             )}
+            <button type="button" className="dropdown-content-item" onClick={handleNetworkChange('0xaa36a7')}>
+              <img src={EthereumLogo} alt="ethereum-logo" className="dropdown-content-item-icon" />
+              <div className="dropdown-container-network-title">Sepolia</div>
+            </button>
             <button type="button" className="dropdown-content-item" onClick={handleNetworkChange('0x5')}>
               <img src={EthereumLogo} alt="ethereum-logo" className="dropdown-content-item-icon" />
               <div className="dropdown-container-network-title">Goerli</div>

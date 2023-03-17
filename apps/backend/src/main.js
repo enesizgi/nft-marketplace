@@ -114,8 +114,8 @@ app.use('/assets', express.static(path.join(dirname, '/assets')));
 (async () => {
   await mongoose.connect(process.env.MONGO_URI, {});
   if (process.env.NODE_ENV === 'production') {
-    setInterval(async () => {
-      await fetchMarketplaceEvents();
+    setInterval(() => {
+      ['0x5', '0xaa36a7'].map(i => fetchMarketplaceEvents(i));
     }, 3000);
   }
 })();

@@ -6,7 +6,11 @@ import {
   MarketplaceAddressGoerli,
   MarketplaceAbiGoerli,
   NFTAddressGoerli,
-  NFTAbiGoerli
+  NFTAbiGoerli,
+  NFTAddressSepolia,
+  NFTAbiSepolia,
+  MarketplaceAddressSepolia,
+  MarketplaceAbiSepolia
 } from 'contracts';
 import EthereumLogo from '../assets/ethereum-logo.png';
 import HardhatLogo from '../assets/hardhat-logo.png';
@@ -77,10 +81,32 @@ export const CONTRACTS = {
       address: MarketplaceAddress.address,
       abi: MarketplaceAbi.abi
     }
+  },
+  '0xaa36a7': {
+    // Sepolia Testnet
+    NFT: {
+      address: NFTAddressSepolia.address,
+      abi: NFTAbiSepolia.abi
+    },
+    MARKETPLACE: {
+      address: MarketplaceAddressSepolia.address,
+      abi: MarketplaceAbiSepolia.abi
+    }
   }
 };
 
 export const CHAIN_PARAMS = {
+  '0xaa36a7': {
+    chainId: '0xaa36a7',
+    rpcUrls: ['https://rpc2.sepolia.org/'],
+    chainName: 'Sepolia',
+    nativeCurrency: {
+      name: 'Ether',
+      symbol: 'ETH', // 2-6 characters long
+      decimals: 18
+    },
+    blockExplorerUrls: ['https://sepolia.etherscan.io']
+  },
   '0x5': {
     chainId: '0x5',
     rpcUrls: ['https://goerli.infura.io/v3/'],
@@ -116,6 +142,10 @@ export const CHAIN_PARAMS = {
 };
 
 export const NETWORK_LOGOS = {
+  '0xaa36a7': {
+    type: 'png',
+    src: EthereumLogo
+  },
   '0x5': {
     type: 'png',
     src: EthereumLogo

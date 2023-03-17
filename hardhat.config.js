@@ -6,7 +6,7 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-const { ALCHEMY_API_KEY, GOERLI_PRIVATE_KEY, DISABLE_AUTOMINING, VITE_ETHERSCAN_API_KEY } = process.env;
+const { ALCHEMY_GOERLI_API_KEY, ALCHEMY_SEPOLIA_API_KEY, DEPLOYER_PRIVATE_KEY, DISABLE_AUTOMINING, ETHERSCAN_API_KEY } = process.env;
 
 module.exports = {
   solidity: '0.8.4',
@@ -17,11 +17,18 @@ module.exports = {
     tests: './libs/contracts/src/test'
   },
   networks: {
-    ...(ALCHEMY_API_KEY &&
-      GOERLI_PRIVATE_KEY && {
+    ...(ALCHEMY_GOERLI_API_KEY &&
+      DEPLOYER_PRIVATE_KEY && {
         goerli: {
-          url: `https://eth-goerli.g.alchemy.com/v2/${ALCHEMY_API_KEY}`,
-          accounts: [GOERLI_PRIVATE_KEY]
+          url: `https://eth-goerli.g.alchemy.com/v2/${ALCHEMY_GOERLI_API_KEY}`,
+          accounts: [DEPLOYER_PRIVATE_KEY]
+        }
+      }),
+    ...(ALCHEMY_GOERLI_API_KEY &&
+      DEPLOYER_PRIVATE_KEY && {
+        sepolia: {
+          url: `https://eth-sepolia.g.alchemy.com/v2/${ALCHEMY_SEPOLIA_API_KEY}`,
+          accounts: [DEPLOYER_PRIVATE_KEY]
         }
       }),
     ...(DISABLE_AUTOMINING === 'true' && {
@@ -33,10 +40,11 @@ module.exports = {
       }
     })
   },
-  ...(VITE_ETHERSCAN_API_KEY && {
+  ...(ETHERSCAN_API_KEY && {
     etherscan: {
       apiKey: {
-        goerli: VITE_ETHERSCAN_API_KEY
+        goerli: ETHERSCAN_API_KEY,
+        sepolia: ETHERSCAN_API_KEY
       }
     }
   }),

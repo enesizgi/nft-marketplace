@@ -16,12 +16,13 @@ const NFTDetailBox = () => {
   const chainId = useSelector(getChainId);
 
   const blockExplorer = CHAIN_PARAMS[chainId]?.blockExplorerUrls?.at(0);
+  const chainName = CHAIN_PARAMS[chainId]?.chainName;
 
   const NFTDetails = {
     'Contract Address': nftContract.address,
     'Token ID': tokenId,
     'Token Standard': 'ERC-721',
-    Chain: 'Ethereum'
+    Chain: chainName
   };
 
   const onNftAddressClick = () => {
