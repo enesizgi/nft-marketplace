@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
-import { CONTRACTS, JSON_RPC_PROVIDER } from '../constants';
+import { CONTRACTS } from 'constants';
+import { JSON_RPC_PROVIDER } from '../constants';
 import API from '../modules/api';
 
 export const getMarketplaceContractFn = (

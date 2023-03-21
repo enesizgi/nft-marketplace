@@ -1,17 +1,3 @@
-import {
-  MarketplaceAddress,
-  MarketplaceAbi,
-  NFTAddress,
-  NFTAbi,
-  MarketplaceAddressGoerli,
-  MarketplaceAbiGoerli,
-  NFTAddressGoerli,
-  NFTAbiGoerli,
-  NFTAddressSepolia,
-  NFTAbiSepolia,
-  MarketplaceAddressSepolia,
-  MarketplaceAbiSepolia
-} from 'contracts';
 import EthereumLogo from '../assets/ethereum-logo.png';
 import HardhatLogo from '../assets/hardhat-logo.png';
 import { ReactComponent as PolygonLogo } from '../assets/polygon-logo.svg';
@@ -40,7 +26,7 @@ export const PAGE_NAMES = {
 };
 
 // export const JSON_RPC_PROVIDER = window.location.href.includes('localhost') ? 'http://localhost:8545' : '';
-export const JSON_RPC_PROVIDER = window.location.href.includes('localhost') ? 'http://localhost:8545' : 'https://ethereum-goerli-rpc.allthatnode.com';
+export const JSON_RPC_PROVIDER = window.location.href.includes('localhost') ? 'http://localhost:8545' : 'https://goerli.infura.io/v3/';
 
 export const NFT_ACTIVITY_TYPES = {
   MINT: 'Mint',
@@ -57,42 +43,6 @@ export const MODAL_TYPES = {
   SELL: 'sell',
   BUY: 'buy',
   IMAGE_PREVIEW: 'image_preview'
-};
-
-export const CONTRACTS = {
-  '0x5': {
-    // Goerli
-    NFT: {
-      address: NFTAddressGoerli.address,
-      abi: NFTAbiGoerli.abi
-    },
-    MARKETPLACE: {
-      address: MarketplaceAddressGoerli.address,
-      abi: MarketplaceAbiGoerli.abi
-    }
-  },
-  '0x7a69': {
-    // Localhost
-    NFT: {
-      address: NFTAddress.address,
-      abi: NFTAbi.abi
-    },
-    MARKETPLACE: {
-      address: MarketplaceAddress.address,
-      abi: MarketplaceAbi.abi
-    }
-  },
-  '0xaa36a7': {
-    // Sepolia Testnet
-    NFT: {
-      address: NFTAddressSepolia.address,
-      abi: NFTAbiSepolia.abi
-    },
-    MARKETPLACE: {
-      address: MarketplaceAddressSepolia.address,
-      abi: MarketplaceAbiSepolia.abi
-    }
-  }
 };
 
 export const CHAIN_PARAMS = {

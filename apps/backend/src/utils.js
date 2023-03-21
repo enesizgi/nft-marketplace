@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import * as dotenv from 'dotenv';
-import { CONTRACTS } from './constants_new';
+import { CONTRACTS } from 'constants';
 import Event from './models/event';
 import NftStatus from './models/nft_status';
 

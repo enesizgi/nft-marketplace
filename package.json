@@ -60,7 +60,7 @@
     "api": "nx run backend:serve:production",
     "api:dev": "nx run backend:serve:development",
     "start": "nx serve frontend",
-    "start:all": "concurrently --names \"HARDHAT,API,FRONTEND\" -c auto --kill-others \"pnpm hardhat\" \"nx serve backend\" \"nx serve frontend\"",
+    "start:all": "concurrently --names \"HARDHAT,API,FRONTEND\" -p \"[{name}:{time}]\" -t \"HH:mm:ss\" -c auto --kill-others \"pnpm hardhat\" \"nx serve backend\" \"nx serve frontend\"",
     "build": "nx run-many --target=build --projects=contracts,backend,frontend --parallel=100",
     "lint": "nx exec -- eslint apps/frontend/src/frontend"
   },

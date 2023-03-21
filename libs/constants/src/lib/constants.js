@@ -1,5 +1,3 @@
-/* eslint-disable */
-import { readFile } from 'node:fs/promises';
 import {
   NFTAddressGoerli,
   NFTAbiGoerli,
@@ -15,6 +13,7 @@ import {
   MarketplaceAbiSepolia
 } from 'contracts';
 
+// eslint-disable-next-line import/prefer-default-export
 export const CONTRACTS = {
   '0x5': {
     // Goerli
