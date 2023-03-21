@@ -72,10 +72,10 @@ const handleInitMarketplace = async (action, listenerApi) => {
 
   const {
     user: { id: userId },
-    marketplace: { chainId, defaultChainId }
+    marketplace: { chainId }
   } = listenerApi.getState();
 
-  const marketplaceContract = await getMarketplaceContractFn(userId, chainId, defaultChainId);
+  const marketplaceContract = await getMarketplaceContractFn(userId, chainId);
   const provider = new ethers.providers.Web3Provider(window.ethereum);
 
   const filter = {
@@ -104,13 +104,13 @@ const handleInitNFTState = async (action, listenerApi) => {
   listenerApi.dispatch(setLoading(true));
   const {
     user: { id: userId },
-    marketplace: { chainId, defaultChainId },
+    marketplace: { chainId },
     nft: { metadata: currentMetadata, tokenId: currentTokenId, transactions: currentTransactions = [] }
   } = listenerApi.getState();
   const tokenId = action.payload;
 
-  const marketplaceContract = await getMarketplaceContractFn(userId, chainId, defaultChainId);
-  const nftContract = await getNFTContractFn(userId, chainId, defaultChainId);
+  const marketplaceContract = await getMarketplaceContractFn(userId, chainId);
+  const nftContract = await getNFTContractFn(userId, chainId);
   const _nftOwner = await nftContract.ownerOf(tokenId);
   const owner = _nftOwner.toLowerCase();
   const uri = await nftContract.tokenURI(tokenId);
@@ -123,7 +123,7 @@ const handleInitNFTState = async (action, listenerApi) => {
     isSameToken && currentTransactions.length > 0 ? currentTransactions.reduce((acc, t) => (t.blockNumber > acc ? t.blockNumber : acc), -1) + 1 : 0;
   console.log(isSameToken && currentTransactions.length > 0, fromBlockNumber, currentTokenId, tokenId);
 
-  // TODO: Cache mechanism for transactions maybe?
+  // TODO @Enes: Cache mechanism for transactions maybe? Get events from mongodb?
   const currentMintTransaction = isSameToken && currentTransactions.find(t => t.type === NFT_ACTIVITY_TYPES.MINT);
   const transferFilter = nftContract.filters.Transfer(ethers.constants.AddressZero, null, tokenId);
   const transferQuery = currentMintTransaction ? [] : nftContract.queryFilter(transferFilter, fromBlockNumber);
@@ -186,27 +186,29 @@ const handleInitNFTState = async (action, listenerApi) => {
   };
 
   const finalItem = removeIndexKeys(serializeBigNumber(it));
-  console.log(removeIndexKeys(serializeBigNumber(transferPromise.value.at(0)?.args ?? {})));
+  console.log(transferPromise.value);
 
-  console.log([...currentTransactions, ...boughtResults, ...auctionEndedResults, ...transferPromise.value].sort(sortFn));
-  const nftTransactionData = [...currentTransactions, ...boughtResults, ...auctionEndedResults, ...transferPromise.value].sort(sortFn).map(e => {
-    const isMintTransaction = e.type === NFT_ACTIVITY_TYPES.MINT || (e.event === 'Transfer' && e.args.from === ethers.constants.AddressZero);
-    return {
-      event: e.event,
-      args: removeIndexKeys(serializeBigNumber(e.args)),
-      type: isMintTransaction ? NFT_ACTIVITY_TYPES.MINT : NFT_ACTIVITY_TYPES.SALE,
-      price: isMintTransaction ? '' : ethers.utils.formatEther(ethers.BigNumber.from(e.args.price.toString())),
-      from: isMintTransaction ? 'Null' : e.args.seller,
-      to: isMintTransaction ? e.to ?? e.args.to : e.args.buyer,
-      blockNumber: e.blockNumber,
-      blockHash: e.blockHash,
-      transactionHash: e.transactionHash
-    };
-  });
+  console.log([...currentTransactions, ...boughtResults, ...auctionEndedResults, ...(transferPromise.value || [])].sort(sortFn));
+  const nftTransactionData = [...currentTransactions, ...boughtResults, ...auctionEndedResults, ...(transferPromise.value || [])]
+    .sort(sortFn)
+    .map(e => {
+      const isMintTransaction = e.type === NFT_ACTIVITY_TYPES.MINT || (e.event === 'Transfer' && e.args.from === ethers.constants.AddressZero);
+      return {
+        event: e.event,
+        args: removeIndexKeys(serializeBigNumber(e.args)),
+        type: isMintTransaction ? NFT_ACTIVITY_TYPES.MINT : NFT_ACTIVITY_TYPES.SALE,
+        price: isMintTransaction ? '' : ethers.utils.formatEther(ethers.BigNumber.from(e.args.price.toString())),
+        from: isMintTransaction ? 'Null' : e.args.seller,
+        to: isMintTransaction ? e.to ?? e.args.to : e.args.buyer,
+        blockNumber: e.blockNumber,
+        blockHash: e.blockHash,
+        transactionHash: e.transactionHash
+      };
+    });
 
   const isNFTOwnedByMarketplace = owner === marketplaceContract.address.toLowerCase();
-  const isListed = isNFTOwnedByMarketplace && lastEvent.event === 'Offered';
-  const isOnAuction = isNFTOwnedByMarketplace && lastEvent.event === 'AuctionStarted';
+  const isListed = isNFTOwnedByMarketplace && lastEvent?.event === 'Offered';
+  const isOnAuction = isNFTOwnedByMarketplace && lastEvent?.event === 'AuctionStarted';
 
   const seller = isListed || isOnAuction ? lastEvent.args.seller.toLowerCase() : '';
 
@@ -235,6 +237,13 @@ const handlePathChanges = async (action, listenerApi) => {
     listenerApi.dispatch(initProfile(pathId));
   }
 };
+
+listenerMiddleware.startListening({
+  type: '@@INIT',
+  effect: () => {
+    console.log('@@INIT');
+  }
+});
 
 listenerMiddleware.startListening({
   type: 'INIT_MARKETPLACE',

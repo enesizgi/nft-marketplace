@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 import API from '../modules/api';
 import NFTShowcase from './NFTShowcase';
 import { getChainId, getNFTContract, getUserId } from '../store/selectors';
-import { JSON_RPC_PROVIDER } from '../constants';
+import { CHAIN_PARAMS, defaultChainId } from '../constants';
 import LoadingSpinner from './LoadingSpinner';
 
 const OwnedPage = ({ profileId, selectedTab }) => {
@@ -46,7 +46,7 @@ const OwnedPage = ({ profileId, selectedTab }) => {
       const signer1 = provider.getSigner();
       return new ethers.Contract(address, abi, signer1);
     }
-    const provider = new ethers.providers.JsonRpcProvider(JSON_RPC_PROVIDER);
+    const provider = new ethers.providers.JsonRpcProvider(CHAIN_PARAMS[chainId || defaultChainId].rpcUrls[0]);
     return new ethers.Contract(address, abi, provider);
   };
   const loadChainNFTs = async () => {

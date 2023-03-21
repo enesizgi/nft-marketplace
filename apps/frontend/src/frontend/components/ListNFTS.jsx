@@ -165,7 +165,7 @@ const ListNFTSPage = ({ profileId, selectedTab }) => {
       setLoading(false);
     };
     runAsync();
-  }, [profileId]);
+  }, [profileId, marketplaceContract, nftContract]);
 
   useEffect(() => {
     const runAsync = async () => {

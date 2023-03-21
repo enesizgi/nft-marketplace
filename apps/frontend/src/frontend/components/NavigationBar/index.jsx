@@ -146,16 +146,13 @@ const NavigationBar = () => {
       )}
       {/* TODO: consider overflow in navigation bar when search is implemented. */}
       {/* <Search /> */}
-      {isLoadingContracts || !userId ? (
-        <CoolButton onClick={handleInitMarketplace}>Connect</CoolButton>
-      ) : (
-        <>
-          <NetworkSelector />
-          <div className="navigationItem accountBox">
-            <AccountBox />
-          </div>
-        </>
+      <NetworkSelector />
+      {userId && (
+        <div className="navigationItem accountBox">
+          <AccountBox />
+        </div>
       )}
+      {(isLoadingContracts || !userId) && <CoolButton onClick={handleInitMarketplace}>Connect</CoolButton>}
     </ScNavigationBar>
   );
 };

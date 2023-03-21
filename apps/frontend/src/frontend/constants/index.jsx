@@ -2,6 +2,8 @@ import EthereumLogo from '../assets/ethereum-logo.png';
 import HardhatLogo from '../assets/hardhat-logo.png';
 import { ReactComponent as PolygonLogo } from '../assets/polygon-logo.svg';
 
+export const defaultChainId = '0xaa36a7';
+
 export const theme = {
   blue: 'rgb(64,75,133)',
   buttonBackground: '#151827'
@@ -25,9 +27,6 @@ export const PAGE_NAMES = {
   [PAGE_LINKS.PURCHASES]: 'My purchases'
 };
 
-// export const JSON_RPC_PROVIDER = window.location.href.includes('localhost') ? 'http://localhost:8545' : '';
-export const JSON_RPC_PROVIDER = window.location.href.includes('localhost') ? 'http://localhost:8545' : 'https://goerli.infura.io/v3/';
-
 export const NFT_ACTIVITY_TYPES = {
   MINT: 'Mint',
   TRANSFER: 'Transfer',
@@ -48,7 +47,7 @@ export const MODAL_TYPES = {
 export const CHAIN_PARAMS = {
   '0xaa36a7': {
     chainId: '0xaa36a7',
-    rpcUrls: ['https://rpc2.sepolia.org/'],
+    rpcUrls: ['https://rpc.ankr.com/eth_sepolia'],
     chainName: 'Sepolia',
     nativeCurrency: {
       name: 'Ether',
@@ -59,7 +58,7 @@ export const CHAIN_PARAMS = {
   },
   '0x5': {
     chainId: '0x5',
-    rpcUrls: ['https://goerli.infura.io/v3/'],
+    rpcUrls: ['https://rpc.ankr.com/eth_goerli'],
     chainName: 'Goerli',
     nativeCurrency: {
       name: 'Ether',

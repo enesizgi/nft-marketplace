@@ -1,9 +1,9 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
+import { defaultChainId } from '../constants';
 
 const initialState = {
-  chainId: null,
-  defaultChainId: '0x5',
+  chainId: sessionStorage.getItem('chainId') || defaultChainId,
   isLoadingContracts: true
 };
 

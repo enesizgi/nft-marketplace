@@ -1,6 +1,7 @@
 import { ethers } from 'ethers';
 import { createSelector } from 'reselect';
 import { getMarketplaceContractFn, getNFTContractFn } from '../components/utils';
+import { defaultChainId } from '../constants';
 
 export const getUser = state => state.user;
 
@@ -20,13 +21,11 @@ export const getUsername = createSelector(getUser, ({ name }) => name);
 
 export const getChainId = createSelector(getMarketplace, ({ chainId }) => chainId);
 
-export const getDefaultChainId = createSelector(getMarketplace, ({ defaultChainId }) => defaultChainId);
+export const getChainIdWithDefault = createSelector(getChainId, chainId => chainId || defaultChainId);
 
-export const getChainIdWithDefault = createSelector(getChainId, getDefaultChainId, (chainId, defaultChainId) => chainId || defaultChainId);
+export const getMarketplaceContract = createSelector(getUserId, getChainId, getMarketplaceContractFn);
 
-export const getMarketplaceContract = createSelector(getUserId, getChainId, getDefaultChainId, getMarketplaceContractFn);
-
-export const getNFTContract = createSelector(getUserId, getChainId, getDefaultChainId, getNFTContractFn);
+export const getNFTContract = createSelector(getUserId, getChainId, getNFTContractFn);
 
 export const getIsLoadingContracts = createSelector(getMarketplace, ({ isLoadingContracts }) => isLoadingContracts);
 

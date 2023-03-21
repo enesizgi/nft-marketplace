@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import OnOutsideClick from 'react-outclick';
 import CoolButton from './CoolButton';
 import { ReactComponent as PolygonLogo } from '../../assets/polygon-logo.svg';
 import EthereumLogo from '../../assets/ethereum-logo.png';
 import HardhatLogo from '../../assets/hardhat-logo.png';
-import { CHAIN_PARAMS, DEVICE_TYPES, NETWORK_LOGOS } from '../../constants';
-import { getChainIdWithDefault, getDeviceType } from '../../store/selectors';
+import { CHAIN_PARAMS, defaultChainId, DEVICE_TYPES, NETWORK_LOGOS } from '../../constants';
+import { getChainIdWithDefault, getDeviceType, getUserId } from '../../store/selectors';
 import Dropdown from '../Dropdown';
+import { setChainId } from '../../store/marketplaceSlice';
 
 const ScNetworkSelector = styled.div`
   height: 100%;
@@ -49,13 +50,27 @@ const ScNetworkSelector = styled.div`
 `;
 
 const NetworkSelector = () => {
+  const dispatch = useDispatch();
   const [isDropdownOpened, setDropdownOpened] = useState(false);
   const chainId = useSelector(getChainIdWithDefault);
   const deviceType = useSelector(getDeviceType);
+  const userId = useSelector(getUserId);
+
+  useEffect(() => {
+    if (!sessionStorage.getItem('chainId')) {
+      sessionStorage.setItem('chainId', defaultChainId);
+    }
+  }, []);
 
   // TODO @Enes: Reload homepage after changing network
   // TODO @Enes: Add localhost to networks
   const handleNetworkChange = networkId => async () => {
+    if (!userId) {
+      sessionStorage.setItem('chainId', networkId);
+      dispatch(setChainId(networkId));
+      setDropdownOpened(false);
+      return;
+    }
     if (!window.ethereum) return;
     try {
       await window.ethereum.request({
