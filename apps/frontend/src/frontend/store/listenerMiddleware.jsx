@@ -138,7 +138,7 @@ const handleInitNFTState = async (action, listenerApi) => {
   const auctionEndedQuery = marketplaceContract.queryFilter(auctionEndedFilter, fromBlockNumber);
   const promiseList = await Promise.allSettled([transferQuery, boughtQuery, offeredQuery, auctionQuery, auctionEndedQuery]);
   const [transferPromise, ...eventPromiseList] = promiseList;
-  console.log(transferPromise);
+  console.log(promiseList);
   const eventsArray = eventPromiseList.reduce((acc, eventPromise) => {
     if (eventPromise.status === 'fulfilled' && eventPromise.value != null) acc.push(eventPromise.value);
     else acc.push([]);
@@ -237,13 +237,6 @@ const handlePathChanges = async (action, listenerApi) => {
     listenerApi.dispatch(initProfile(pathId));
   }
 };
-
-listenerMiddleware.startListening({
-  type: '@@INIT',
-  effect: () => {
-    console.log('@@INIT');
-  }
-});
 
 listenerMiddleware.startListening({
   type: 'INIT_MARKETPLACE',

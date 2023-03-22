@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { CONTRACTS } from 'constants';
+import { CONTRACTS } from 'contracts';
 import { CHAIN_PARAMS, defaultChainId } from '../constants';
 import API from '../modules/api';
 

@@ -10,6 +10,7 @@ import { writeFile, readFile } from 'fs/promises';
 import * as dotenv from 'dotenv';
 import https from 'https';
 import * as mongoose from 'mongoose';
+import { CONTRACTS, NETWORK_IDS } from 'contracts';
 import Nft from './models/nft';
 import userRouter from './routes/userRoute';
 import { apiBaseURL, apiProtocol } from './constants';
@@ -113,11 +114,19 @@ app.use('/assets', express.static(path.join(dirname, '/assets')));
 
 (async () => {
   await mongoose.connect(process.env.MONGO_URI, {});
-  if (process.env.NODE_ENV === 'production') {
-    setInterval(() => {
-      ['0x5', '0xaa36a7'].map(i => fetchMarketplaceEvents(i));
-    }, 3000);
-  }
+  setInterval(async () => {
+    try {
+      if (process.env.NODE_ENV === 'production') {
+        Object.keys(CONTRACTS)
+          .filter(chainId => chainId !== NETWORK_IDS.LOCALHOST)
+          .map(chainId => fetchMarketplaceEvents(chainId));
+      } else {
+        await fetchMarketplaceEvents(NETWORK_IDS.LOCALHOST);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }, 5000);
 })();
 if (apiBaseURL.includes('localhost')) {
   app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`)); // eslint-disable-line
