@@ -69,7 +69,7 @@ export const CHAIN_PARAMS = {
   },
   '0x89': {
     chainId: '0x89',
-    rpcUrls: ['https://polygon-rpc.com/'],
+    rpcUrls: ['https://rpc.ankr.com/polygon'],
     chainName: 'Polygon',
     nativeCurrency: {
       name: 'Matic',

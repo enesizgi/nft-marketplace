@@ -10,6 +10,7 @@ import { CHAIN_PARAMS, defaultChainId, DEVICE_TYPES, NETWORK_LOGOS } from '../..
 import { getChainIdWithDefault, getDeviceType, getUserId } from '../../store/selectors';
 import Dropdown from '../Dropdown';
 import { setChainId } from '../../store/marketplaceSlice';
+import { changeNetwork } from '../../utils';
 
 const ScNetworkSelector = styled.div`
   height: 100%;
@@ -68,32 +69,10 @@ const NetworkSelector = () => {
     if (!userId) {
       sessionStorage.setItem('chainId', networkId);
       dispatch(setChainId(networkId));
-      setDropdownOpened(false);
-      return;
+    } else if (window.ethereum) {
+      await changeNetwork(networkId);
     }
-    if (!window.ethereum) return;
-    try {
-      await window.ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: networkId }] // chainId must be in hexadecimal numbers
-      });
-      setDropdownOpened(false);
-    } catch (error) {
-      // This error code indicates that the chain has not been added to MetaMask
-      // if it is not, then install it into the user MetaMask
-      if (error.code === 4902) {
-        try {
-          await window.ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [CHAIN_PARAMS[networkId]]
-          });
-          setDropdownOpened(false);
-        } catch (addError) {
-          console.error(addError);
-        }
-      }
-      console.error(error);
-    }
+    setDropdownOpened(false);
   };
 
   const { type: logoType, src: Logo } = NETWORK_LOGOS[chainId] || {};

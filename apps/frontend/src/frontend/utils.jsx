@@ -1,4 +1,5 @@
 import { ethers } from 'ethers';
+import { CHAIN_PARAMS } from './constants';
 
 export const classNames = classes => {
   let str = '';
@@ -35,3 +36,26 @@ export const serializeBigNumber = obj =>
   );
 
 export const compare = (s1, s2) => s1 && s2 && s1.toLowerCase() === s2.toLowerCase();
+
+export const changeNetwork = async networkId => {
+  try {
+    await window.ethereum.request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: networkId }] // chainId must be in hexadecimal numbers
+    });
+  } catch (error) {
+    // This error code indicates that the chain has not been added to MetaMask
+    // if it is not, then install it into the user MetaMask
+    if (error.code === 4902) {
+      try {
+        await window.ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [CHAIN_PARAMS[networkId]]
+        });
+      } catch (addError) {
+        console.error(addError);
+      }
+    }
+    console.error(error);
+  }
+};

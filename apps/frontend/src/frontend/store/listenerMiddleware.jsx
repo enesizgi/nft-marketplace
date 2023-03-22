@@ -2,7 +2,7 @@ import { createListenerMiddleware, isAnyOf } from '@reduxjs/toolkit';
 import { ethers } from 'ethers';
 import { setSignedMessage, setUser } from './userSlice';
 import API from '../modules/api';
-import { generateSignatureData, serializeBigNumber } from '../utils';
+import { changeNetwork, generateSignatureData, serializeBigNumber } from '../utils';
 import { setChainId, setIsLoadingContracts } from './marketplaceSlice';
 import { setProfile } from './profileSlice';
 import { loadNFT, setCurrentPath, setLoading } from './uiSlice';
@@ -50,6 +50,10 @@ const setChainIdOfAccount = async () => {
 const handleInitMarketplace = async (action, listenerApi) => {
   const sessionAccount = sessionStorage.getItem('account');
   const sessionChainId = sessionStorage.getItem('chainId');
+  const metamaskChainId = await window.ethereum.request({ method: 'eth_chainId' });
+  if (sessionChainId && sessionChainId !== metamaskChainId) {
+    await changeNetwork(sessionChainId);
+  }
 
   const id = sessionAccount || (await setAccounts());
   const chainIdOfAccount = sessionChainId || (await setChainIdOfAccount());
