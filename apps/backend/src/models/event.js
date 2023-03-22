@@ -6,6 +6,7 @@ const EventSchema = new mongoose.Schema(
     itemId: Number,
     auctionId: Number,
     nft: String,
+    marketplaceContract: String,
     price: String,
     tokenId: Number,
     seller: String,

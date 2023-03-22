@@ -119,36 +119,28 @@ const handleInitNFTState = async (action, listenerApi) => {
   const owner = _nftOwner.toLowerCase();
   const uri = await nftContract.tokenURI(tokenId);
   const cid = uri.split('ipfs://')[1];
-
+  const mongoEvents = await API.getEvents({ network: chainId, nft: nftContract.address, tokenId: parseInt(tokenId) });
   const isSameToken = tokenId === currentTokenId?.toString();
-  console.log(isSameToken);
   const metadata = currentMetadata && isSameToken ? currentMetadata : await API.getFromIPFS(cid);
   const fromBlockNumber =
     isSameToken && currentTransactions.length > 0 ? currentTransactions.reduce((acc, t) => (t.blockNumber > acc ? t.blockNumber : acc), -1) + 1 : 0;
-  console.log(isSameToken && currentTransactions.length > 0, fromBlockNumber, currentTokenId, tokenId);
 
   // TODO @Enes: Cache mechanism for transactions maybe? Get events from mongodb?
   const currentMintTransaction = isSameToken && currentTransactions.find(t => t.type === NFT_ACTIVITY_TYPES.MINT);
   const transferFilter = nftContract.filters.Transfer(ethers.constants.AddressZero, null, tokenId);
   const transferQuery = currentMintTransaction ? [] : nftContract.queryFilter(transferFilter, fromBlockNumber);
 
-  const boughtFilter = marketplaceContract.filters.Bought(null, null, tokenId, null, null, null);
-  const offeredFilter = marketplaceContract.filters.Offered(null, null, tokenId, null, null);
-  const auctionFilter = marketplaceContract.filters.AuctionStarted(null, null, tokenId, null, null, null);
-  const auctionEndedFilter = marketplaceContract.filters.AuctionEnded(null, null, tokenId, null, null, null);
-  const boughtQuery = marketplaceContract.queryFilter(boughtFilter, fromBlockNumber);
-  const offeredQuery = marketplaceContract.queryFilter(offeredFilter, fromBlockNumber);
-  const auctionQuery = marketplaceContract.queryFilter(auctionFilter, fromBlockNumber);
-  const auctionEndedQuery = marketplaceContract.queryFilter(auctionEndedFilter, fromBlockNumber);
+  const boughtQuery = mongoEvents.filter(e => e.type === 'Bought');
+  const offeredQuery = mongoEvents.filter(e => e.type === 'Offered');
+  const auctionQuery = mongoEvents.filter(e => e.type === 'AuctionStarted');
+  const auctionEndedQuery = mongoEvents.filter(e => e.type === 'AuctionEnded');
   const promiseList = await Promise.allSettled([transferQuery, boughtQuery, offeredQuery, auctionQuery, auctionEndedQuery]);
   const [transferPromise, ...eventPromiseList] = promiseList;
-  console.log(promiseList);
   const eventsArray = eventPromiseList.reduce((acc, eventPromise) => {
     if (eventPromise.status === 'fulfilled' && eventPromise.value != null) acc.push(eventPromise.value);
     else acc.push([]);
     return acc;
   }, []);
-  console.log(eventsArray);
   const [boughtResults, , , auctionEndedResults] = eventsArray;
   const events = eventsArray.flat(1);
   const lastEvent = events.reduce((acc, event) => {
@@ -158,12 +150,12 @@ const handleInitNFTState = async (action, listenerApi) => {
   }, null);
 
   const sortFn = (a, b) => parseFloat(`${b.blockNumber}.${b.transactionIndex}`) - parseFloat(`${a.blockNumber}.${a.transactionIndex}`);
-  const itemId = lastEvent?.args?.itemId;
-  const auctionId = lastEvent?.args?.auctionId;
+  const itemId = lastEvent?.itemId;
+  const auctionId = lastEvent?.auctionId;
 
   let i;
   let totalPrice;
-  if (lastEvent?.event === 'Offered' || lastEvent?.event === 'AuctionStarted') {
+  if (lastEvent?.type === 'Offered' || lastEvent?.type === 'AuctionStarted') {
     if (itemId) {
       i = await marketplaceContract.items(itemId);
       totalPrice = await marketplaceContract.getTotalPrice(itemId);
@@ -190,9 +182,7 @@ const handleInitNFTState = async (action, listenerApi) => {
   };
 
   const finalItem = removeIndexKeys(serializeBigNumber(it));
-  console.log(transferPromise.value);
 
-  console.log([...currentTransactions, ...boughtResults, ...auctionEndedResults, ...(transferPromise.value || [])].sort(sortFn));
   const nftTransactionData = [...currentTransactions, ...boughtResults, ...auctionEndedResults, ...(transferPromise.value || [])]
     .sort(sortFn)
     .map(e => {
@@ -211,10 +201,10 @@ const handleInitNFTState = async (action, listenerApi) => {
     });
 
   const isNFTOwnedByMarketplace = owner === marketplaceContract.address.toLowerCase();
-  const isListed = isNFTOwnedByMarketplace && lastEvent?.event === 'Offered';
-  const isOnAuction = isNFTOwnedByMarketplace && lastEvent?.event === 'AuctionStarted';
+  const isListed = isNFTOwnedByMarketplace && lastEvent?.type === 'Offered';
+  const isOnAuction = isNFTOwnedByMarketplace && lastEvent?.type === 'AuctionStarted';
 
-  const seller = isListed || isOnAuction ? lastEvent.args.seller.toLowerCase() : '';
+  const seller = isListed || isOnAuction ? lastEvent.seller.toLowerCase() : '';
 
   listenerApi.dispatch(setNFT({ ...finalItem, transactions: nftTransactionData, owner, seller, isListed, isOnAuction }));
   listenerApi.dispatch(setLoading(false));

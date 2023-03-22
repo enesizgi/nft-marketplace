@@ -36,9 +36,11 @@ export const getLastStatusOfNft = async events => {
             type: 'Listing',
             itemId: event.itemId,
             nft: event.nft,
+            marketplaceContract: event.marketplaceContract,
             tokenId: event.tokenId,
             price: event.price,
             seller: event.seller,
+            network: event.network,
             sold: false,
             canceled: false
           });
@@ -46,7 +48,7 @@ export const getLastStatusOfNft = async events => {
         case 'Bought':
           acc.updateEvents.push({
             updateOne: {
-              filter: { itemId: event.itemId },
+              filter: { type: 'Listing', itemId: event.itemId, network: event.network, marketplaceContract: event.marketplaceContract },
               update: { $set: { buyer: event.buyer, sold: true } }
             }
           });
@@ -56,10 +58,12 @@ export const getLastStatusOfNft = async events => {
             type: 'Auction',
             auctionId: event.auctionId,
             nft: event.nft,
+            marketplaceContract: event.marketplaceContract,
             tokenId: event.tokenId,
             price: event.price,
             timeToEnd: event.timeToEnd,
             seller: event.seller,
+            network: event.network,
             claimed: false,
             canceled: false
           });
@@ -67,7 +71,7 @@ export const getLastStatusOfNft = async events => {
         case 'AuctionEnded':
           acc.updateEvents.push({
             updateOne: {
-              filter: { itemId: event.itemId },
+              filter: { type: 'Auction', auctionId: event.auctionId, network: event.network, marketplaceContract: event.marketplaceContract },
               update: { $set: { winner: event.winner, claimed: true } }
             }
           });
@@ -75,7 +79,7 @@ export const getLastStatusOfNft = async events => {
         case 'OfferCanceled':
           acc.updateEvents.push({
             updateOne: {
-              filter: { itemId: event.itemId },
+              filter: { type: 'Listing', itemId: event.itemId, network: event.network, marketplaceContract: event.marketplaceContract },
               update: { $set: { canceled: true } }
             }
           });
@@ -83,7 +87,7 @@ export const getLastStatusOfNft = async events => {
         case 'AuctionCanceled':
           acc.updateEvents.push({
             updateOne: {
-              filter: { auctionId: event.auctionId },
+              filter: { type: 'Auction', auctionId: event.auctionId, network: event.network, marketplaceContract: event.marketplaceContract },
               update: { $set: { canceled: true } }
             }
           });
@@ -103,12 +107,12 @@ export const fetchMarketplaceEvents = async chainId => {
   let insertData = [];
   try {
     dotenv.config();
+    const isLocalhost = chainId === NETWORK_IDS.LOCALHOST;
     const maxBlockNumber = await Event.find().sort({ blockNumber: -1 }).limit(1).lean();
-    const fromBlock = chainId !== NETWORK_IDS.LOCALHOST && maxBlockNumber[0] ? maxBlockNumber[0].blockNumber + 1 : 0;
-    const provider =
-      chainId === NETWORK_IDS.LOCALHOST
-        ? new ethers.providers.JsonRpcProvider('http://127.0.0.1:8545')
-        : new ethers.providers.EtherscanProvider(Number(chainId), process.env.ETHERSCAN_API_KEY);
+    const fromBlock = !isLocalhost && maxBlockNumber[0] ? maxBlockNumber[0].blockNumber + 1 : 0;
+    const provider = isLocalhost
+      ? new ethers.providers.JsonRpcProvider('http://127.0.0.1:8545')
+      : new ethers.providers.EtherscanProvider(Number(chainId), process.env.ETHERSCAN_API_KEY);
     const marketplaceContract = new ethers.Contract(CONTRACTS[chainId].MARKETPLACE.address, CONTRACTS[chainId].MARKETPLACE.abi, provider);
     const events = await marketplaceContract.queryFilter('*', fromBlock);
     // console.log(events);
@@ -125,23 +129,29 @@ export const fetchMarketplaceEvents = async chainId => {
         ...(itemId ? { itemId: ethers.BigNumber.from(itemId).toNumber() } : {}),
         ...(auctionId ? { auctionId: ethers.BigNumber.from(auctionId).toNumber() } : {}),
         nft,
+        marketplaceContract: CONTRACTS[chainId].MARKETPLACE.address,
         ...(price ? { price: ethers.BigNumber.from(price).toString() } : {}),
         ...(tokenId ? { tokenId: ethers.BigNumber.from(tokenId).toNumber() } : {}),
         seller,
         ...(buyer ? { buyer } : {}),
-        ...(timeToEnd ? { timeToEnd: new Date(ethers.BigNumber.from(timeToEnd).toNumber()) } : {}),
+        ...(timeToEnd ? { timeToEnd: new Date(ethers.BigNumber.from(timeToEnd).toNumber() * 1000) } : {}),
         blockNumber,
         transactionIndex,
         transactionHash,
         network: chainId
       };
     });
-    const session = await mongoose.startSession();
-    session.startTransaction();
-    await Event.deleteMany({ network: chainId });
-    await Promise.all([Event.insertMany(insertData), getLastStatusOfNft(insertData)]);
-    await session.commitTransaction();
-    session.endSession();
+    if (isLocalhost) {
+      const session = await mongoose.startSession();
+      session.startTransaction();
+      await Event.deleteMany({ network: chainId });
+      await NftStatus.deleteMany({ network: chainId });
+      await Promise.all([Event.insertMany(insertData), getLastStatusOfNft(insertData)]);
+      await session.commitTransaction();
+      session.endSession();
+    } else {
+      await Promise.all([Event.insertMany(insertData), getLastStatusOfNft(insertData)]);
+    }
   } catch (err) {
     console.log(err);
   }

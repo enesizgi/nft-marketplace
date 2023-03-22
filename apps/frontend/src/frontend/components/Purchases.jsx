@@ -14,21 +14,18 @@ const PurchasesPage = ({ profileId, selectedTab }) => {
 
   const loadPurchasedItems = async () => {
     // Fetch purchased items from marketplace by quering Offered events with the buyer set as the user
-    const boughtFilter = marketplaceContract.filters.Bought(null, null, null, null, null, profileId);
-    const boughtResults = await marketplaceContract.queryFilter(boughtFilter);
-    const offeredFilter = marketplaceContract.filters.Offered(null, null, null, null, profileId);
-    const offeredResults = await marketplaceContract.queryFilter(offeredFilter);
+    const boughtResults = await API.getEvents({ type: 'Bought', buyer: profileId });
+    const offeredResults = await API.getEvents({ type: 'Offered', seller: profileId });
 
     const sortedEvents = [...boughtResults, ...offeredResults].sort((a, b) => b.blockNumber - a.blockNumber);
-    const uniqEvents = sortedUniqBy(sortedEvents, i => i.args.tokenId.toBigInt());
-    const boughtItems = uniqEvents.filter(i => i.event === 'Bought');
+    const uniqEvents = sortedUniqBy(sortedEvents, i => i.tokenId);
+    const boughtItems = uniqEvents.filter(i => i.type === 'Bought');
     // Fetch metadata of each nft and add that to listedItem object.
     // eslint-disable-next-line no-shadow
     const purchases = await Promise.all(
       boughtItems.map(async i => {
         // TODO @Enes: Rename above variable to something else
         // fetch arguments from each result
-        i = i.args; // eslint-disable-line no-param-reassign
         // get uri url from nft contract
         const uri = await nftContract.tokenURI(i.tokenId);
         const cid = uri.split('ipfs://')[1];

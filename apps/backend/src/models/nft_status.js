@@ -5,6 +5,7 @@ const NftStatusSchema = new mongoose.Schema(
     type: String,
     itemId: Number,
     nft: String,
+    marketplaceContract: String,
     price: String,
     tokenId: Number,
     seller: String,

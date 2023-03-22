@@ -100,17 +100,14 @@ const NFTDetailHeader = () => {
 
   useEffect(() => {
     if (isWindowFocused) {
-      console.log('loadNFT');
       dispatch(loadNFT());
     }
     const intervalId = setInterval(() => {
       if (isWindowFocused) {
-        console.log('loadNFT');
         dispatch(loadNFT());
       }
     }, 15000);
     return () => {
-      console.log('clearInterval');
       clearInterval(intervalId);
     };
   }, [isWindowFocused]);

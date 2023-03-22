@@ -101,6 +101,8 @@ class API {
       endpoint: '/user',
       qs: { slug }
     });
+
+  getEvents = async qs => this.getRequest({ endpoint: '/events', qs });
 }
 
 export default new API();
