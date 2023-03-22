@@ -14,6 +14,7 @@ import { CONTRACTS, NETWORK_IDS } from 'contracts';
 import Nft from './models/nft';
 import userRouter from './routes/userRoute';
 import eventRouter from './routes/eventRoute';
+import nftStatusRouter from './routes/nftStatusRoute';
 import { apiBaseURL, apiProtocol } from './constants';
 import { fetchMarketplaceEvents } from './utils';
 
@@ -105,6 +106,7 @@ app.get('/get-from-ipfs', async (req, res) => {
 
 app.use(userRouter);
 app.use(eventRouter);
+app.use(nftStatusRouter);
 
 ['/assets', '/assets/images', '/assets/nfts'].forEach(dir => {
   if (!fs.existsSync(`${dirname}${dir}`)) {

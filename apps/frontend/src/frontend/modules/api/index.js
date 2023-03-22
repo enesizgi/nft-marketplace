@@ -103,6 +103,10 @@ class API {
     });
 
   getEvents = async qs => this.getRequest({ endpoint: '/events', qs });
+
+  getNftStatus = async qs => this.getRequest({ endpoint: '/nftStatus', qs });
+
+  getNftCount = async qs => this.getRequest({ endpoint: '/nftStatus/count', qs });
 }
 
 export default new API();
