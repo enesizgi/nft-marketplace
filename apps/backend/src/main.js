@@ -95,9 +95,9 @@ app.get('/get-from-ipfs', async (req, res) => {
       });
     }
 
-    const response = await client.get(req.query.cid);
-    const files = await response.files();
-    return res.json({ isIPFS: true, files });
+    const response = await fetch(`https://${req.query.cid}.ipfs.w3s.link`);
+    const json = await response.json();
+    return res.json({ isIPFS: true, ...json, ...(json.image ? { url: json.image } : {}) });
   } catch (err) {
     console.log(err);
     return res.status(500).send();
