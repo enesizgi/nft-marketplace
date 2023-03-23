@@ -18,6 +18,10 @@ import nftStatusRouter from './routes/nftStatusRoute';
 import { apiBaseURL, apiProtocol } from './constants';
 import { fetchMarketplaceEvents } from './utils';
 
+if (+process.versions.node.split('.')[0] < 18) {
+  throw new Error('Node version must be 18 or higher');
+}
+
 dotenv.config();
 const dirname = path.resolve();
 const storage = multer.diskStorage({
