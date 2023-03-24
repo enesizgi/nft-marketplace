@@ -18,6 +18,8 @@ import nftStatusRouter from './routes/nftStatusRoute';
 import priceRouter from './routes/priceRoute';
 import { apiBaseURL, apiProtocol } from './constants';
 import { fetchEthPrice, fetchMarketplaceEvents } from './utils';
+import Event from './models/event';
+import NftStatus from './models/nft_status';
 
 if (+process.versions.node.split('.')[0] < 18) {
   throw new Error('Node version must be 18 or higher');
@@ -124,15 +126,14 @@ app.use('/assets', express.static(path.join(dirname, '/assets')));
 
 (async () => {
   await mongoose.connect(process.env.MONGO_URI, {});
+  if (process.env.NODE_ENV !== 'production') await Promise.all([await Event.deleteMany({}), await NftStatus.deleteMany({})]);
+
   setInterval(async () => {
     try {
       if (process.env.NODE_ENV === 'production') {
-        Object.keys(CONTRACTS)
-          .filter(chainId => chainId !== NETWORK_IDS.LOCALHOST)
-          .map(chainId => fetchMarketplaceEvents(chainId));
-      } else {
-        await fetchMarketplaceEvents(NETWORK_IDS.LOCALHOST);
-      }
+        const chainIds = Object.keys(CONTRACTS).filter(chainId => chainId !== NETWORK_IDS.LOCALHOST);
+        await Promise.all(chainIds.map(chainId => fetchMarketplaceEvents(chainId)));
+      } else await fetchMarketplaceEvents(NETWORK_IDS.LOCALHOST);
     } catch (err) {
       console.log(err);
     }

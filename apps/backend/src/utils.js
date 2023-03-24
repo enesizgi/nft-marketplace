@@ -1,7 +1,6 @@
 import { ethers } from 'ethers';
 import * as dotenv from 'dotenv';
 import { CONTRACTS, NETWORK_IDS } from 'contracts';
-import mongoose from 'mongoose';
 import Event from './models/event';
 import Price from './models/price';
 import NftStatus from './models/nft_status';
@@ -142,17 +141,7 @@ export const fetchMarketplaceEvents = async chainId => {
         network: chainId
       };
     });
-    if (isLocalhost) {
-      const session = await mongoose.startSession();
-      session.startTransaction();
-      await Event.deleteMany({ network: chainId });
-      await NftStatus.deleteMany({ network: chainId });
-      await Promise.all([Event.insertMany(insertData), getLastStatusOfNft(insertData)]);
-      await session.commitTransaction();
-      session.endSession();
-    } else {
-      await Promise.all([Event.insertMany(insertData), getLastStatusOfNft(insertData)]);
-    }
+    await Promise.all([Event.insertMany(insertData), getLastStatusOfNft(insertData)]);
   } catch (err) {
     console.log(err);
   }
