@@ -15,8 +15,9 @@ import Nft from './models/nft';
 import userRouter from './routes/userRoute';
 import eventRouter from './routes/eventRoute';
 import nftStatusRouter from './routes/nftStatusRoute';
+import priceRouter from './routes/priceRoute';
 import { apiBaseURL, apiProtocol } from './constants';
-import { fetchMarketplaceEvents } from './utils';
+import { fetchEthPrice, fetchMarketplaceEvents } from './utils';
 
 if (+process.versions.node.split('.')[0] < 18) {
   throw new Error('Node version must be 18 or higher');
@@ -111,6 +112,7 @@ app.get('/get-from-ipfs', async (req, res) => {
 app.use(userRouter);
 app.use(eventRouter);
 app.use(nftStatusRouter);
+app.use(priceRouter);
 
 ['/assets', '/assets/images', '/assets/nfts'].forEach(dir => {
   if (!fs.existsSync(`${dirname}${dir}`)) {
@@ -134,7 +136,8 @@ app.use('/assets', express.static(path.join(dirname, '/assets')));
     } catch (err) {
       console.log(err);
     }
-  }, 5000);
+  }, 1000 * 5);
+  setInterval(fetchEthPrice, 1000 * 10);
 })();
 if (apiBaseURL.includes('localhost')) {
   app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`)); // eslint-disable-line

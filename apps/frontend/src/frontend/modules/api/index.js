@@ -107,6 +107,8 @@ class API {
   getNftStatus = async qs => this.getRequest({ endpoint: '/nftStatus', qs });
 
   getNftCount = async qs => this.getRequest({ endpoint: '/nftStatus/count', qs });
+
+  getETHUSDPrice = async () => this.getRequest({ endpoint: '/price/ethereum/usd' });
 }
 
 export default new API();

@@ -3,6 +3,7 @@ import * as dotenv from 'dotenv';
 import { CONTRACTS, NETWORK_IDS } from 'contracts';
 import mongoose from 'mongoose';
 import Event from './models/event';
+import Price from './models/price';
 import NftStatus from './models/nft_status';
 
 export const verifyMessage = async (req, res, next) => {
@@ -156,4 +157,14 @@ export const fetchMarketplaceEvents = async chainId => {
     console.log(err);
   }
   return insertData;
+};
+
+export const fetchEthPrice = async () => {
+  try {
+    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+    const data = await response.json();
+    await Price.findOneAndUpdate({ coin: 'Ethereum', symbol: 'ETH', currency: 'USD' }, { $set: { price: +data.ethereum.usd } }, { upsert: true });
+  } catch (err) {
+    console.log(err);
+  }
 };
