@@ -68,8 +68,15 @@ router.get('/user/check', async (req, res) => {
 
 router.post('/user/create', verifyMessage, async (req, res) => {
   try {
-    await User.create({ walletId: req.query.id, slug: null, name: 'Unnamed' });
-    return res.status(201).send({ status: 'User saved successfully', id: req.query.id });
+    try {
+      await User.create({ walletId: req.query.id, slug: null, name: 'Unnamed' });
+      return res.status(201).send({ status: 'User saved successfully', id: req.query.id });
+    } catch (err) {
+      if (err.code === 11000) {
+        return res.status(201).send({ status: 'User saved successfully', id: req.query.id });
+      }
+      return res.status(400).send();
+    }
   } catch (err) {
     console.log(err);
     return res.status(500).send();
