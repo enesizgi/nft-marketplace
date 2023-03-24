@@ -11,6 +11,6 @@ const NftSchema = new mongoose.Schema(
   }
 );
 
-const Nft = mongoose.model('Nft', NftSchema, 'nfts');
+NftSchema.index({ cid: 1, path: 1 }, { unique: true });
 
-export default Nft;
+export default mongoose.model('Nft', NftSchema, 'nfts');

@@ -22,6 +22,4 @@ const NftStatusSchema = new mongoose.Schema(
   }
 );
 
-const NftStatus = mongoose.model('NftStatus', NftStatusSchema, 'nft_status');
-
-export default NftStatus;
+export default mongoose.model('NftStatus', NftStatusSchema, 'nft_status');

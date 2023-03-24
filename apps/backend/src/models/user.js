@@ -12,8 +12,6 @@ const UserSchema = new mongoose.Schema(
   }
 );
 
-const User = mongoose.model('User', UserSchema, 'users');
-
 UserSchema.index({ walletId: 1 }, { unique: true });
 
-export default User;
+export default mongoose.model('User', UserSchema, 'users');

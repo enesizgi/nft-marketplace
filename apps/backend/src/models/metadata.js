@@ -13,6 +13,4 @@ const MetadataSchema = new mongoose.Schema(
   }
 );
 
-const Metadata = mongoose.model('Metadata', MetadataSchema, 'metadata');
-
-export default Metadata;
+export default mongoose.model('Metadata', MetadataSchema, 'metadata');
