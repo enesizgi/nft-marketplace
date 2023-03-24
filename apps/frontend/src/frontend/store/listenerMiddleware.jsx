@@ -23,8 +23,7 @@ const userLoginFlow = async (id, listenerApi) => {
     if (!createdUser) {
       console.warn('User could not be created.');
     } else {
-      const { slug, name } = createdUser;
-      listenerApi.dispatch(setUser({ id: id.toLowerCase(), slug, name }));
+      listenerApi.dispatch(setUser({ ...createdUser, id: id.toLowerCase() }));
     }
   } else {
     const signature = localStorage.getItem('signature');
