@@ -82,12 +82,13 @@ const ScNavigationBar = styled.div`
 
   .accountBox {
     height: 80px;
+    width: 80px;
     flex-shrink: 0;
     text-align: center;
 
     @media screen and (max-width: 768px) {
       height: 65px;
-      width: 95px;
+      width: 65px;
     }
 
     @media screen and (max-width: 480px) {

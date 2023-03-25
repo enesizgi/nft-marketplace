@@ -7,6 +7,7 @@ const ScDropdown = styled.div`
   border: 2px solid ${({ theme }) => theme.blue};
   border-radius: 10px;
   overflow: hidden;
+  z-index: 100;
 
   .dropdown-content-item {
     width: 100%;

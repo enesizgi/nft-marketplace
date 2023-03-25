@@ -34,6 +34,7 @@ const ScAccountBox = styled.div`
     &-content {
       display: inline-block;
       height: 100%;
+      width: 100%;
       box-sizing: border-box;
       border: 2px solid ${({ theme }) => theme.blue};
       border-radius: 100%;

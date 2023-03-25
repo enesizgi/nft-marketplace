@@ -82,7 +82,7 @@ const NetworkSelector = () => {
     <ScNetworkSelector isDropdownOpened={isDropdownOpened}>
       <OnOutsideClick onOutsideClick={() => setDropdownOpened(false)}>
         <div className="title-container">
-          <CoolButton className="title-container-title" onClick={() => setDropdownOpened(!isDropdownOpened)}>
+          <CoolButton className="title-container-title" onClick={() => setDropdownOpened(!isDropdownOpened)} isDropdownOpened={isDropdownOpened}>
             {logoType === 'svg' && <Logo />}
             {logoType && logoType !== 'svg' && <img src={Logo} alt="network logo" className="title-container-logo" />}
             {deviceType !== DEVICE_TYPES.MOBILE && <div className="network-name">{CHAIN_PARAMS[chainId]?.chainName ?? 'Unknown'}</div>}

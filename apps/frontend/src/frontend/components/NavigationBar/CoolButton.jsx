@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { theme } from '../../constants';
 
 const ScCoolButton = styled.div`
   background-color: rgba(76, 130, 251, 0.24);
@@ -19,11 +20,22 @@ const ScCoolButton = styled.div`
     &:hover {
       opacity: 0.6;
     }
+    &::after {
+      ${({ isDropdownOpened }) => (!isDropdownOpened ? 'display: none;' : '')}
+      position: absolute;
+      bottom: -7px;
+      left: calc(50% - 5px);
+      transform: rotateZ(45deg);
+      content: ' ';
+      width: 15px;
+      height: 15px;
+      background: ${theme.blue};
+    }
   }
 `;
 
-const CoolButton = ({ children, onClick }) => (
-  <ScCoolButton>
+const CoolButton = ({ children, onClick, isDropdownOpened }) => (
+  <ScCoolButton isDropdownOpened={isDropdownOpened}>
     <button type="button" onClick={onClick}>
       {children}
     </button>
