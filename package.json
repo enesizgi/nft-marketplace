@@ -4,6 +4,9 @@
   "private": false,
   "dependencies": {
     "@chainlink/contracts": "^0.4.2",
+    "@chakra-ui/react": "^2.5.3",
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
     "@nomiclabs/hardhat-ethers": "^2.2.1",
     "@nrwl/eslint-plugin-nx": "^15.8.6",
     "@nrwl/nx": "^7.8.7",
@@ -25,6 +28,7 @@
     "eslint-plugin-react": "7.32.2",
     "ethers": "^5.7.2",
     "express": "^4.18.2",
+    "framer-motion": "^10.9.1",
     "hardhat": "^2.12.2",
     "husky": "^8.0.2",
     "lodash": "^4.17.21",
