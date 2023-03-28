@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { ChakraProvider } from '@chakra-ui/react';
 import { ThemeProvider } from 'styled-components';
 import { setDeviceType } from '../store/uiSlice';
 import { getDeviceType } from '../store/selectors';
@@ -52,19 +53,23 @@ const App = () => {
       <RouteListener />
       <GlobalStyle />
       <ThemeProvider theme={theme}>
-        <div className="App">
-          {deviceType !== DEVICE_TYPES.DESKTOP && <LeftPanel />}
-          <NavigationBar />
-          <Routes>
-            <Route exact path="/" element={<HomePage />} />
-            <Route path="/user/*" element={<Profile />} />
-            <Route path="/mint-nfts" element={<MintNFTSPage />} />
-            <Route path="/my-listed-nfts" element={<ListNFTSPage />} />
-            <Route path="/my-purchases" element={<PurchasesPage />} />
-            <Route path="/nft/*" element={<NFTDetailPage />} />
-          </Routes>
-        </div>
-        <ModalContainer />
+        <ChakraProvider>
+          <div className="App">
+            {deviceType !== DEVICE_TYPES.DESKTOP && <LeftPanel />}
+            <NavigationBar />
+            <main className="routes-container">
+              <Routes>
+                <Route exact path="/" element={<HomePage />} />
+                <Route path="/user/*" element={<Profile />} />
+                <Route path="/mint-nfts" element={<MintNFTSPage />} />
+                <Route path="/my-listed-nfts" element={<ListNFTSPage />} />
+                <Route path="/my-purchases" element={<PurchasesPage />} />
+                <Route path="/nft/*" element={<NFTDetailPage />} />
+              </Routes>
+            </main>
+          </div>
+          <ModalContainer />
+        </ChakraProvider>
       </ThemeProvider>
     </BrowserRouter>
   );

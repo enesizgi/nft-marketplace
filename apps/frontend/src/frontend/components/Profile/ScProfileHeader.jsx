@@ -2,15 +2,19 @@ import styled from 'styled-components';
 
 const ScProfileHeader = styled.div`
   width: 100%;
-  height: 50%;
+  height: 400px;
   margin-bottom: 20px;
+
   @media screen and (max-width: 768px) {
-    height: 40%;
+    height: 300px;
+    margin-bottom: 25px;
   }
+
   @media screen and (max-width: 480px) {
-    height: 30%;
+    height: 200px;
     margin-bottom: 30px;
   }
+
   .profile-photos {
     position: relative;
     width: 100%;
@@ -25,9 +29,6 @@ const ScProfileHeader = styled.div`
         width: 100%;
         height: 100%;
       }
-      @media screen and (max-width: 480px) {
-        height: 60%;
-      }
     }
     .profile-photo {
       position: absolute;
@@ -39,8 +40,8 @@ const ScProfileHeader = styled.div`
         height: 175px;
       }
       @media screen and (max-width: 480px) {
-        width: 150px;
-        height: 150px;
+        width: 120px;
+        height: 120px;
       }
       border: 5px solid ${({ theme }) => theme.blue};
       border-radius: 100%;
@@ -60,24 +61,31 @@ const ScProfileHeader = styled.div`
   .profile-names {
     width: 70%;
     height: 20%;
-    margin-left: 20px;
+    margin-left: 2%;
     margin-bottom: 10px;
     margin-top: 10px;
     &-name {
+      line-height: 36px;
+      height: 36px;
       font-size: 36px;
+      font-weight: 600;
       @media screen and (max-width: 768px) {
+        line-height: 30px;
+        height: 30px;
         font-size: 30px;
       }
       @media screen and (max-width: 480px) {
+        line-height: 24px;
+        height: 24px;
         font-size: 24px;
       }
     }
     &-id {
-      max-width: 50%;
       text-overflow: ellipsis;
       overflow: hidden;
       color: rgb(105, 105, 105);
       font-size: 24px;
+      white-space: nowrap;
       @media screen and (max-width: 768px) {
         font-size: 20px;
       }

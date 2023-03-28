@@ -4,17 +4,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import AccountBox from './AccountBox';
 import { DEVICE_TYPES } from '../../constants';
-import { ReactComponent as MenuIcon } from '../../assets/menu-icon.svg';
 import { classNames } from '../../utils';
 import { initMarketplace } from '../../store/actionCreators';
-import { getDeviceType, getIsLeftPanelOpened, getIsLoadingContracts, getUserId } from '../../store/selectors';
-import { setLeftPanelOpened } from '../../store/uiSlice';
+import { getDeviceType, getIsLoadingContracts, getUserId } from '../../store/selectors';
 import CoolButton from './CoolButton';
 import NetworkSelector from './NetworkSelector';
+import { ReactComponent as LogoSvg } from '../../assets/nftao-logo.svg';
 
-const ScNavigationBar = styled.div`
+const ScNavigationBar = styled.nav`
+  position: fixed;
+  z-index: 2000;
   width: 100%;
-  height: 12%;
+  height: 100px;
   box-sizing: border-box;
   display: flex;
   flex-direction: row;
@@ -22,6 +23,10 @@ const ScNavigationBar = styled.div`
   align-items: center;
   padding: 0 16px;
   background: linear-gradient(rgba(21, 24, 39, 1) 0%, rgba(31, 35, 54, 1) 35%, rgba(51, 56, 80, 1) 100%);
+
+  @media screen and (max-width: 768px) {
+    height: 80px;
+  }
 
   .navigationItem {
     height: 100%;
@@ -41,11 +46,6 @@ const ScNavigationBar = styled.div`
       height: 70%;
       padding: 0 8px;
       transition: all 0.2s ease-in-out;
-    }
-
-    :not(.accountBox, .logoPlaceHolder, .menu):hover {
-      background: ${({ theme }) => theme.blue};
-      transform: translateX(10px);
     }
 
     .menu-icon {
@@ -80,7 +80,29 @@ const ScNavigationBar = styled.div`
     }
   }
 
-  .accountBox {
+  .navigationItem.logo {
+    overflow: hidden;
+    border: 0;
+    border-radius: 8px;
+    padding: 0;
+    object-fit: cover;
+    transition: 0.2s;
+    svg {
+      width: 100%;
+      height: 100%;
+      fill: #fff;
+      transition: 0.2s;
+    }
+    &:hover {
+      background: #fff;
+      svg {
+        fill: ${({ theme }) => theme.blue};
+      }
+    }
+  }
+
+  .accountBox,
+  .logo {
     height: 80px;
     width: 80px;
     flex-shrink: 0;
@@ -96,24 +118,18 @@ const ScNavigationBar = styled.div`
       width: 60px;
     }
   }
-
-  @media screen and (max-width: 768px) {
-    height: 80px;
-  }
 `;
 
 const NavigationBar = () => {
   const dispatch = useDispatch();
   const userId = useSelector(getUserId);
   const deviceType = useSelector(getDeviceType);
-  const isLeftPanelOpened = useSelector(getIsLeftPanelOpened);
   const isLoadingContracts = useSelector(getIsLoadingContracts);
 
   const isDesktop = deviceType === DEVICE_TYPES.DESKTOP;
   const isTablet = deviceType === DEVICE_TYPES.TABLET;
   const isMobile = deviceType === DEVICE_TYPES.MOBILE;
 
-  const toggleLeftPanel = () => dispatch(setLeftPanelOpened(!isLeftPanelOpened));
   const handleInitMarketplace = () => dispatch(initMarketplace());
 
   return (
@@ -125,12 +141,15 @@ const NavigationBar = () => {
           logoPlaceHolder: true,
           isDesktop,
           isTablet,
-          isMobile
+          isMobile,
+          logo: true
         })}
       >
-        NFTAO
+        <LogoSvg />
       </Link>
-      {!isDesktop && (
+
+      {/* Meaningless until we have that pages...
+      !isDesktop && (
         <button
           type="button"
           className={classNames({
@@ -144,7 +163,7 @@ const NavigationBar = () => {
         >
           <MenuIcon className="navigation-item menu-icon" alt="menuIcon" />
         </button>
-      )}
+      ) */}
       {/* TODO: consider overflow in navigation bar when search is implemented. */}
       {/* <Search /> */}
       <NetworkSelector />

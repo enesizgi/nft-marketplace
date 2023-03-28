@@ -5,7 +5,7 @@ import { ReactComponent as PolygonLogo } from '../assets/polygon-logo.svg';
 export const defaultChainId = '0xaa36a7';
 
 export const theme = {
-  blue: 'rgb(64,75,133)',
+  blue: '#2596be',
   buttonBackground: '#151827'
 };
 

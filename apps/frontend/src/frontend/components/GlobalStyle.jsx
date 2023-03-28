@@ -33,6 +33,19 @@ const GlobalStyle = createGlobalStyle`
     height: 100%;
   }
   
+  .routes-container {
+    position: absolute;
+    bottom: 0;
+    height: calc(100% - 100px);
+    width: 100%;
+    overflow: auto;
+    @media screen and (max-width: 768px) {
+      height: calc(100% - 80px);
+      margin-top: 80px;
+    }
+    transition: .2s;
+  }
+  
   button {
     background: none;
     color: inherit;

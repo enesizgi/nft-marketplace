@@ -10,7 +10,7 @@ const ScCoolButton = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    color: rgb(76, 130, 251);
+    color: ${theme.blue};
     cursor: pointer;
     font-size: 16px;
     font-weight: 600;
@@ -18,7 +18,7 @@ const ScCoolButton = styled.div`
     transition: all 125ms ease-in 0s;
 
     &:hover {
-      opacity: 0.6;
+      filter: brightness(120%);
     }
     &::after {
       ${({ isDropdownOpened }) => (!isDropdownOpened ? 'display: none;' : '')}
