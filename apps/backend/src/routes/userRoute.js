@@ -85,9 +85,13 @@ router.post('/user/create', verifyMessage, async (req, res) => {
 
 router.get('/user', async (req, res) => {
   try {
-    const searchKey = req.query.id ? 'walletId' : 'slug';
-    const value = req.query.id || req.query.slug;
-    const user = req.query.id && (await User.findOne({ [searchKey]: value }).lean());
+    let user;
+    if (req.query.slug) {
+      user = await User.findOne({ slug: req.query.slug }).lean();
+    } else {
+      // id
+      user = await User.findOne({ walletId: req.query.id }).lean();
+    }
     const images = user ? await Image.find({ user_id: user.walletId }).lean() : [];
     const imageObj = {};
     images.forEach(row => {
@@ -113,8 +117,7 @@ router.get('/user/slug', async (req, res) => {
   try {
     const user = req.query.id && (await User.findOne({ walletId: req.query.id }).lean());
     if (user) {
-      const { walletId: id, _id, ...rest } = user;
-      return res.send({ id, ...rest });
+      return res.status(200).send({ id: user.id, slug: user.slug });
     }
     // default response for the demo: will be changed
     return res.status(404).send();
@@ -153,6 +156,42 @@ async function uploadPhoto(req, id, url, type) {
   await Image.create({ user_id: id, image_path: url, type });
   return absolutePath;
 }
+
+router.post(
+  '/user/bulkUpdate',
+  userValidator,
+  verifyMessage,
+  upload.fields([
+    { name: 'profilePhoto', maxCount: 1 },
+    { name: 'coverPhoto', maxCount: 1 }
+  ]),
+  async (req, res) => {
+    const { coverPhoto: _coverPhoto, profilePhoto: _profilePhoto } = req.files;
+    const coverPhoto = _coverPhoto ? _coverPhoto[0] : null;
+    const profilePhoto = _profilePhoto ? _profilePhoto[0] : null;
+    const { name, slug } = req.query;
+    let coverURL;
+    let profileURL;
+    try {
+      if (profilePhoto) {
+        const profileRelativePath = profilePhoto.path.replace(/\.\.\//g, '');
+        profileURL = await uploadPhoto(req, req.query.id, profileRelativePath, imageType.ProfilePhoto);
+      }
+      if (coverPhoto) {
+        const coverRelativePath = coverPhoto.path.replace(/\.\.\//g, '');
+        coverURL = await uploadPhoto(req, req.query.id, coverRelativePath, imageType.CoverPhoto);
+      }
+    } catch (err) {
+      return res.status(500).send();
+    }
+
+    const result = await User.updateOne({ walletId: req.query.id }, { name, slug });
+    if (result.acknowledged && result.modifiedCount > 0) {
+      return res.status(200).send({ id: req.query.id, slug, name, profilePhoto: profileURL, coverPhoto: coverURL });
+    }
+    return res.status(500).send();
+  }
+);
 
 // TODO: Set up user controller and reuse code for profile and cover upload
 router.post('/user/upload-profile-photo', userValidator, verifyMessage, upload.single('profile-photo'), async (req, res) => {

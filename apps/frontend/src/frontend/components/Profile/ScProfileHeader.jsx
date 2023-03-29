@@ -92,19 +92,22 @@ const ScProfileHeader = styled.div`
       }
     }
     &-name {
-      max-width: 50%;
+      max-width: 70%;
       line-height: 36px;
-      height: 36px;
+      height: 40px;
       font-size: 36px;
       font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
       @media screen and (max-width: 768px) {
         line-height: 30px;
-        height: 30px;
+        height: 34px;
         font-size: 30px;
       }
       @media screen and (max-width: 480px) {
         line-height: 24px;
-        height: 24px;
+        height: 28px;
         font-size: 24px;
       }
     }

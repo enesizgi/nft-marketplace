@@ -17,12 +17,12 @@ class API {
 
     this.baseRequest =
       type =>
-      ({ endpoint, qs = {}, header, body, timeout }) => {
+      ({ endpoint, qs = {}, headers, body, timeout }) => {
         const fetchMethod = timeout ? this.fetchWithTimeout(timeout) : fetch;
 
         return fetchMethod(`${this.baseURL}${endpoint}${this.createQs(qs)}`, {
           method: type,
-          ...(header && { header }),
+          ...(headers && { headers }),
           ...(body && { body })
         })
           .then(response => response.json())
@@ -102,14 +102,11 @@ class API {
       qs: { slug }
     });
 
-  // TODO: implement endpoint in backend
-  bulkUpdateUser = async (id, signature, message, formData) =>
-    this.putRequest({
+  bulkUpdateUser = async (qs, payload) =>
+    this.postRequest({
       endpoint: '/user/bulkUpdate',
-      qs: { id, signature, message },
-      body: {
-        formData
-      }
+      qs,
+      body: payload
     });
 
   getEvents = async qs => this.getRequest({ endpoint: '/events', qs });

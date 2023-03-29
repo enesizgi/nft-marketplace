@@ -21,19 +21,19 @@ const BUTTON_SIZE_MAP = {
 const ScProfileEditModal = styled(FormControl)`
   display: flex;
   flex-direction: column;
-
   input {
-    margin-bottom: 20px;
+    &:not([aria-invalid]) {
+      margin-bottom: 20px;
+    }
   }
   label {
     font-weight: 600;
   }
   button {
     word-wrap: break-word;
-    max-width: calc(50% - 20px);
   }
   .chakra-form__helper-text {
-    transform: translateY(-20px);
+    margin-bottom: 20px;
     color: red;
   }
   .submitButton {
@@ -62,6 +62,11 @@ const ScProfileEditModal = styled(FormControl)`
       width: 120px;
       height: 120px;
     }
+  }
+  .upload-button-container {
+    max-width: calc(50% - 20px);
+    display: flex;
+    flex-direction: column;
   }
   .coverPhoto {
     margin-right: 20px;
@@ -104,24 +109,28 @@ const ProfileEditModal = ({ profile, updateSignedMessage }) => {
   const handleProfilePhotoUpload = e => {
     const file = e.target.files[0];
     if (file) {
+      if (file.size > 1024 * 1024 * 5) {
+        setErrorMessages({ ...errorMessages, profile: 'Image size should be less than 5MB.' });
+        return;
+      }
+      setErrorMessages({ ...errorMessages, profile: '' });
       setUploadedProfilePhoto(file);
       const url = URL.createObjectURL(file);
       setCurrentProfile({ ...currentProfile, profilePhoto: url });
-      setErrorMessages({ ...errorMessages, profile: '' });
-    } else {
-      setErrorMessages({ ...errorMessages, profile: 'Please upload a valid profile photo.' });
     }
   };
 
   const handleCoverPhotoUpload = e => {
     const file = e.target.files[0];
     if (file) {
+      if (file.size > 1024 * 1024 * 5) {
+        setErrorMessages({ ...errorMessages, cover: 'Image size should be less than 5MB.' });
+        return;
+      }
+      setErrorMessages({ ...errorMessages, profile: '' });
       setUploadedCoverPhoto(file);
       const url = URL.createObjectURL(file);
       setCurrentProfile({ ...currentProfile, coverPhoto: url });
-      setErrorMessages({ ...errorMessages, cover: '' });
-    } else {
-      setErrorMessages({ ...errorMessages, cover: 'Please upload a valid cover photo.' });
     }
   };
 
@@ -154,15 +163,20 @@ const ProfileEditModal = ({ profile, updateSignedMessage }) => {
     const { signature, message } = await generateSignatureData(signedMessage);
     updateSignedMessage(signature, message);
     const formData = new FormData();
-    if (uploadedProfilePhoto) formData.append('profile-photo', uploadedProfilePhoto);
-    if (uploadedCoverPhoto) formData.append('cover-photo', uploadedCoverPhoto);
-    formData.append('name', currentProfile.name);
-    formData.append('slug', currentProfile.slug);
-    const result = await API.bulkUpdateUser(profile.id, signature, message, formData);
+    if (uploadedProfilePhoto) formData.append('coverPhoto', uploadedCoverPhoto);
+    if (uploadedCoverPhoto) formData.append('profilePhoto', uploadedProfilePhoto);
+    const qs = {
+      id: profile.id,
+      signature,
+      message,
+      name: currentProfile.name,
+      slug: currentProfile.slug
+    };
+    const result = await API.bulkUpdateUser(qs, formData);
     dispatch(setUser(result));
     dispatch(initProfile(profile.id));
     setIsLoading(false);
-    setActiveModal('');
+    dispatch(setActiveModal(''));
   };
 
   if (isLoading) {
@@ -196,20 +210,24 @@ const ProfileEditModal = ({ profile, updateSignedMessage }) => {
       <FormLabel htmlFor="profilePhoto">Profile Photo</FormLabel>
       <div className="photoUpload-container">
         <img className="profilePhoto" alt="profilePhoto" id="profilePhoto" src={currentProfile.profilePhoto} />
-        <Button size={BUTTON_SIZE_MAP[deviceType]} colorScheme="linkedin" onClick={handleOpenProfilePhotoUpload}>
-          Change Profile Photo
-        </Button>
+        <div className="upload-button-container">
+          <Button size={BUTTON_SIZE_MAP[deviceType]} colorScheme="linkedin" onClick={handleOpenProfilePhotoUpload}>
+            Change Profile Photo
+          </Button>
+          <FormHelperText>{errorMessages.profile}</FormHelperText>
+        </div>
         <input ref={profilePhotoUploadRef} type="file" accept="image/*" onChange={handleProfilePhotoUpload} style={{ display: 'none' }} />
-        <FormHelperText>{errorMessages.profile}</FormHelperText>
       </div>
       <FormLabel htmlFor="coverPhoto">Cover Photo</FormLabel>
       <div className="photoUpload-container">
         <img className="coverPhoto" alt="coverPhoto" id="coverPhoto" src={currentProfile.coverPhoto} />
-        <Button size={BUTTON_SIZE_MAP[deviceType]} colorScheme="linkedin" onClick={handeOpenCoverPhotoUpload}>
-          Change Cover Photo
-        </Button>
+        <div className="upload-button-container">
+          <Button size={BUTTON_SIZE_MAP[deviceType]} colorScheme="linkedin" onClick={handeOpenCoverPhotoUpload}>
+            Change Cover Photo
+          </Button>
+          <FormHelperText>{errorMessages.cover}</FormHelperText>
+        </div>
         <input ref={coverPhotoUploadRef} type="file" accept="image/*" onChange={handleCoverPhotoUpload} style={{ display: 'none' }} />
-        <FormHelperText>{errorMessages.cover}</FormHelperText>
       </div>
       <Button
         isDisabled={!isChanged}
