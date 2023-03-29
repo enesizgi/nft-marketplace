@@ -59,12 +59,40 @@ const ScProfileHeader = styled.div`
     }
   }
   .profile-names {
-    width: 70%;
+    position: relative;
     height: 20%;
-    margin-left: 2%;
-    margin-bottom: 10px;
-    margin-top: 10px;
+    padding: 10px 2%;
+
+    &-edit {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      bottom: 0;
+      right: 2%;
+      padding: 2px 5px;
+      font-size: 18px;
+      height: 50px;
+      @media screen and (max-width: 768px) {
+        font-size: 16px;
+        height: 40px;
+      }
+      @media screen and (max-width: 480px) {
+        font-size: 12px;
+        height: 30px;
+        bottom: -5px;
+      }
+      > svg {
+        display: inline;
+        fill: #fff;
+        width: 20%;
+        height: 90%;
+        margin-right: 5px;
+        transform: translateY(-2px);
+      }
+    }
     &-name {
+      max-width: 50%;
       line-height: 36px;
       height: 36px;
       font-size: 36px;
@@ -81,6 +109,7 @@ const ScProfileHeader = styled.div`
       }
     }
     &-id {
+      max-width: 50%;
       text-overflow: ellipsis;
       overflow: hidden;
       color: rgb(105, 105, 105);

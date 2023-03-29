@@ -102,6 +102,16 @@ class API {
       qs: { slug }
     });
 
+  // TODO: implement endpoint in backend
+  bulkUpdateUser = async (id, signature, message, formData) =>
+    this.putRequest({
+      endpoint: '/user/bulkUpdate',
+      qs: { id, signature, message },
+      body: {
+        formData
+      }
+    });
+
   getEvents = async qs => this.getRequest({ endpoint: '/events', qs });
 
   getNftStatus = async qs => this.getRequest({ endpoint: '/nftStatus', qs });

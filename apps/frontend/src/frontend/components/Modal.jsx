@@ -15,7 +15,7 @@ const ScModal = styled.div`
   height: 100%;
   max-height: 100%;
   max-width: 100%;
-  z-index: 1000;
+  z-index: 3000;
   background-color: rgba(35, 37, 42, 0.5);
   display: flex;
   flex-direction: column;
@@ -42,6 +42,7 @@ const ScModal = styled.div`
     }
 
     > * {
+      overflow: auto;
       max-height: 100%;
       max-width: 100%;
     }

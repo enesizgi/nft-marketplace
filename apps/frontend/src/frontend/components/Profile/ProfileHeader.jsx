@@ -6,14 +6,19 @@ import API from '../../modules/api';
 import ScProfileHeader from './ScProfileHeader';
 import ImageUpload from '../ImageUpload';
 import { ReactComponent as DefaultProfilePhoto } from '../../assets/default-profile-photo.svg';
+import { ReactComponent as EditIcon } from '../../assets/edit-icon.svg';
 import { generateSignatureData } from '../../utils';
 import { getIsProfileOwner, getProfile, getSignedMessage } from '../../store/selectors';
 import { initProfile } from '../../store/actionCreators';
+import Button from '../Button';
+import { setActiveModal } from '../../store/uiSlice';
+import { MODAL_TYPES } from '../../constants';
 
 const ProfileHeader = ({ id }) => {
   const dispatch = useDispatch();
   const isProfileOwner = useSelector(getIsProfileOwner);
-  const { name: username, profilePhoto, coverPhoto } = useSelector(getProfile);
+  const profile = useSelector(getProfile);
+  const { name: username, profilePhoto, coverPhoto } = profile;
   const signedMessage = useSelector(getSignedMessage);
 
   const updateSignedMessage = (signature, message) => {
@@ -35,10 +40,12 @@ const ProfileHeader = ({ id }) => {
         const response = await API.uploadCoverPhoto(id, signature, message, formData);
         dispatch(setUserCoverPhoto(response.url));
         dispatch(initProfile(id));
+        return response.url;
       } catch (error) {
         console.warn('Error on uploading file', error);
       }
     }
+    return null;
   };
 
   const handleProfilePhotoUpload = async e => {
@@ -53,15 +60,27 @@ const ProfileHeader = ({ id }) => {
         const response = await API.uploadProfilePhoto(id, signature, message, formData);
         dispatch(setUserProfilePhoto(response.url));
         dispatch(initProfile(id));
+        return response.url;
       } catch (error) {
         console.warn('Error on uploading file', error);
       }
     }
+    return null;
+  };
+
+  const openEditModal = () => {
+    dispatch(setActiveModal({ type: MODAL_TYPES.PROFILE_EDIT, props: { profile, updateSignedMessage } }));
   };
 
   return (
     <ScProfileHeader>
       <div className="profile-photos">
+        {isProfileOwner && (
+          <Button type="button" className="profile-names-edit" onClick={openEditModal}>
+            <EditIcon />
+            Edit Profile
+          </Button>
+        )}
         <div className="cover-photo">
           {isProfileOwner && <ImageUpload onUpload={handleCoverPhotoUpload} />}
           {coverPhoto && <img className="cover-photo-image" alt="coverPhoto" src={coverPhoto} />}

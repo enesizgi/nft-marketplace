@@ -5,7 +5,7 @@ import { ReactComponent as PolygonLogo } from '../assets/polygon-logo.svg';
 export const defaultChainId = '0xaa36a7';
 
 export const theme = {
-  blue: '#2596be',
+  blue: '#00A0DC',
   buttonBackground: '#151827'
 };
 
@@ -41,7 +41,8 @@ export const NFT_LISTING_TYPES = {
 export const MODAL_TYPES = {
   SELL: 'sell',
   BUY: 'buy',
-  IMAGE_PREVIEW: 'image_preview'
+  IMAGE_PREVIEW: 'image_preview',
+  PROFILE_EDIT: 'profile_edit'
 };
 
 export const CHAIN_PARAMS = {
