@@ -170,16 +170,15 @@ router.post(
     const coverPhoto = _coverPhoto ? _coverPhoto[0] : null;
     const profilePhoto = _profilePhoto ? _profilePhoto[0] : null;
     const { name, slug } = req.query;
-    let coverURL;
-    let profileURL;
+
     try {
       if (profilePhoto) {
         const profileRelativePath = profilePhoto.path.replace(/\.\.\//g, '');
-        profileURL = await uploadPhoto(req, req.query.id, profileRelativePath, imageType.ProfilePhoto);
+        await uploadPhoto(req, req.query.id, profileRelativePath, imageType.ProfilePhoto);
       }
       if (coverPhoto) {
         const coverRelativePath = coverPhoto.path.replace(/\.\.\//g, '');
-        coverURL = await uploadPhoto(req, req.query.id, coverRelativePath, imageType.CoverPhoto);
+        await uploadPhoto(req, req.query.id, coverRelativePath, imageType.CoverPhoto);
       }
     } catch (err) {
       return res.status(500).send();
@@ -187,7 +186,21 @@ router.post(
 
     const result = await User.updateOne({ walletId: req.query.id }, { name, slug });
     if (result.acknowledged && result.modifiedCount > 0) {
-      return res.status(200).send({ id: req.query.id, slug, name, profilePhoto: profileURL, coverPhoto: coverURL });
+      const images = await Image.find({ user_id: req.query.id }).lean();
+
+      const profilePhotoPath = images.find(image => image.type === 'profile_photo').image_path;
+      const absoluteProfilePhotoPath = `${apiProtocol}://${apiBaseURL}/${profilePhotoPath}`;
+
+      const coverPhotoPath = images.find(image => image.type === 'cover_photo').image_path;
+      const absoluteCoverPhotoPath = `${apiProtocol}://${apiBaseURL}/${coverPhotoPath}`;
+
+      return res.status(200).send({
+        id: req.query.id,
+        slug,
+        name,
+        profilePhoto: absoluteProfilePhotoPath,
+        coverPhoto: absoluteCoverPhotoPath
+      });
     }
     return res.status(500).send();
   }

@@ -36,10 +36,6 @@ const ScProfileEditModal = styled(FormControl)`
     margin-bottom: 20px;
     color: red;
   }
-  .submitButton {
-    margin-top: 20px;
-    align-self: center;
-  }
 
   .photoUpload-container {
     display: flex;
@@ -77,6 +73,19 @@ const ScProfileEditModal = styled(FormControl)`
     }
     @media screen and (max-width: 480px) {
       height: 120px;
+    }
+  }
+
+  .form-footer {
+    margin-top: 20px;
+    align-self: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    > div {
+      font-weight: 600;
+      font-size: 16px;
+      margin: 0 10px;
     }
   }
 `;
@@ -172,11 +181,16 @@ const ProfileEditModal = ({ profile, updateSignedMessage }) => {
       name: currentProfile.name,
       slug: currentProfile.slug
     };
-    const result = await API.bulkUpdateUser(qs, formData);
-    dispatch(setUser(result));
-    dispatch(initProfile(profile.id));
-    setIsLoading(false);
-    dispatch(setActiveModal(''));
+
+    try {
+      const result = await API.bulkUpdateUser(qs, formData);
+      dispatch(setUser(result));
+      dispatch(initProfile(profile.id));
+      setIsLoading(false);
+      dispatch(setActiveModal(''));
+    } catch (e) {
+      setErrorMessages({ ...errorMessages, formError: 'Error occurred during profile update.' });
+    }
   };
 
   if (isLoading) {
@@ -229,16 +243,19 @@ const ProfileEditModal = ({ profile, updateSignedMessage }) => {
         </div>
         <input ref={coverPhotoUploadRef} type="file" accept="image/*" onChange={handleCoverPhotoUpload} style={{ display: 'none' }} />
       </div>
-      <Button
-        isDisabled={!isChanged}
-        colorScheme="linkedin"
-        className="submitButton"
-        size={BUTTON_SIZE_MAP[deviceType]}
-        type="submit"
-        onClick={handleSubmitData}
-      >
-        Save Changes
-      </Button>
+      <div className="form-footer">
+        <Button
+          isDisabled={!isChanged}
+          colorScheme="linkedin"
+          className="submitButton"
+          size={BUTTON_SIZE_MAP[deviceType]}
+          type="submit"
+          onClick={handleSubmitData}
+        >
+          Save Changes
+        </Button>
+        <FormHelperText>{errorMessages.formError}</FormHelperText>
+      </div>
     </ScProfileEditModal>
   );
 };
