@@ -160,7 +160,6 @@ async function uploadPhoto(req, id, url, type) {
 router.post(
   '/user/bulkUpdate',
   userValidator,
-  verifyMessage,
   upload.fields([
     { name: 'profilePhoto', maxCount: 1 },
     { name: 'coverPhoto', maxCount: 1 }
@@ -188,11 +187,11 @@ router.post(
     if (result.acknowledged && result.modifiedCount > 0) {
       const images = await Image.find({ user_id: req.query.id }).lean();
 
-      const profilePhotoPath = images.find(image => image.type === 'profile_photo').image_path;
-      const absoluteProfilePhotoPath = `${apiProtocol}://${apiBaseURL}/${profilePhotoPath}`;
+      const profilePhotoPath = images.find(image => image.type === 'profile_photo')?.image_path;
+      const absoluteProfilePhotoPath = profilePhotoPath ? `${apiProtocol}://${apiBaseURL}/${profilePhotoPath}` : '';
 
-      const coverPhotoPath = images.find(image => image.type === 'cover_photo').image_path;
-      const absoluteCoverPhotoPath = `${apiProtocol}://${apiBaseURL}/${coverPhotoPath}`;
+      const coverPhotoPath = images.find(image => image.type === 'cover_photo')?.image_path;
+      const absoluteCoverPhotoPath = coverPhotoPath ? `${apiProtocol}://${apiBaseURL}/${coverPhotoPath}` : '';
 
       return res.status(200).send({
         id: req.query.id,

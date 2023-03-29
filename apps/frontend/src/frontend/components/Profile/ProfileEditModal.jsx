@@ -158,6 +158,7 @@ const ProfileEditModal = ({ profile, updateSignedMessage }) => {
       const result = await API.getUserBySlug(currentProfile.slug);
       if (result && result.id !== currentProfile.id) {
         setErrorMessages({ ...errorMessages, slug: 'This slug is being used by another user.' });
+        setCurrentProfile({ ...currentProfile, slug: profile.slug });
       } else {
         setCurrentProfile({ ...currentProfile, slug: e.target.value });
         setErrorMessages({ ...errorMessages, slug: '' });
