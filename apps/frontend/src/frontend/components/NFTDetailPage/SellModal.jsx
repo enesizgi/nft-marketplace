@@ -127,6 +127,10 @@ const ScSellModal = styled.div`
       color: red;
     }
     > button {
+      @media screen and (min-width: 768px) {
+        width: 50%;
+        align-self: center;
+      }
       margin-top: 10px;
     }
   }

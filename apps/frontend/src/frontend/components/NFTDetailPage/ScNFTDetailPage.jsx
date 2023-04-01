@@ -3,15 +3,12 @@ import styled from 'styled-components';
 const ScNFTDetailPage = styled.div`
   display: flex;
   flex-direction: row;
-  padding: 20px;
+  padding: 16px;
   width: 100%;
   height: 100%;
 
   @media screen and (max-width: 768px) {
     flex-direction: column;
-  }
-
-  @media screen and (max-width: 480px) {
   }
 
   .item-summary {

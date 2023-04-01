@@ -17,7 +17,7 @@ const ScDetailsDropdown = styled.div`
     cursor: pointer;
     font-size: 24px;
     font-weight: 600;
-    padding: 20px;
+    padding: 10px 20px;
     border-radius: 10px;
     ${({ opened }) => (opened ? 'border-bottom-right-radius: 0; border-bottom-left-radius: 0;' : '')};
     &-icon {

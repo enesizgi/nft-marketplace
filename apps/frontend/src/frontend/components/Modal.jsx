@@ -63,8 +63,8 @@ const ScModal = styled.div`
       display: flex;
       justify-content: center;
       position: absolute;
-      top: 20px;
-      right: 20px;
+      top: 10px;
+      right: 10px;
       width: 40px;
       height: 40px;
       background: ${theme.background};
@@ -72,12 +72,20 @@ const ScModal = styled.div`
       border-radius: 50%;
       padding: 7px;
       cursor: pointer;
+      transition: 0.2s;
       & > svg {
+        transition: 0.2s;
         fill: ${theme.blue};
+      }
+      &:hover {
+        background: ${theme.blue};
+        > svg {
+          fill: #fff;
+        }
       }
 
       @media screen and (max-width: 768px) {
-        left: 20px;
+        left: 10px;
         right: 0;
       }
 
