@@ -21,7 +21,13 @@ const BUTTON_SIZE_MAP = {
 const ScProfileEditModal = styled(FormControl)`
   display: flex;
   flex-direction: column;
+  padding: 16px;
   input {
+    height: 3rem;
+    padding: 10px;
+    font-size: 18px;
+    color: #fff;
+    font-size: 18px;
     color: #fff;
     &:not([aria-invalid]) {
       margin-bottom: 20px;
@@ -29,6 +35,7 @@ const ScProfileEditModal = styled(FormControl)`
   }
   label {
     font-weight: 600;
+    font-size: 24px;
   }
   button {
     word-wrap: break-word;

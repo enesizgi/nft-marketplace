@@ -97,7 +97,7 @@ const ScNavigationBar = styled.nav`
       margin: auto;
       width: 80%;
       height: 80%;
-      fill: transparent;
+      fill: none;
       stroke: ${({ theme }) => theme.blue};
       stroke-width: 10px;
       transition: 0.2s;
