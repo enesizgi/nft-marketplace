@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { theme } from '../../constants';
 
 const ScNFTDetailBox = styled.div`
   .details-container {
@@ -8,7 +9,7 @@ const ScNFTDetailBox = styled.div`
     flex-direction: row;
     justify-content: space-between;
     :hover {
-      background: rgba(35, 37, 42, 0.1);
+      background: ${theme.secondaryBlue};
       transition: 0.2s ease;
     }
   }

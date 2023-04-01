@@ -1,4 +1,5 @@
 import { createGlobalStyle } from 'styled-components';
+import { theme } from '../constants';
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -36,19 +37,27 @@ const GlobalStyle = createGlobalStyle`
   .routes-container {
     position: absolute;
     bottom: 0;
-    height: calc(100% - 100px);
+    height: calc(100%);
     width: 100%;
     overflow: auto;
+    padding-top: 100px;
     @media screen and (max-width: 768px) {
-      height: calc(100% - 80px);
-      margin-top: 80px;
+      padding-top: 80px;
+    }
+    &.isHomepage {
+      padding-top: 0;
     }
     transition: .2s;
+    background-color: ${theme.background};
+  }
+  
+  p, span, label {
+    color: #fff;
   }
   
   button {
     background: none;
-    color: inherit;
+    color: #fff;
     border: none;
     padding: 0;
     font: inherit;

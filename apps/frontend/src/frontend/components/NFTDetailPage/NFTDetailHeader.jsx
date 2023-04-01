@@ -116,7 +116,7 @@ const NFTDetailHeader = () => {
     <ScNFTDetailHeader>
       <div className="nft-header-name">
         <div className="nft-header-name-nftName">
-          <div className="nftTitle">{itemName}</div>
+          <p className="nftTitle">{itemName}</p>
           <button type="button" className="refresh-button" onClick={handleReloadNftInfo}>
             <BiRefresh />
           </button>

@@ -34,7 +34,7 @@ const NFTDetailBox = () => {
   return (
     <ScNFTDetailBox>
       <DetailsDropdown title="Description">
-        <div className="description-text">{description}</div>
+        <p className="description-text">{description}</p>
       </DetailsDropdown>
       <DetailsDropdown title="Details">
         {Object.entries(NFTDetails).map(([detailName, detail]) => (

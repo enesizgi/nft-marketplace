@@ -66,7 +66,7 @@ const SaleButton = () => {
       )}
       {!isOwner && (
         <div className="item">
-          <div className="text1">{formattedPrice} ETH</div>
+          <p className="text1">{formattedPrice} ETH</p>
           {isSeller && (
             <Button className="sell-button buy" onClick={handleCancel}>
               Cancel

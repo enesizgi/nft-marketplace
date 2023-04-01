@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { theme } from '../../constants';
 
 const ScCoolButton = styled.div`
-  background-color: rgba(76, 130, 251, 0.24);
+  background-color: ${theme.secondaryBlue};
   border-radius: 9999px;
 
   button {

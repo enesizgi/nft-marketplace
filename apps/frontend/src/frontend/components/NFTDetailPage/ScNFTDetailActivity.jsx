@@ -1,10 +1,12 @@
 import styled from 'styled-components';
+import { theme } from '../../constants';
 
 const ScNFTDetailActivity = styled.table`
   width: 100%;
   height: 100%;
   border-collapse: collapse;
   table-layout: fixed;
+  color: #fff;
 
   .nft-activity-title {
     width: 100%;
@@ -15,7 +17,7 @@ const ScNFTDetailActivity = styled.table`
   .nft-activity-content {
     width: 100%;
     :hover {
-      background: rgba(35, 37, 42, 0.1);
+      background: ${theme.secondaryBlue};
       transition: 0.2s ease;
     }
     &-item {

@@ -14,7 +14,7 @@ const ScLeftPanel = styled.div`
   position: absolute;
   display: flex;
   flex-direction: column;
-  background-color: ${({ theme }) => theme.buttonBackground};
+  background-color: ${({ theme }) => theme.secondaryBlue};
   z-index: 999;
   ${({ isLeftPanelOpened }) => (isLeftPanelOpened ? 'left: 0;' : 'left: -90%;')}
   transition: all .5s ease;
@@ -43,7 +43,7 @@ const ScLeftPanel = styled.div`
       background: #fff;
       transition: 0.3s ease;
       & > p {
-        color: ${({ theme }) => theme.buttonBackground};
+        color: ${({ theme }) => theme.secondaryBlue};
       }
     }
   }

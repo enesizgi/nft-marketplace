@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import ScNFTCard from './ScNFTCard';
 import { getNFTContract, getUserId } from '../../store/selectors';
 import AddressDisplay from '../AddressDisplay';
-import imagePlaceholder from '../../assets/image-placeholder.png';
+import { ReactComponent as ImagePlaceholder } from '../../assets/image-placeholder.svg';
 import { MODAL_TYPES } from '../../constants';
 import { setActiveModal } from '../../store/uiSlice';
 import { compare, serializeBigNumber } from '../../utils';
@@ -70,13 +70,11 @@ const NFTCard = ({ item, selectedTab, loading }) => {
 
   return (
     <ScNFTCard onMouseEnter={handleHoverCard} onMouseLeave={handleHoverLeave} onClick={handleGoToDetailPage}>
-      <div className="nft-image">
-        <img src={item.url ?? imagePlaceholder} alt="nftImage" className={`${!item.url && loading ? 'shimmer' : ''}`} />
-      </div>
+      <div className="nft-image">{item.url && !loading ? <img src={item.url} alt="nftImage" /> : <ImagePlaceholder className="shimmer" />}</div>
       <div className="nft-info">
         <div className="nft-info-name">
           <span className="nft-info-name-itemName">{item.name}</span>
-          {!inProfilePage && <AddressDisplay className="nft-info-name-seller" address={item.seller} label="Seller" />}
+          {!inProfilePage && !loading && <AddressDisplay className="nft-info-name-seller" address={item.seller} label="Seller" />}
         </div>
         <div className="nft-info-price">
           {!showBuyButton && !showSellButton && <div className="nft-info-price-text">{formattedPrice}</div>}

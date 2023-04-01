@@ -6,7 +6,8 @@ export const defaultChainId = '0xaa36a7';
 
 export const theme = {
   blue: '#00A0DC',
-  buttonBackground: '#151827'
+  secondaryBlue: '#182C53',
+  background: '#0A101E'
 };
 
 export const DEVICE_TYPES = {

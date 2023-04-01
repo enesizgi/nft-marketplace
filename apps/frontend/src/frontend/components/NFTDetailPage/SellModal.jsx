@@ -44,21 +44,26 @@ const ScSellModal = styled.div`
     }
   }
 
-  .nft-sell-options {
+  .nftSellOptionsToggle {
     display: flex;
+    flex-direction: row;
+    justify-content: center;
     align-self: center;
-    width: 40%;
-    justify-content: space-around;
-    align-items: center;
+    @media screen and (min-width: 768px) {
+      width: 40%;
+    }
     margin: 20px 0;
   }
 
   .nftSellOptionsButton {
     height: 50px;
     border: 3px solid ${theme.blue};
+    border-radius: 0;
     font-size: 18px;
     font-weight: 600;
-    margin: 0 20px;
+    &:hover {
+      box-shadow: none;
+    }
   }
 
   .sell-fixed,
@@ -73,7 +78,7 @@ const ScSellModal = styled.div`
       width: 200px;
       height: 50px;
       align-items: center;
-      border: 2px solid rgba(35, 37, 42, 0.7);
+      border: 2px solid ${theme.secondaryBlue};
       border-radius: 10px;
       margin: 10px 0 20px;
 
@@ -93,6 +98,12 @@ const ScSellModal = styled.div`
         }
       }
 
+      #sell-auction-price,
+      #sell-number {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+
       #sell-auction-date {
         width: 100%;
       }
@@ -104,7 +115,7 @@ const ScSellModal = styled.div`
         width: 20%;
         height: 100%;
         border-left: 2px solid rgba(35, 37, 42, 0.7);
-        color: rgba(35, 37, 42, 0.7);
+        color: #fff;
       }
     }
   }
@@ -218,7 +229,7 @@ const SellModal = ({ tokenId }) => {
           <span className="nft-overview-text-description">{nftMetadata.description}</span>
         </div>
       </div>
-      <div className="nft-sell-options">
+      <div className="nftSellOptionsToggle">
         <Button
           className={classNames({
             nftSellOptionsButton: true,

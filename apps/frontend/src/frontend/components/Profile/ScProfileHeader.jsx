@@ -53,7 +53,7 @@ const ScProfileHeader = styled.div`
         height: 100%;
       }
       &-default {
-        fill: ${({ theme }) => theme.buttonBackground};
+        fill: ${({ theme }) => theme.secondaryBlue};
         background: #fff;
       }
     }
@@ -92,6 +92,7 @@ const ScProfileHeader = styled.div`
       }
     }
     &-name {
+      color: #fff;
       max-width: 70%;
       line-height: 36px;
       height: 40px;
@@ -115,7 +116,7 @@ const ScProfileHeader = styled.div`
       max-width: 50%;
       text-overflow: ellipsis;
       overflow: hidden;
-      color: rgb(105, 105, 105);
+      color: rgb(150, 150, 150);
       font-size: 24px;
       white-space: nowrap;
       @media screen and (max-width: 768px) {

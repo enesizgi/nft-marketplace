@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { node, func } from 'prop-types';
 import styled from 'styled-components';
 import { createPortal } from 'react-dom';
+import { theme } from '../constants';
 import { ReactComponent as CloseIcon } from '../assets/close-icon-2.svg';
 import { useClickOutsideAlert } from '../hooks';
 import { classNames } from '../utils';
@@ -30,7 +31,7 @@ const ScModal = styled.div`
     margin: auto;
     padding: 60px 30px 27px;
     overflow: hidden;
-    background: #fff;
+    background: ${theme.background};
     border-radius: 10px;
     position: relative;
 
@@ -66,16 +67,18 @@ const ScModal = styled.div`
       right: 20px;
       width: 40px;
       height: 40px;
-      background: #fff;
-      border: 1px solid #fff;
+      background: ${theme.background};
+      border: 1px solid ${theme.blue};
       border-radius: 50%;
       padding: 7px;
       cursor: pointer;
+      & > svg {
+        fill: ${theme.blue};
+      }
 
       @media screen and (max-width: 768px) {
         left: 20px;
         right: 0;
-        padding-left: 0;
       }
 
       > svg {

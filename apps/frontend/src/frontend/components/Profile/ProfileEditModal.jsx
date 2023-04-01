@@ -22,6 +22,7 @@ const ScProfileEditModal = styled(FormControl)`
   display: flex;
   flex-direction: column;
   input {
+    color: #fff;
     &:not([aria-invalid]) {
       margin-bottom: 20px;
     }

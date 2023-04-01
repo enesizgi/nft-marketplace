@@ -15,9 +15,7 @@ const ScAddressDisplay = styled.p.attrs(props => ({
   vertical-align: middle;
   overflow: hidden;
   text-overflow: ellipsis;
-  .label {
-    color: #000;
-  }
+
   .address {
     :hover {
       text-decoration: underline;

@@ -14,7 +14,7 @@ const ScDropdown = styled.div`
     padding: 8px;
     z-index: 1;
     display: flex;
-    background-color: ${({ theme }) => theme.buttonBackground};
+    background-color: ${({ theme }) => theme.background};
     font-size: 20px;
     flex-direction: row;
     align-items: center;
@@ -27,7 +27,7 @@ const ScDropdown = styled.div`
     }
 
     &:hover {
-      background-color: ${({ theme }) => theme.blue};
+      background-color: ${({ theme }) => theme.secondaryBlue};
     }
 
     &-icon {

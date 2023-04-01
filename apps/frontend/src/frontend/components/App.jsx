@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ChakraProvider } from '@chakra-ui/react';
 import { ThemeProvider } from 'styled-components';
 import { setDeviceType } from '../store/uiSlice';
-import { getDeviceType } from '../store/selectors';
+import { getCurrentPath, getDeviceType } from '../store/selectors';
 import { DEVICE_TYPES, theme } from '../constants';
 import HomePage from './Home';
 import MintNFTSPage from './MintNFTSPage';
@@ -19,11 +19,14 @@ import RouteListener from './RouteListener';
 import ModalContainer from './ModalContainer';
 import { useWindowSize } from '../hooks';
 import { initMarketplace } from '../store/actionCreators';
+import Landing from './Landing';
+import { classNames } from '../utils';
 
 const App = () => {
   const dispatch = useDispatch();
 
   const deviceType = useSelector(getDeviceType);
+  const currentPath = useSelector(getCurrentPath);
   const { width } = useWindowSize();
 
   const updateDeviceType = () => {
@@ -57,7 +60,8 @@ const App = () => {
           <div className="App">
             {deviceType !== DEVICE_TYPES.DESKTOP && <LeftPanel />}
             <NavigationBar />
-            <main className="routes-container">
+            <main className={classNames({ 'routes-container': true, isHomepage: currentPath === '/' })}>
+              {currentPath === '/' && <Landing />}
               <Routes>
                 <Route exact path="/" element={<HomePage />} />
                 <Route path="/user/*" element={<Profile />} />

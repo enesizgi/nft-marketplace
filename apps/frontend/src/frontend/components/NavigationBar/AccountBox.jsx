@@ -20,7 +20,7 @@ const ScAccountBox = styled.div`
     width: 100% !important;
   }
   .accountBox-default {
-    fill: ${({ theme }) => theme.buttonBackground};
+    fill: ${({ theme }) => theme.secondaryBlue};
     background: #fff;
     height: 100%;
     width: 100%;

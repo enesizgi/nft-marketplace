@@ -3,8 +3,9 @@
 import React from 'react';
 import { string } from 'prop-types';
 import styled from 'styled-components';
-import ListedIcon from '../../assets/article_black_24dp.svg';
-import PurchasedIcon from '../../assets/shopping_bag_black_24dp.svg';
+import { theme } from '../../constants';
+import { ReactComponent as ListedIcon } from '../../assets/article_black_24dp.svg';
+import { ReactComponent as PurchasedIcon } from '../../assets/shopping_bag_black_24dp.svg';
 import { classNames } from '../../utils';
 import ListNFTSPage from '../ListNFTS';
 import PurchasesPage from '../Purchases';
@@ -15,7 +16,7 @@ const ScProfileContent = styled.div`
   padding: 0 2%;
   .profile-content-header {
     display: flex;
-    border-bottom: 3px solid ${({ theme }) => theme.blue};
+    border-bottom: 3px solid ${theme.blue};
     margin-bottom: 20px;
     height: 60px;
     @media screen and (max-width: 480px) {
@@ -31,21 +32,25 @@ const ScProfileContent = styled.div`
       font-size: 24px;
       padding: 16px;
       transition: transform 0.3s ease;
-      opacity: 0.5;
+      opacity: 0.7;
       @media screen and (max-width: 480px) {
         font-size: 18px;
         padding: 8px;
+      }
+      > svg {
+        fill: #fff;
+        margin-right: 5px;
       }
     }
 
     &-title.isActive {
       opacity: 1;
+      background: ${theme.blue};
     }
 
-    &-title:hover {
+    &-title:hover:not(.isActive) {
+      background: ${theme.secondaryBlue};
       cursor: pointer;
-      transform: translateX(5px);
-      border-bottom: 2px solid ${({ theme }) => theme.blue};
       opacity: 1;
     }
   }
@@ -73,7 +78,7 @@ const ProfileContent = ({ id }) => {
             })}
             onClick={() => setSelectedTab(tab.name)}
           >
-            <img src={tab.icon} alt={`${tab.name} Icon`} />
+            <tab.icon />
             {tab.name}
           </button>
         ))}

@@ -7,11 +7,11 @@ const ScNFTCard = styled.div`
   cursor: pointer;
   height: 300px;
 
-  box-shadow: 0 0 6px rgba(35, 37, 42, 0.3);
+  box-shadow: 0 0 6px #fff;
   margin: 10px 10px;
 
   :hover {
-    box-shadow: 0 0 10px rgba(35, 37, 42, 0.7);
+    box-shadow: 0 0 10px #fff;
     .nft-image {
       & > img {
         transform: scale(1.2);
@@ -20,6 +20,8 @@ const ScNFTCard = styled.div`
   }
 
   .nft-image {
+    display: flex;
+    align-items: center;
     overflow: hidden;
     width: 100%;
     height: 70%;
@@ -32,6 +34,7 @@ const ScNFTCard = styled.div`
   }
 
   .nft-info {
+    color: #fff;
     width: 100%;
     height: 30%;
     display: flex;
@@ -101,13 +104,14 @@ const ScNFTCard = styled.div`
   }
 
   .shimmer {
-    color: grey;
+    fill: #fff;
+    margin: auto;
+    width: 80%;
     display: inline-block;
     -webkit-mask: linear-gradient(-60deg, #000 30%, #0005, #000 70%) right/300% 100%;
     background-repeat: no-repeat;
     animation: shimmer 2.5s infinite;
     font-size: 50px;
-    max-width: 200px;
   }
 
   @keyframes shimmer {

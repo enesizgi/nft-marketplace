@@ -6,6 +6,7 @@ import NFTShowcase from './NFTShowcase';
 import { getMarketplaceContract, getNFTContract } from '../store/selectors';
 import LoadingSpinner from './LoadingSpinner';
 import NFTSlider from './NFTSlider';
+import { theme } from '../constants';
 
 const ScListNFTSPage = styled.div`
   margin: 16px;
@@ -22,18 +23,16 @@ const ScListNFTSPage = styled.div`
       justify-content: center;
       align-items: center;
       margin-bottom: 8px;
-    }
-
-    svg {
-      height: 100%;
-      width: 3%;
-      color: ${({ theme }) => theme.blue};
-      opacity: 0.5;
-      transition: all 0.2s ease-in-out;
-    }
-
-    svg:hover {
-      opacity: 1;
+      & > svg {
+        cursor: pointer;
+        height: 100%;
+        width: 3%;
+        color: ${theme.blue};
+        transition: all 0.2s ease-in-out;
+        &:hover {
+          filter: brightness(120%);
+        }
+      }
     }
 
     nav.indicators {
@@ -48,7 +47,7 @@ const ScListNFTSPage = styled.div`
     }
 
     nav.indicators ul li button.current {
-      background-color: ${({ theme }) => theme.blue};
+      background-color: ${theme.blue};
     }
 
     nav.indicators ul li button {
@@ -56,13 +55,13 @@ const ScListNFTSPage = styled.div`
       height: 20px;
       border-radius: 10px;
       margin: 0 10px;
-      background-color: rgba(0, 0, 0, 0.5);
+      background-color: ${theme.secondaryBlue};
       cursor: pointer;
       transition: all 0.2s ease-in-out;
     }
 
     nav.indicators ul li button:hover {
-      background-color: rgba(0, 0, 0, 0.8);
+      filter: brightness(130%);
     }
 
     nav.indicators ul li {

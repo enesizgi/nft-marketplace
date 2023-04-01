@@ -1,25 +1,36 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { Button, FormLabel, Input, Switch } from '@chakra-ui/react';
 import { ethers } from 'ethers';
 import API from '../../modules/api';
 import { getMarketplaceContract, getNFTContract, getUserId } from '../../store/selectors';
 import ScMintNFTSPage from './ScMintNFTSPage';
+import { classNames } from '../../utils';
 
+// TODO: add form control and image removal
 const MintNFTSPage = () => {
-  const [image, setImage] = useState(''); // eslint-disable-line
+  const [image, setImage] = useState('');
   const [price, setPrice] = useState(null);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [file, setFile] = useState(null);
+  const [willBeListed, setWillBeListed] = useState(false);
+  const fileUploadRef = useRef();
 
   const userId = useSelector(getUserId);
   const marketplaceContract = useSelector(getMarketplaceContract);
   const nftContract = useSelector(getNFTContract);
 
+  const handleOpenFileUpload = () => {
+    fileUploadRef.current?.click();
+  };
+
   const uploadToIPFS = async e => {
     e.preventDefault();
     if (e.target.files.length > 0) {
       setFile(e.target.files[0]);
+      const url = URL.createObjectURL(e.target.files[0]);
+      setImage(url);
     }
   };
 
@@ -43,7 +54,7 @@ const MintNFTSPage = () => {
     const listingPrice = ethers.utils.parseEther(price.toString());
     await (await marketplaceContract.makeItem(nftContract.address, id, listingPrice)).wait();
   };
-  const createNFT = willBeListed => async () => {
+  const createNFT = async () => {
     if (willBeListed && !price) return;
     if (!file || !name || !description) return;
     try {
@@ -54,7 +65,6 @@ const MintNFTSPage = () => {
         description
       });
       const response = await API.uploadToIPFS(metadata, formData);
-      setImage(response);
       if (willBeListed) {
         mintThenList(response);
       } else {
@@ -67,34 +77,40 @@ const MintNFTSPage = () => {
 
   return (
     <ScMintNFTSPage className="mintContainer">
-      <label htmlFor="images" className="drop-container">
-        <span className="drop-title">Upload your NFT</span>
-        <input type="file" id="images" name="file" onChange={uploadToIPFS} accept="image/*" required />
+      <label htmlFor="images" className={classNames({ 'drop-container': true, withImage: !!image })}>
+        {image ? (
+          <img src={image} alt="nft-input" className="nftImage" />
+        ) : (
+          <>
+            <span className="drop-title">Upload Your NFT</span>
+            <Button colorScheme="linkedin" className="uploadButton" onClick={handleOpenFileUpload}>
+              Choose a File
+            </Button>
+            <input type="file" id="images" onChange={uploadToIPFS} accept="image/*" style={{ display: 'none' }} ref={fileUploadRef} />
+          </>
+        )}
       </label>
-
-      <div className="container">
-        <div className="input-group">
-          <div className="input-flat">Name</div>
-          <input type="text" onChange={e => setName(e.target.value)} placeholder="Name" className="input-control" />
+      <div className="formContainer">
+        <FormLabel className="input-flat" htmlFor="name">
+          Name
+        </FormLabel>
+        <Input id="name" type="text" onChange={e => setName(e.target.value)} placeholder="Name" className="input-control" />
+        <FormLabel className="input-flat" htmlFor="description">
+          Description
+        </FormLabel>
+        <Input id="description" type="text" onChange={e => setDescription(e.target.value)} placeholder="Description" className="input-control" />
+        <FormLabel htmlFor="price" className="input-flat">
+          Price
+        </FormLabel>
+        <Input id="price" type="number" onChange={e => setPrice(e.target.value)} placeholder="Price in ETH" className="input-control" />
+        <div className="listSwitch">
+          <FormLabel htmlFor="list">List Item In Marketplace</FormLabel>
+          <Switch onChange={() => setWillBeListed(!willBeListed)} isChecked={willBeListed} colorScheme="linkedin" id="list" size="lg" />
         </div>
-        <div className="input-group">
-          <div className="input-flat">Description</div>
-          <input type="text" onChange={e => setDescription(e.target.value)} placeholder="Description" className="input-control" />
-        </div>
-        <div className="input-group">
-          <div className="input-flat">Price</div>
-          <input type="number" onChange={e => setPrice(e.target.value)} placeholder="Price in ETH" className="input-control" />
-        </div>
-      </div>
-      <div className="buttonContainer">
-        <button type="button" onClick={createNFT(false)}>
+        <Button size="lg" colorScheme="linkedin" onClick={createNFT}>
           Mint NFT
-        </button>
-        <button type="button" className="isGreen" onClick={createNFT(true)}>
-          Mint and List
-        </button>
+        </Button>
       </div>
-      {image && <img src={image.url} alt="nft-input" width="300px" />}
     </ScMintNFTSPage>
   );
 };
