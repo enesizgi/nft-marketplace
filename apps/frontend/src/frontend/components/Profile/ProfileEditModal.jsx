@@ -34,6 +34,9 @@ const ScProfileEditModal = styled(FormControl)`
     }
   }
   label {
+    @media screen and (max-width: 768px) {
+      align-self: flex-start;
+    }
     font-weight: 600;
     font-size: 24px;
   }
@@ -45,19 +48,34 @@ const ScProfileEditModal = styled(FormControl)`
     color: red;
   }
 
+  .photoUpload-group {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    @media screen and (max-width: 768px) {
+      flex-direction: column;
+    }
+  }
+
   .photoUpload-container {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 20px;
+    width: 50%;
+    @media screen and (max-width: 768px) {
+      width: 100%;
+    }
+    & > img {
+      margin-bottom: 20px;
+    }
   }
   .profilePhoto {
     display: inline;
     width: 200px;
-    max-width: 50%;
     height: 200px;
     border-radius: 100%;
-    margin-right: 20px;
     @media screen and (max-width: 768px) {
       width: 175px;
       height: 175px;
@@ -68,14 +86,11 @@ const ScProfileEditModal = styled(FormControl)`
     }
   }
   .upload-button-container {
-    max-width: calc(50% - 20px);
     display: flex;
     flex-direction: column;
   }
   .coverPhoto {
-    margin-right: 20px;
     height: 200px;
-    max-width: 50%;
     @media screen and (max-width: 768px) {
       height: 175px;
     }
@@ -230,27 +245,29 @@ const ProfileEditModal = ({ profile, updateSignedMessage }) => {
         onClick={e => e.target.setSelectionRange(0, e.target.value.length)}
       />
       <FormHelperText>{errorMessages.slug}</FormHelperText>
-      <FormLabel htmlFor="profilePhoto">Profile Photo</FormLabel>
-      <div className="photoUpload-container">
-        <img className="profilePhoto" alt="profilePhoto" id="profilePhoto" src={currentProfile.profilePhoto} />
-        <div className="upload-button-container">
-          <Button size={BUTTON_SIZE_MAP[deviceType]} colorScheme="linkedin" onClick={handleOpenProfilePhotoUpload}>
-            Change Profile Photo
-          </Button>
-          <FormHelperText>{errorMessages.profile}</FormHelperText>
+      <div className="photoUpload-group">
+        <div className="photoUpload-container">
+          <FormLabel htmlFor="profilePhoto">Profile Photo</FormLabel>
+          <img className="profilePhoto" alt="profilePhoto" id="profilePhoto" src={currentProfile.profilePhoto} />
+          <div className="upload-button-container">
+            <Button size={BUTTON_SIZE_MAP[deviceType]} colorScheme="linkedin" onClick={handleOpenProfilePhotoUpload}>
+              Change Profile Photo
+            </Button>
+            <FormHelperText>{errorMessages.profile}</FormHelperText>
+          </div>
+          <input ref={profilePhotoUploadRef} type="file" accept="image/*" onChange={handleProfilePhotoUpload} style={{ display: 'none' }} />
         </div>
-        <input ref={profilePhotoUploadRef} type="file" accept="image/*" onChange={handleProfilePhotoUpload} style={{ display: 'none' }} />
-      </div>
-      <FormLabel htmlFor="coverPhoto">Cover Photo</FormLabel>
-      <div className="photoUpload-container">
-        <img className="coverPhoto" alt="coverPhoto" id="coverPhoto" src={currentProfile.coverPhoto} />
-        <div className="upload-button-container">
-          <Button size={BUTTON_SIZE_MAP[deviceType]} colorScheme="linkedin" onClick={handeOpenCoverPhotoUpload}>
-            Change Cover Photo
-          </Button>
-          <FormHelperText>{errorMessages.cover}</FormHelperText>
+        <div className="photoUpload-container">
+          <FormLabel htmlFor="coverPhoto">Cover Photo</FormLabel>
+          <img className="coverPhoto" alt="coverPhoto" id="coverPhoto" src={currentProfile.coverPhoto} />
+          <div className="upload-button-container">
+            <Button size={BUTTON_SIZE_MAP[deviceType]} colorScheme="linkedin" onClick={handeOpenCoverPhotoUpload}>
+              Change Cover Photo
+            </Button>
+            <FormHelperText>{errorMessages.cover}</FormHelperText>
+          </div>
+          <input ref={coverPhotoUploadRef} type="file" accept="image/*" onChange={handleCoverPhotoUpload} style={{ display: 'none' }} />
         </div>
-        <input ref={coverPhotoUploadRef} type="file" accept="image/*" onChange={handleCoverPhotoUpload} style={{ display: 'none' }} />
       </div>
       <div className="form-footer">
         <Button

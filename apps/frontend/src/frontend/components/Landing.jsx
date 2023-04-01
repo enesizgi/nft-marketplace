@@ -18,6 +18,11 @@ const ScLanding = styled.div`
       width: 80%;
     }
 
+    @media screen and (max-width: 480px) {
+      height: 80px;
+      width: auto;
+    }
+
     background: transparent;
     > g {
       fill: none;
