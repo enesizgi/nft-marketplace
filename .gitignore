@@ -37,8 +37,7 @@ artifacts
 
 apps/frontend/public/images
 apps/frontend/src/backend/images
-assets
-!apps/frontend/src/frontend/assets
+/assets
 /.deps/
 /dist/
 /tmp/
