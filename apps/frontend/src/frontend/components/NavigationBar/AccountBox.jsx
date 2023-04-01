@@ -38,25 +38,13 @@ const ScAccountBox = styled.div`
       box-sizing: border-box;
       border: 2px solid ${({ theme }) => theme.blue};
       border-radius: 100%;
-      position: relative;
-
-      &::after {
-        ${({ isDropdownOpened }) => (!isDropdownOpened ? 'display: none;' : '')}
-        position: absolute;
-        bottom: -12px;
-        left: calc(50% - 5px);
-        transform: rotateZ(45deg);
-        content: ' ';
-        width: 10px;
-        height: 10px;
-        background: ${({ theme }) => theme.blue};
-      }
     }
   }
 
   .dropdown-content {
     position: absolute;
-    top: calc(100% + 5px);
+    margin-top: 10px;
+    top: 100%;
     right: 0;
   }
 `;

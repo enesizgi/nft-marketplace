@@ -13,7 +13,6 @@ import { setChainId } from '../../store/marketplaceSlice';
 import { changeNetwork } from '../../utils';
 
 const ScNetworkSelector = styled.div`
-  height: 100%;
   display: flex;
   align-items: center;
   position: relative;
@@ -23,6 +22,7 @@ const ScNetworkSelector = styled.div`
     justify-content: center;
     align-items: center;
     height: 100%;
+    position: relative;
     div {
       border-radius: 8px;
     }
@@ -44,6 +44,7 @@ const ScNetworkSelector = styled.div`
   }
 
   .dropdown-content {
+    margin-top: 10px;
     position: absolute;
     top: 100%;
     right: 0;

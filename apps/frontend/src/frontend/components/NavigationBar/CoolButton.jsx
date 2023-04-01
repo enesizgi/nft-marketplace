@@ -4,7 +4,7 @@ import { theme } from '../../constants';
 
 const ScCoolButton = styled.div`
   background-color: ${theme.secondaryBlue};
-  border-radius: 9999px;
+  border-radius: 10px;
 
   button {
     display: flex;
@@ -19,17 +19,6 @@ const ScCoolButton = styled.div`
 
     &:hover {
       filter: brightness(120%);
-    }
-    &::after {
-      ${({ isDropdownOpened }) => (!isDropdownOpened ? 'display: none;' : '')}
-      position: absolute;
-      bottom: -7px;
-      left: calc(50% - 5px);
-      transform: rotateZ(45deg);
-      content: ' ';
-      width: 15px;
-      height: 15px;
-      background: ${theme.blue};
     }
   }
 `;
