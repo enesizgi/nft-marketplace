@@ -40,13 +40,13 @@ const ProfileEditModal = ({ profile, updateSignedMessage }) => {
     const file = e.target.files[0];
     if (file) {
       if (file.size > 1024 * 1024 * 5) {
-        setErrorMessages({ ...errorMessages, profile: 'Image size should be less than 5MB.' });
+        setErrorMessages(prev => ({ ...prev, profile: 'Image size should be less than 5MB.' }));
         return;
       }
-      setErrorMessages({ ...errorMessages, profile: '' });
+      setErrorMessages(prev => ({ ...prev, profile: '' }));
       setUploadedProfilePhoto(file);
       const url = URL.createObjectURL(file);
-      setCurrentProfile({ ...currentProfile, profilePhoto: url });
+      setCurrentProfile(prev => ({ ...prev, profilePhoto: url }));
     }
   };
 
@@ -54,39 +54,45 @@ const ProfileEditModal = ({ profile, updateSignedMessage }) => {
     const file = e.target.files[0];
     if (file) {
       if (file.size > 1024 * 1024 * 5) {
-        setErrorMessages({ ...errorMessages, cover: 'Image size should be less than 5MB.' });
+        setErrorMessages(prev => ({ ...prev, cover: 'Image size should be less than 5MB.' }));
         return;
       }
-      setErrorMessages({ ...errorMessages, profile: '' });
+      setErrorMessages(prev => ({ ...prev, profile: '' }));
       setUploadedCoverPhoto(file);
       const url = URL.createObjectURL(file);
-      setCurrentProfile({ ...currentProfile, coverPhoto: url });
+      setCurrentProfile(prev => ({ ...prev, coverPhoto: url }));
     }
   };
 
   const validateName = e => {
     if (!e.target.value) {
-      setCurrentProfile({ ...currentProfile, name: profile.name });
-      setErrorMessages({ ...errorMessages, name: 'Account name cannot be empty' });
+      setCurrentProfile(prev => ({ ...prev, name: profile.name }));
+      setErrorMessages(prev => ({ ...prev, name: 'Account name cannot be empty' }));
     } else {
-      setCurrentProfile({ ...currentProfile, name: e.target.value });
-      setErrorMessages({ ...errorMessages, name: '' });
+      setCurrentProfile(prev => ({ ...prev, name: e.target.value }));
+      setErrorMessages(prev => ({ ...prev, name: '' }));
     }
   };
 
   const validateSlug = async e => {
     if (e.target.value) {
+      if (e.target.value.startsWith('0x')) {
+        setErrorMessages(prev => ({ ...prev, slug: 'Slug cannot start with 0x' }));
+        setCurrentProfile(prev => ({ ...prev, slug: profile.slug }));
+        return false;
+      }
       const result = await API.getUserBySlug(currentProfile.slug);
       if (result && result.id !== currentProfile.id) {
-        setErrorMessages({ ...errorMessages, slug: 'This slug is being used by another user.' });
-        setCurrentProfile({ ...currentProfile, slug: profile.slug });
-      } else {
-        setCurrentProfile({ ...currentProfile, slug: e.target.value });
-        setErrorMessages({ ...errorMessages, slug: '' });
+        setErrorMessages(prev => ({ ...prev, slug: 'This slug is being used by another user.' }));
+        setCurrentProfile(prev => ({ ...prev, slug: profile.slug }));
+        return false;
       }
-    } else {
-      setCurrentProfile({ ...currentProfile, slug: null });
+      setCurrentProfile(prev => ({ ...prev, slug: e.target.value }));
+      setErrorMessages(prev => ({ ...prev, slug: '' }));
+      return true;
     }
+    setCurrentProfile(prev => ({ ...prev, slug: null }));
+    return true;
   };
 
   const handleSubmitData = async () => {
@@ -111,7 +117,7 @@ const ProfileEditModal = ({ profile, updateSignedMessage }) => {
       setIsLoading(false);
       dispatch(setActiveModal(''));
     } catch (e) {
-      setErrorMessages({ ...errorMessages, formError: 'Error occurred during profile update.' });
+      setErrorMessages(prev => ({ ...prev, formError: 'Error occurred during profile update.' }));
     }
   };
 
@@ -127,7 +133,7 @@ const ProfileEditModal = ({ profile, updateSignedMessage }) => {
         id="name"
         value={currentProfile.name}
         isInvalid={!!errorMessages.name}
-        onChange={e => setCurrentProfile({ ...currentProfile, name: e.target.value })}
+        onChange={e => setCurrentProfile(prev => ({ ...prev, name: e.target.value }))}
         onBlur={validateName}
         onClick={e => e.target.setSelectionRange(0, e.target.value.length)}
       />
@@ -138,7 +144,7 @@ const ProfileEditModal = ({ profile, updateSignedMessage }) => {
         id="slug"
         value={currentProfile.slug}
         isInvalid={!!errorMessages.slug}
-        onChange={e => setCurrentProfile({ ...currentProfile, slug: e.target.value })}
+        onChange={e => setCurrentProfile(prev => ({ ...prev, slug: e.target.value }))}
         onBlur={validateSlug}
         onClick={e => e.target.setSelectionRange(0, e.target.value.length)}
       />
