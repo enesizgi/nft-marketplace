@@ -109,13 +109,12 @@ export const fetchMarketplaceEvents = async chainId => {
     dotenv.config();
     const isLocalhost = chainId === NETWORK_IDS.LOCALHOST;
     const maxBlockNumber = await Event.find().sort({ blockNumber: -1 }).limit(1).lean();
-    const fromBlock = !isLocalhost && maxBlockNumber[0] ? maxBlockNumber[0].blockNumber + 1 : 0;
+    const fromBlock = maxBlockNumber[0] ? maxBlockNumber[0].blockNumber + 1 : 0;
     const provider = isLocalhost
       ? new ethers.providers.JsonRpcProvider('http://127.0.0.1:8545')
       : new ethers.providers.EtherscanProvider(Number(chainId), process.env.ETHERSCAN_API_KEY);
     const marketplaceContract = new ethers.Contract(CONTRACTS[chainId].MARKETPLACE.address, CONTRACTS[chainId].MARKETPLACE.abi, provider);
     const events = await marketplaceContract.queryFilter('*', fromBlock);
-    // console.log(events);
     insertData = events.map(event => {
       const {
         blockNumber,

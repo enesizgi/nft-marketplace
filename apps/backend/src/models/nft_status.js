@@ -22,4 +22,6 @@ const NftStatusSchema = new mongoose.Schema(
   }
 );
 
+NftStatusSchema.index({ itemId: 1, auctionId: 1, network: 1, marketplaceContract: 1 }, { unique: true });
+
 export default mongoose.model('NftStatus', NftStatusSchema, 'nft_status');

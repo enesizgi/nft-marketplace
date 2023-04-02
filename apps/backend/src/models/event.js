@@ -24,4 +24,5 @@ const EventSchema = new mongoose.Schema(
   }
 );
 
+EventSchema.index({ transactionIndex: 1, blockNumber: 1, network: 1 }, { unique: true });
 export default mongoose.model('Event', EventSchema, 'events');

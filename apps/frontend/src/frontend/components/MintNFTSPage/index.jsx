@@ -99,10 +99,14 @@ const MintNFTSPage = () => {
           Description
         </FormLabel>
         <Input id="description" type="text" onChange={e => setDescription(e.target.value)} placeholder="Description" className="input-control" />
-        <FormLabel htmlFor="price" className="input-flat">
-          Price
-        </FormLabel>
-        <Input id="price" type="number" onChange={e => setPrice(e.target.value)} placeholder="Price in ETH" className="input-control" />
+        {willBeListed && (
+          <>
+            <FormLabel htmlFor="price" className="input-flat">
+              Price
+            </FormLabel>
+            <Input id="price" type="number" onChange={e => setPrice(e.target.value)} placeholder="Price in ETH" className="input-control" />
+          </>
+        )}
         <div className="listSwitch">
           <FormLabel htmlFor="list">List Item In Marketplace</FormLabel>
           <Switch onChange={() => setWillBeListed(!willBeListed)} isChecked={willBeListed} colorScheme="linkedin" id="list" size="lg" />
