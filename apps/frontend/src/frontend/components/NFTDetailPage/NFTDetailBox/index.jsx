@@ -1,11 +1,11 @@
 /* eslint-disable no-underscore-dangle */
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { getChainId, getNFTContract, getNFTDescription, getTokenId } from '../../store/selectors';
-import DetailsDropdown from '../DetailsDropdown';
-import AddressDisplay from '../AddressDisplay';
-import { CHAIN_PARAMS } from '../../constants';
-import ScContractAddress from './ScContractAddress';
+import { getChainId, getNFTContract, getNFTDescription, getTokenId } from '../../../store/selectors';
+import DetailsDropdown from '../../DetailsDropdown';
+import AddressDisplay from '../../AddressDisplay';
+import { CHAIN_PARAMS } from '../../../constants';
+import ScContractAddress from '../ScContractAddress';
 import ScNFTDetailBox from './ScNFTDetailBox';
 
 // TODO: Add redux

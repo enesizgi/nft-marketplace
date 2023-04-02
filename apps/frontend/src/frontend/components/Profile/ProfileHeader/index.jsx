@@ -1,18 +1,18 @@
 import React from 'react';
 import { string } from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
-import { setUserProfilePhoto, setUserCoverPhoto, setSignedMessage } from '../../store/userSlice';
-import API from '../../modules/api';
+import { setUserProfilePhoto, setUserCoverPhoto, setSignedMessage } from '../../../store/userSlice';
+import API from '../../../modules/api';
 import ScProfileHeader from './ScProfileHeader';
-import ImageUpload from '../ImageUpload';
-import { ReactComponent as DefaultProfilePhoto } from '../../assets/default-profile-photo.svg';
-import { ReactComponent as EditIcon } from '../../assets/edit-icon.svg';
-import { generateSignatureData } from '../../utils';
-import { getIsProfileOwner, getProfile, getSignedMessage } from '../../store/selectors';
-import { initProfile } from '../../store/actionCreators';
-import Button from '../Button';
-import { setActiveModal } from '../../store/uiSlice';
-import { MODAL_TYPES } from '../../constants';
+import ImageUpload from '../../ImageUpload';
+import { ReactComponent as DefaultProfilePhoto } from '../../../assets/default-profile-photo.svg';
+import { ReactComponent as EditIcon } from '../../../assets/edit-icon.svg';
+import { generateSignatureData } from '../../../utils';
+import { getIsProfileOwner, getProfile, getSignedMessage } from '../../../store/selectors';
+import { initProfile } from '../../../store/actionCreators';
+import Button from '../../Button';
+import { setActiveModal } from '../../../store/uiSlice';
+import { MODAL_TYPES } from '../../../constants';
 
 const ProfileHeader = ({ id }) => {
   const dispatch = useDispatch();

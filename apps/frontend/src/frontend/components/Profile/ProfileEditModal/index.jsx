@@ -1,117 +1,22 @@
 import React, { useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
-import { Input, FormControl, FormLabel, Button, FormHelperText } from '@chakra-ui/react';
+import { Input, FormLabel, Button, FormHelperText } from '@chakra-ui/react';
 import isEqual from 'lodash/isEqual';
 import { useDispatch, useSelector } from 'react-redux';
-import { getDeviceType, getSignedMessage } from '../../store/selectors';
-import { DEVICE_TYPES } from '../../constants';
-import { setActiveModal } from '../../store/uiSlice';
-import API from '../../modules/api';
-import { initProfile } from '../../store/actionCreators';
-import { setUser } from '../../store/userSlice';
-import LoadingSpinner from '../LoadingSpinner';
-import { generateSignatureData } from '../../utils';
+import { getDeviceType, getSignedMessage } from '../../../store/selectors';
+import { DEVICE_TYPES } from '../../../constants';
+import { setActiveModal } from '../../../store/uiSlice';
+import API from '../../../modules/api';
+import { initProfile } from '../../../store/actionCreators';
+import { setUser } from '../../../store/userSlice';
+import LoadingSpinner from '../../LoadingSpinner';
+import ScProfileEditModal from './ScProfileEditModal';
+import { generateSignatureData } from '../../../utils';
 
 const BUTTON_SIZE_MAP = {
   [DEVICE_TYPES.MOBILE]: 'sm',
   [DEVICE_TYPES.TABLET]: 'md',
   [DEVICE_TYPES.DESKTOP]: 'lg'
 };
-
-const ScProfileEditModal = styled(FormControl)`
-  display: flex;
-  flex-direction: column;
-  padding: 16px;
-  input {
-    height: 3rem;
-    padding: 10px;
-    font-size: 18px;
-    color: #fff;
-    font-size: 18px;
-    color: #fff;
-    &:not([aria-invalid]) {
-      margin-bottom: 20px;
-    }
-  }
-  label {
-    @media screen and (max-width: 768px) {
-      align-self: flex-start;
-    }
-    font-weight: 600;
-    font-size: 24px;
-  }
-  button {
-    word-wrap: break-word;
-  }
-  .chakra-form__helper-text {
-    margin-bottom: 20px;
-    color: red;
-  }
-
-  .photoUpload-group {
-    display: flex;
-    justify-content: space-around;
-    width: 100%;
-    @media screen and (max-width: 768px) {
-      flex-direction: column;
-    }
-  }
-
-  .photoUpload-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    width: 50%;
-    @media screen and (max-width: 768px) {
-      width: 100%;
-    }
-    & > img {
-      margin-bottom: 20px;
-    }
-  }
-  .profilePhoto {
-    display: inline;
-    width: 200px;
-    height: 200px;
-    border-radius: 100%;
-    @media screen and (max-width: 768px) {
-      width: 175px;
-      height: 175px;
-    }
-    @media screen and (max-width: 480px) {
-      width: 120px;
-      height: 120px;
-    }
-  }
-  .upload-button-container {
-    display: flex;
-    flex-direction: column;
-  }
-  .coverPhoto {
-    height: 200px;
-    @media screen and (max-width: 768px) {
-      height: 175px;
-    }
-    @media screen and (max-width: 480px) {
-      height: 120px;
-    }
-  }
-
-  .form-footer {
-    margin-top: 20px;
-    align-self: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    > div {
-      font-weight: 600;
-      font-size: 16px;
-      margin: 0 10px;
-    }
-  }
-`;
 
 const ProfileEditModal = ({ profile, updateSignedMessage }) => {
   const [isLoading, setIsLoading] = useState(false);

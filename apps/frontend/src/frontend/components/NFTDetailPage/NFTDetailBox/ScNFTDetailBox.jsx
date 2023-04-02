@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { theme } from '../../constants';
+import { theme } from '../../../constants';
 
 const ScNFTDetailBox = styled.div`
   .details-container {

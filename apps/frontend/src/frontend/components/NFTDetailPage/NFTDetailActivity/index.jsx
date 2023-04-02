@@ -1,10 +1,10 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import DetailsDropdown from '../DetailsDropdown';
+import DetailsDropdown from '../../DetailsDropdown';
 import ScNFTDetailActivity from './ScNFTDetailActivity';
-import AddressDisplay from '../AddressDisplay';
-import { getNFTTransactions } from '../../store/selectors';
-import ScContractAddress from './ScContractAddress';
+import AddressDisplay from '../../AddressDisplay';
+import { getNFTTransactions } from '../../../store/selectors';
+import ScContractAddress from '../ScContractAddress';
 
 const NFTDetailActivity = () => {
   const transactions = useSelector(getNFTTransactions);
