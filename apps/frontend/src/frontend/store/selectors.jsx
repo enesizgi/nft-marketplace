@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 import { createSelector } from 'reselect';
 import { getMarketplaceContractFn, getNFTContractFn } from '../components/utils';
-import { defaultChainId } from '../constants';
+import { defaultChainId, DEVICE_TYPES } from '../constants';
 
 export const getUser = state => state.user;
 
@@ -48,6 +48,17 @@ export const getCoverPhoto = createSelector(getProfile, ({ coverPhoto }) => cove
 export const getIsProfileOwner = createSelector([getUserId, getProfileId], (userId, profileId) => userId === profileId);
 
 export const getDeviceType = createSelector(getUI, ({ deviceType }) => deviceType);
+
+export const getButtonSize = createSelector(getDeviceType, deviceType => {
+  switch (deviceType) {
+    case DEVICE_TYPES.MOBILE:
+      return 'sm';
+    case DEVICE_TYPES.TABLET:
+      return 'md';
+    default:
+      return 'lg';
+  }
+});
 
 export const getIsLeftPanelOpened = createSelector(getUI, ({ leftPanelOpened }) => leftPanelOpened);
 

@@ -2,8 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Input, FormLabel, Button, FormHelperText } from '@chakra-ui/react';
 import isEqual from 'lodash/isEqual';
 import { useDispatch, useSelector } from 'react-redux';
-import { getDeviceType, getSignedMessage } from '../../../store/selectors';
-import { DEVICE_TYPES } from '../../../constants';
+import { getButtonSize, getSignedMessage } from '../../../store/selectors';
 import { setActiveModal } from '../../../store/uiSlice';
 import API from '../../../modules/api';
 import { initProfile } from '../../../store/actionCreators';
@@ -11,12 +10,6 @@ import { setUser } from '../../../store/userSlice';
 import LoadingSpinner from '../../LoadingSpinner';
 import ScProfileEditModal from './ScProfileEditModal';
 import { generateSignatureData } from '../../../utils';
-
-const BUTTON_SIZE_MAP = {
-  [DEVICE_TYPES.MOBILE]: 'sm',
-  [DEVICE_TYPES.TABLET]: 'md',
-  [DEVICE_TYPES.DESKTOP]: 'lg'
-};
 
 const ProfileEditModal = ({ profile, updateSignedMessage }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -28,7 +21,7 @@ const ProfileEditModal = ({ profile, updateSignedMessage }) => {
   const profilePhotoUploadRef = useRef();
   const coverPhotoUploadRef = useRef();
   const dispatch = useDispatch();
-  const deviceType = useSelector(getDeviceType);
+  const buttonSize = useSelector(getButtonSize);
   const signedMessage = useSelector(getSignedMessage);
 
   useEffect(() => {
@@ -155,7 +148,7 @@ const ProfileEditModal = ({ profile, updateSignedMessage }) => {
           <FormLabel htmlFor="profilePhoto">Profile Photo</FormLabel>
           <img className="profilePhoto" alt="profilePhoto" id="profilePhoto" src={currentProfile.profilePhoto} />
           <div className="upload-button-container">
-            <Button size={BUTTON_SIZE_MAP[deviceType]} colorScheme="linkedin" onClick={handleOpenProfilePhotoUpload}>
+            <Button size={buttonSize} colorScheme="linkedin" onClick={handleOpenProfilePhotoUpload}>
               Change Profile Photo
             </Button>
             <FormHelperText>{errorMessages.profile}</FormHelperText>
@@ -166,7 +159,7 @@ const ProfileEditModal = ({ profile, updateSignedMessage }) => {
           <FormLabel htmlFor="coverPhoto">Cover Photo</FormLabel>
           <img className="coverPhoto" alt="coverPhoto" id="coverPhoto" src={currentProfile.coverPhoto} />
           <div className="upload-button-container">
-            <Button size={BUTTON_SIZE_MAP[deviceType]} colorScheme="linkedin" onClick={handeOpenCoverPhotoUpload}>
+            <Button size={buttonSize} colorScheme="linkedin" onClick={handeOpenCoverPhotoUpload}>
               Change Cover Photo
             </Button>
             <FormHelperText>{errorMessages.cover}</FormHelperText>
@@ -175,14 +168,7 @@ const ProfileEditModal = ({ profile, updateSignedMessage }) => {
         </div>
       </div>
       <div className="form-footer">
-        <Button
-          isDisabled={!isChanged}
-          colorScheme="linkedin"
-          className="submitButton"
-          size={BUTTON_SIZE_MAP[deviceType]}
-          type="submit"
-          onClick={handleSubmitData}
-        >
+        <Button isDisabled={!isChanged} colorScheme="linkedin" className="submitButton" size={buttonSize} type="submit" onClick={handleSubmitData}>
           Save Changes
         </Button>
         <FormHelperText>{errorMessages.formError}</FormHelperText>
