@@ -16,9 +16,6 @@ const MintNFTSPage = () => {
   const [file, setFile] = useState(null);
   const [willBeListed, setWillBeListed] = useState(false);
   const fileUploadRef = useRef();
-  const [nameValid, setNameValid] = useState(false);
-  const [descriptionValid, setDescriptionValid] = useState(false);
-  const [priceValid, setPriceValid] = useState(false);
 
   const userId = useSelector(getUserId);
   const marketplaceContract = useSelector(getMarketplaceContract);
@@ -58,8 +55,8 @@ const MintNFTSPage = () => {
     await (await marketplaceContract.makeItem(nftContract.address, id, listingPrice)).wait();
   };
   const createNFT = async () => {
-    if (willBeListed && !priceValid) return;
-    if (!file || !nameValid || !descriptionValid) return;
+    if (willBeListed && !price) return;
+    if (!file || !name || !description) return;
     try {
       const formData = new FormData();
       formData.append('files', file);
@@ -97,44 +94,17 @@ const MintNFTSPage = () => {
         <FormLabel className="input-flat" htmlFor="name">
           Name
         </FormLabel>
-        <Input
-          id="name"
-          type="text"
-          onChange={e => {
-            setName(e.target.value);
-            setNameValid(!!e.target.value);
-          }}
-          placeholder="Name"
-          className={`input-control ${nameValid ? '' : 'invalid'}`}
-        />
+        <Input id="name" type="text" onChange={e => setName(e.target.value)} placeholder="Name" className="input-control" />
         <FormLabel className="input-flat" htmlFor="description">
           Description
         </FormLabel>
-        <Input
-          id="description"
-          type="text"
-          onChange={e => {
-            setDescription(e.target.value);
-            setDescriptionValid(!!e.target.value);
-          }}
-          placeholder="Description"
-          className={`input-control ${descriptionValid ? '' : 'invalid'}`}
-        />
+        <Input id="description" type="text" onChange={e => setDescription(e.target.value)} placeholder="Description" className="input-control" />
         {willBeListed && (
           <>
             <FormLabel htmlFor="price" className="input-flat">
               Price
             </FormLabel>
-            <Input
-              id="price"
-              type="number"
-              onChange={e => {
-                setPrice(e.target.value);
-                setPriceValid(!!e.target.value);
-              }}
-              placeholder="Price in ETH"
-              className={`input-control ${priceValid ? '' : 'invalid'}`}
-            />
+            <Input id="price" type="number" onChange={e => setPrice(e.target.value)} placeholder="Price in ETH" className="input-control" />
           </>
         )}
         <div className="listSwitch">
