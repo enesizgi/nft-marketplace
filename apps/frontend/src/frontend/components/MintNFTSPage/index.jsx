@@ -39,7 +39,7 @@ const MintNFTSPage = () => {
     // mint nft
     const response = await (await nftContract.mintNFT(uri)).wait();
     // get tokenId of new nft
-    return response.events[0].args[2];
+    return response.events[0].args.tokenId;
   };
 
   const mintThenList = async result => {
