@@ -42,6 +42,7 @@ export const NFT_LISTING_TYPES = {
 export const MODAL_TYPES = {
   SELL: 'sell',
   BUY: 'buy',
+  OFFER: 'offer',
   IMAGE_PREVIEW: 'image_preview',
   PROFILE_EDIT: 'profile_edit'
 };

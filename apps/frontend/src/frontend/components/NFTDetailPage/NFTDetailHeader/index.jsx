@@ -1,20 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { BiRefresh } from 'react-icons/bi';
-import { ethers } from 'ethers';
-import {
-  getIsListed,
-  getIsOnAuction,
-  getNFTName,
-  getNFTOwner,
-  getNFTSeller,
-  getNFTURL,
-  getUserId,
-  getMarketplaceContract,
-  getwETHContract,
-  getNFTContract,
-  getTokenId
-} from '../../../store/selectors';
+import { getIsListed, getIsOnAuction, getNFTName, getNFTOwner, getNFTSeller, getNFTURL, getUserId } from '../../../store/selectors';
 import AddressDisplay from '../../AddressDisplay';
 import ShareDropdown from '../ShareDropdown';
 import '../ShareDropdown.css';
@@ -24,6 +11,7 @@ import { loadNFT } from '../../../store/uiSlice';
 import SaleButton from '../SaleButton';
 import AuctionButton from '../../AuctionButton';
 import ScNFTDetailHeader from './ScNFTDetailHeader';
+import OfferButton from '../OfferButton';
 
 const NFTDetailHeader = () => {
   const dispatch = useDispatch();
@@ -36,10 +24,6 @@ const NFTDetailHeader = () => {
   const isOnAuction = useSelector(getIsOnAuction);
   const isOwnerPage = compare(owner, userId);
   const isSellerPage = compare(seller, userId);
-  const marketplaceContract = useSelector(getMarketplaceContract);
-  const wEthContract = useSelector(getwETHContract);
-  const nftContract = useSelector(getNFTContract);
-  const nftTokenId = useSelector(getTokenId);
 
   const [isWindowFocused, setIsWindowFocused] = useState(true);
 
@@ -60,66 +44,6 @@ const NFTDetailHeader = () => {
 
   const handleReloadNftInfo = () => {
     dispatch(loadNFT());
-  };
-  const getPermitSignature = async (signer, token, spender, value, deadline) => {
-    const signerAddress = await signer.getAddress();
-    const [nonce, name, version, chainId] = await Promise.all([token.nonces(signerAddress), token.name(), '1', signer.getChainId()]);
-
-    return ethers.utils.splitSignature(
-      // eslint-disable-next-line no-underscore-dangle
-      await signer._signTypedData(
-        {
-          name,
-          version,
-          chainId,
-          verifyingContract: token.address
-        },
-        {
-          Permit: [
-            {
-              name: 'owner',
-              type: 'address'
-            },
-            {
-              name: 'spender',
-              type: 'address'
-            },
-            {
-              name: 'value',
-              type: 'uint256'
-            },
-            {
-              name: 'nonce',
-              type: 'uint256'
-            },
-            {
-              name: 'deadline',
-              type: 'uint256'
-            }
-          ]
-        },
-        {
-          owner: signerAddress,
-          spender,
-          value,
-          nonce,
-          deadline
-        }
-      )
-    );
-  };
-  const makeOffer = async () => {
-    // const chainId = window.sessionStorage.getItem('chainId');
-    // const provider = new ethers.providers.JsonRpcProvider(CHAIN_PARAMS[chainId || defaultChainId].rpcUrls[0]);
-    // const signer = provider.getSigner();
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-    const amount = ethers.utils.parseEther('10');
-    const deadline = Math.floor(Date.now() / 1000) + 3600;
-    const { v, r, s } = await getPermitSignature(signer, wEthContract, marketplaceContract.address, amount, deadline);
-    console.log(s);
-    // TODO: Balance check of wETH before calling
-    await marketplaceContract.makeERCOffer(wEthContract.address, nftContract.address, nftTokenId, amount, deadline, v, r, s);
   };
 
   useEffect(() => {
@@ -156,12 +80,7 @@ const NFTDetailHeader = () => {
       </div>
       {(isListed || isOwnerPage) && <SaleButton />}
       {isOnAuction && <AuctionButton />}
-      {(isListed || isOnAuction) && !isSellerPage && (
-        <button type="button" onClick={makeOffer}>
-          {' '}
-          Make Offer
-        </button>
-      )}
+      {(isListed || isOnAuction) && !isSellerPage && <OfferButton />}
     </ScNFTDetailHeader>
   );
 };

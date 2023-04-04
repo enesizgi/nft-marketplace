@@ -6,11 +6,13 @@ import Modal from './Modal';
 import { DEVICE_TYPES, MODAL_TYPES } from '../constants';
 import { setActiveModal } from '../store/uiSlice';
 import ProfileEditModal from './Profile/ProfileEditModal';
+import OfferModal from './NFTDetailPage/OfferModal';
 
 const MODAL_COMPONENTS = {
   [MODAL_TYPES.SELL]: SellModal,
   [MODAL_TYPES.IMAGE_PREVIEW]: ({ ...props }) => <img alt="previewImage" {...props} />,
-  [MODAL_TYPES.PROFILE_EDIT]: ProfileEditModal
+  [MODAL_TYPES.PROFILE_EDIT]: ProfileEditModal,
+  [MODAL_TYPES.OFFER]: OfferModal
 };
 
 const ModalContainer = () => {
