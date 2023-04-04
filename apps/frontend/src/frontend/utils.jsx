@@ -31,7 +31,8 @@ export const generateSignatureData = async (signedMessage = null, message = 'NFT
 
 export const serializeBigNumber = obj =>
   Object.entries(obj).reduce(
-    (acc, [key, value]) => (ethers.BigNumber.isBigNumber(value) ? { ...acc, [key]: parseInt(value._hex, 16) } : { ...acc, [key]: value }),
+    (acc, [key, value]) =>
+      value != null && ethers.BigNumber.isBigNumber(value) ? { ...acc, [key]: parseInt(value._hex, 16) } : { ...acc, [key]: value },
     {}
   );
 
