@@ -181,6 +181,9 @@ const ListNFTSPage = ({ profileId, selectedTab }) => {
     return <LoadingSpinner />;
   }
   if (selectedTab === 'Home') {
+    if (listedItemCount === 0 && auctionItemCount === 0) {
+      return null;
+    }
     return (
       <ScListNFTSPage>
         {listedItemCount && (
