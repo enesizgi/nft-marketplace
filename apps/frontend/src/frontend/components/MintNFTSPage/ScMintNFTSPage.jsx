@@ -71,6 +71,10 @@ const ScMintNFTSPage = styled.div`
       margin: 0;
     }
   }
+
+  .input-control.invalid {
+    border: 1px solid red;
+  }
 `;
 
 export default ScMintNFTSPage;
