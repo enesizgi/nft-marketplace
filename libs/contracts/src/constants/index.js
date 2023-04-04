@@ -4,6 +4,8 @@ import * as MarketplaceAddressGoerli from '../contractsData/goerli/Marketplace-a
 import * as MarketplaceAbiGoerli from '../contractsData/goerli/Marketplace.json';
 import * as NFTAddress from '../contractsData/localhost/NFT-address.json';
 import * as NFTAbi from '../contractsData/localhost/NFT.json';
+import * as wETHAddress from '../contractsData/localhost/wETH-address.json';
+import * as wETHAbi from '../contractsData/localhost/wETH.json';
 import * as MarketplaceAddress from '../contractsData/localhost/Marketplace-address.json';
 import * as MarketplaceAbi from '../contractsData/localhost/Marketplace.json';
 import * as NFTAddressSepolia from '../contractsData/sepolia/NFT-address.json';
@@ -46,6 +48,10 @@ export const CONTRACTS = {
     MARKETPLACE: {
       address: MarketplaceAddress.address,
       abi: MarketplaceAbi.abi
+    },
+    wETH: {
+      address: wETHAddress.address,
+      abi: wETHAbi.abi
     }
   },
   [NETWORK_IDS.SEPOLIA]: {

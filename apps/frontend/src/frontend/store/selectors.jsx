@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import { createSelector } from 'reselect';
-import { getMarketplaceContractFn, getNFTContractFn } from '../components/utils';
+import { getMarketplaceContractFn, getNFTContractFn, getwETHContractFn } from '../components/utils';
 import { defaultChainId, DEVICE_TYPES } from '../constants';
 
 export const getUser = state => state.user;
@@ -26,6 +26,8 @@ export const getChainIdWithDefault = createSelector(getChainId, chainId => chain
 export const getMarketplaceContract = createSelector(getUserId, getChainId, getMarketplaceContractFn);
 
 export const getNFTContract = createSelector(getUserId, getChainId, getNFTContractFn);
+
+export const getwETHContract = createSelector(getUserId, getChainId, getwETHContractFn);
 
 export const getIsLoadingContracts = createSelector(getMarketplace, ({ isLoadingContracts }) => isLoadingContracts);
 
@@ -91,6 +93,8 @@ export const getNFTURL = createSelector(getNFTMetadata, ({ url }) => url);
 export const getNFTDescription = createSelector(getNFTMetadata, ({ description }) => description);
 
 export const getNFTTransactions = createSelector(getNFT, ({ transactions }) => transactions);
+
+export const getNFTOffers = createSelector(getNFT, ({ offers }) => offers);
 
 export const getTokenId = createSelector(getNFT, ({ tokenId }) => tokenId);
 

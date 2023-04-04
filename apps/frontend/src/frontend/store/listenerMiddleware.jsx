@@ -108,7 +108,7 @@ const handleInitNFTState = async (action, listenerApi) => {
   const {
     user: { id: userId },
     marketplace: { chainId },
-    nft: { metadata: currentMetadata, tokenId: currentTokenId, transactions: currentTransactions = [] }
+    nft: { metadata: currentMetadata, tokenId: currentTokenId }
   } = listenerApi.getState();
   const tokenId = action.payload;
 
@@ -121,12 +121,9 @@ const handleInitNFTState = async (action, listenerApi) => {
   const mongoEvents = await API.getEvents({ network: chainId, nft: nftContract.address, tokenId: parseInt(tokenId) });
   const isSameToken = tokenId === currentTokenId?.toString();
   const metadata = currentMetadata && isSameToken ? currentMetadata : await API.getFromIPFS(cid);
-  const fromBlockNumber =
-    isSameToken && currentTransactions.length > 0 ? currentTransactions.reduce((acc, t) => (t.blockNumber > acc ? t.blockNumber : acc), -1) + 1 : 0;
 
   // TODO @Enes: Cache mechanism for transactions maybe? Get events from mongodb?
-  const currentMintTransaction = isSameToken && currentTransactions.find(t => t.type === NFT_ACTIVITY_TYPES.MINT);
-  const transferQuery = currentMintTransaction ? [] : mongoEvents.filter(e => e.type === 'Transfer' && e.from === ethers.constants.AddressZero);
+  const transferQuery = mongoEvents.filter(e => e.type === 'Transfer' && e.from === ethers.constants.AddressZero);
   const boughtQuery = mongoEvents.filter(e => e.type === 'Bought');
   const offeredQuery = mongoEvents.filter(e => e.type === 'Offered');
   const auctionQuery = mongoEvents.filter(e => e.type === 'AuctionStarted');
@@ -180,22 +177,35 @@ const handleInitNFTState = async (action, listenerApi) => {
 
   const finalItem = removeIndexKeys(serializeBigNumber(it));
 
-  const nftTransactionData = [...currentTransactions, ...boughtResults, ...auctionEndedResults, ...(transferPromise.value || [])]
-    .sort(sortFn)
+  const nftTransactionData = [...boughtResults, ...auctionEndedResults, ...(transferPromise.value || [])].sort(sortFn).map(e => {
+    const isMintTransaction = e.type === 'Transfer' && e.from === ethers.constants.AddressZero;
+    return {
+      event: e.event,
+      ...(e.args ? { args: removeIndexKeys(serializeBigNumber(e.args)) } : {}),
+      type: isMintTransaction ? NFT_ACTIVITY_TYPES.MINT : NFT_ACTIVITY_TYPES.SALE,
+      ...(e.price ? { price: isMintTransaction ? '' : ethers.utils.formatEther(ethers.BigNumber.from(e.price.toString())) } : {}),
+      from: isMintTransaction ? 'Null' : e.seller,
+      to: isMintTransaction ? e.to ?? e.to : e.buyer,
+      blockNumber: e.blockNumber,
+      blockHash: e.blockHash,
+      transactionHash: e.transactionHash
+    };
+  });
+  const nftOffers = await marketplaceContract.getERCOffers(tokenId);
+  const offers = nftOffers
     .map(e => {
-      const isMintTransaction = e.type === NFT_ACTIVITY_TYPES.MINT || (e.type === 'Transfer' && e.from === ethers.constants.AddressZero);
+      if (e.offerer === ethers.constants.AddressZero) {
+        return;
+      }
       return {
-        event: e.event,
-        ...(e.args ? { args: removeIndexKeys(serializeBigNumber(e.args)) } : {}),
-        type: isMintTransaction ? NFT_ACTIVITY_TYPES.MINT : NFT_ACTIVITY_TYPES.SALE,
-        price: isMintTransaction ? '' : ethers.utils.formatEther(ethers.BigNumber.from(e.args.price.toString())),
-        from: isMintTransaction ? 'Null' : e.args.seller,
-        to: isMintTransaction ? e.to ?? e.args.to : e.args.buyer,
-        blockNumber: e.blockNumber,
-        blockHash: e.blockHash,
-        transactionHash: e.transactionHash
+        offerIndex: serializeBigNumber(e.offerIndex),
+        offerer: e.offerer.toLowerCase(),
+        amount: serializeBigNumber(e.amount),
+        tokenId: serializeBigNumber(e.tokenId),
+        deadline: serializeBigNumber(e.deadline)
       };
-    });
+    })
+    .filter(item => item);
 
   const isNFTOwnedByMarketplace = owner === marketplaceContract.address.toLowerCase();
   const isListed = isNFTOwnedByMarketplace && lastEvent?.type === 'Offered';
@@ -203,7 +213,7 @@ const handleInitNFTState = async (action, listenerApi) => {
 
   const seller = isListed || isOnAuction ? lastEvent.seller.toLowerCase() : '';
 
-  listenerApi.dispatch(setNFT({ ...finalItem, transactions: nftTransactionData, owner, seller, isListed, isOnAuction }));
+  listenerApi.dispatch(setNFT({ ...finalItem, transactions: nftTransactionData, offers: offers, owner, seller, isListed, isOnAuction }));
   listenerApi.dispatch(setLoading(false));
 };
 

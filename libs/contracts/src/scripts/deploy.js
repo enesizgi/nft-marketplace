@@ -34,7 +34,8 @@ const main = async () => {
   // eslint-disable-next-line no-restricted-syntax
   for await (const contractData of [
     { name: 'Marketplace', args: [1] },
-    { name: 'NFT', args: [] }
+    { name: 'NFT', args: [] },
+    { name: 'wETH', args: [] }
   ]) {
     const contract = await hre.ethers.getContractFactory(contractData.name);
     const contractInstance = await contract.deploy(...contractData.args);

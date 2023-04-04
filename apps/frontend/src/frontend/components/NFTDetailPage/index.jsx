@@ -8,6 +8,7 @@ import NFTDetailActivity from './NFTDetailActivity';
 import { DEVICE_TYPES } from '../../constants';
 import ScNFTDetailPage from './ScNFTDetailPage';
 import LoadingSpinner from '../LoadingSpinner';
+import NFTOfferActivity from './NFTOfferActivity';
 
 const NFTDetailPage = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -34,6 +35,7 @@ const NFTDetailPage = () => {
       <div className="item-main">
         {deviceType === DEVICE_TYPES.DESKTOP && <NFTDetailHeader />}
         <NFTDetailActivity />
+        <NFTOfferActivity />
       </div>
     </ScNFTDetailPage>
   );

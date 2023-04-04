@@ -2,9 +2,8 @@
 pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
-
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-
+import "./IERC20Permit.sol";
 import "hardhat/console.sol";
 
 contract Marketplace is ReentrancyGuard {
@@ -43,9 +42,18 @@ contract Marketplace is ReentrancyGuard {
         bool canceled;
     }
 
+    struct ERCOffer {
+        uint256 offerIndex;
+        address offerer;
+        uint256 amount;
+        uint256 tokenId;
+        uint256 deadline;
+    }
+
     // itemId -> Item
     mapping(uint => Item) public items;
     mapping(uint => AuctionItem) public auctionItems;
+    mapping(uint256 => ERCOffer[]) private offers;
 
     event Offered(
         uint itemId,
@@ -282,5 +290,60 @@ contract Marketplace is ReentrancyGuard {
         emit AuctionCanceled (
             _auctionId
         );
+    }
+
+    function makeERCOffer(IERC20Permit erc20, IERC721 nft, uint256 _tokenId, uint256 _amount, uint256 _deadline, uint8 _v, bytes32 _r, bytes32 _s) external payable {
+        require(_amount > 0, "Amount must be greater than zero");
+        require(nft.ownerOf(_tokenId) != address(0), "Token does not exist");
+        erc20.permit(msg.sender, address(this), _amount, _deadline, _v, _r, _s);
+        erc20.transferFrom(msg.sender, address(this), _amount);
+        offers[_tokenId].push(ERCOffer(offers[_tokenId].length, msg.sender, _amount, _tokenId, _deadline));
+    }
+
+    function acceptERCOffer(IERC20Permit erc20, IERC721 nft, uint256 _tokenId, uint _itemId, uint256 _offerIndex, bool isOnSale) external {
+        //TODO: cancel offerers other offers for nft and emit event for marketplace item and sellable without listed
+        ERCOffer memory offer = offers[_tokenId][_offerIndex];
+        address owner = nft.ownerOf(_tokenId);
+        require(block.timestamp < offer.deadline, "Offer deadline is exceeded");
+        require(address(this) == owner , "Only marketplace items can be accepted");
+        nft.transferFrom(address(this), offer.offerer, _tokenId);
+        erc20.transfer(msg.sender, offer.amount);
+        if (isOnSale) {
+            Item storage item = items[_itemId];
+            item.sold = true;
+            // emit Bought event
+            emit Bought(
+                _itemId,
+                address(item.nft),
+                item.tokenId,
+                offer.amount,
+                item.seller,
+                offer.offerer
+            );
+        } else {
+            AuctionItem storage item = auctionItems[_itemId];
+            item.claimed = true;
+
+            emit AuctionEnded(
+                _itemId,
+                address(item.nft),
+                item.tokenId,
+                uint(offer.amount),
+                item.seller,
+                offer.offerer
+            );
+        }
+        delete offers[_tokenId][_offerIndex];
+    }
+
+    function cancelERCOffer(IERC20Permit erc20, uint256 _tokenId, uint256 _offerIndex) external {
+        ERCOffer memory offer = offers[_tokenId][_offerIndex];
+        require(msg.sender == offer.offerer, "Only offerer can cancel offer");
+        erc20.transfer(msg.sender, offer.amount);
+        delete offers[_tokenId][_offerIndex];
+    }
+
+    function getERCOffers(uint256 _tokenId) external view returns (ERCOffer[] memory) {
+        return offers[_tokenId];
     }
 }
