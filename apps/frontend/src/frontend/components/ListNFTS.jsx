@@ -180,28 +180,31 @@ const ListNFTSPage = ({ profileId, selectedTab }) => {
   if (loading) {
     return <LoadingSpinner />;
   }
-
   if (selectedTab === 'Home') {
     return (
       <ScListNFTSPage>
-        <NFTSlider
-          itemCount={listedItemCount}
-          loadItems={loadItems(false)}
-          selectedTab={selectedTab}
-          loading={listedItemsLoading}
-          currentPage={listedCurrentPage}
-          setCurrentPage={setListedCurrentPage}
-          items={listedItems}
-        />
-        <NFTSlider
-          itemCount={auctionItemCount}
-          loadItems={loadItems(true)}
-          selectedTab={selectedTab}
-          loading={auctionItemsLoading}
-          currentPage={auctionCurrentPage}
-          setCurrentPage={setAuctionCurrentPage}
-          items={auctionItems}
-        />
+        {listedItemCount && (
+          <NFTSlider
+            itemCount={listedItemCount}
+            loadItems={loadItems(false)}
+            selectedTab={selectedTab}
+            loading={listedItemsLoading}
+            currentPage={listedCurrentPage}
+            setCurrentPage={setListedCurrentPage}
+            items={listedItems}
+          />
+        )}
+        {auctionItemCount && (
+          <NFTSlider
+            itemCount={auctionItemCount}
+            loadItems={loadItems(true)}
+            selectedTab={selectedTab}
+            loading={auctionItemsLoading}
+            currentPage={auctionCurrentPage}
+            setCurrentPage={setAuctionCurrentPage}
+            items={auctionItems}
+          />
+        )}
       </ScListNFTSPage>
     );
   }
