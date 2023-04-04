@@ -126,9 +126,7 @@ const handleInitNFTState = async (action, listenerApi) => {
 
   // TODO @Enes: Cache mechanism for transactions maybe? Get events from mongodb?
   const currentMintTransaction = isSameToken && currentTransactions.find(t => t.type === NFT_ACTIVITY_TYPES.MINT);
-  const transferFilter = nftContract.filters.Transfer(ethers.constants.AddressZero, null, tokenId);
-  const transferQuery = currentMintTransaction ? [] : nftContract.queryFilter(transferFilter, fromBlockNumber);
-
+  const transferQuery = currentMintTransaction ? [] : mongoEvents.filter(e => e.type === 'Transfer' && e.from === ethers.constants.AddressZero);
   const boughtQuery = mongoEvents.filter(e => e.type === 'Bought');
   const offeredQuery = mongoEvents.filter(e => e.type === 'Offered');
   const auctionQuery = mongoEvents.filter(e => e.type === 'AuctionStarted');
@@ -185,10 +183,10 @@ const handleInitNFTState = async (action, listenerApi) => {
   const nftTransactionData = [...currentTransactions, ...boughtResults, ...auctionEndedResults, ...(transferPromise.value || [])]
     .sort(sortFn)
     .map(e => {
-      const isMintTransaction = e.type === NFT_ACTIVITY_TYPES.MINT || (e.event === 'Transfer' && e.args.from === ethers.constants.AddressZero);
+      const isMintTransaction = e.type === NFT_ACTIVITY_TYPES.MINT || (e.type === 'Transfer' && e.from === ethers.constants.AddressZero);
       return {
         event: e.event,
-        args: removeIndexKeys(serializeBigNumber(e.args)),
+        ...(e.args ? { args: removeIndexKeys(serializeBigNumber(e.args)) } : {}),
         type: isMintTransaction ? NFT_ACTIVITY_TYPES.MINT : NFT_ACTIVITY_TYPES.SALE,
         price: isMintTransaction ? '' : ethers.utils.formatEther(ethers.BigNumber.from(e.args.price.toString())),
         from: isMintTransaction ? 'Null' : e.args.seller,

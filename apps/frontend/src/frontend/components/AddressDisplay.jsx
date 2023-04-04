@@ -38,7 +38,8 @@ const AddressDisplay = ({ address, className, label, onClick, isShortAddress }) 
 
   useEffect(() => {
     const runAsync = async () => {
-      if (address && !showYou) {
+      // TODO @Enes: Why is address 'Null' string?
+      if (address && address.toLowerCase() !== 'null' && !showYou) {
         const { name } = (await API.getUsername(address.toLowerCase())) || {};
         if (name && name !== 'Unnamed') {
           setDisplayed(name);

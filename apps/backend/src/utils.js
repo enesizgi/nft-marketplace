@@ -114,7 +114,9 @@ export const fetchMarketplaceEvents = async chainId => {
       ? new ethers.providers.JsonRpcProvider('http://127.0.0.1:8545')
       : new ethers.providers.EtherscanProvider(Number(chainId), process.env.ETHERSCAN_API_KEY);
     const marketplaceContract = new ethers.Contract(CONTRACTS[chainId].MARKETPLACE.address, CONTRACTS[chainId].MARKETPLACE.abi, provider);
+    const nftContract = new ethers.Contract(CONTRACTS[chainId].NFT.address, CONTRACTS[chainId].NFT.abi, provider);
     const events = await marketplaceContract.queryFilter('*', fromBlock);
+    const nftEvents = await nftContract.queryFilter('Transfer', fromBlock);
     insertData = events.map(event => {
       const {
         blockNumber,
@@ -140,7 +142,27 @@ export const fetchMarketplaceEvents = async chainId => {
         network: chainId
       };
     });
-    await Promise.all([Event.insertMany(insertData), getLastStatusOfNft(insertData)]);
+    const nftInsertData = nftEvents.map(event => {
+      const {
+        blockNumber,
+        transactionIndex,
+        transactionHash,
+        event: type,
+        args: { tokenId, from, to }
+      } = event;
+      return {
+        type,
+        from,
+        to,
+        tokenId: ethers.BigNumber.from(tokenId).toNumber(),
+        nft: CONTRACTS[chainId].NFT.address,
+        blockNumber,
+        transactionIndex,
+        transactionHash,
+        network: chainId
+      };
+    });
+    await Promise.all([Event.insertMany([...insertData, ...nftInsertData]), insertData.length > 0 && getLastStatusOfNft(insertData)]);
   } catch (err) {
     console.log(err);
   }
