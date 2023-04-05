@@ -41,4 +41,3 @@ apps/frontend/src/backend/images
 /.deps/
 /dist/
 /tmp/
-/libs/contracts/src/contractsData/localhost/
