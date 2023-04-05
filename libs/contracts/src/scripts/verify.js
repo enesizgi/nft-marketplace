@@ -14,19 +14,22 @@ const network = process.env.HARDHAT_NETWORK || 'goerli';
 
 const main = async () => {
   const contractsDir = `${dirname}/../contractsData/${network}`;
-  const nftAddress = JSON.parse(await readFile(`${contractsDir}/NFT-address.json`)).address;
-  const marketplaceAddress = JSON.parse(await readFile(`${contractsDir}/Marketplace-address.json`)).address;
-  try {
-    const { stdout } = await execPromise(`env $(cat ../../../../.env) npx hardhat verify --network ${network} ${nftAddress}`);
-    console.log(stdout);
-  } catch (error) {
-    console.log('Error:', error);
-  }
-  try {
-    const { stdout } = await execPromise(`env $(cat ../../../../.env) npx hardhat verify --network ${network} ${marketplaceAddress} 1`);
-    console.log(stdout);
-  } catch (error) {
-    console.log('Error:', error);
+
+  // eslint-disable-next-line no-restricted-syntax
+  for await (const contractData of [
+    { name: 'NFT', args: [] },
+    { name: 'Marketplace', args: [1] },
+    { name: 'wETH', args: [] }
+  ]) {
+    const contractAddress = JSON.parse(await readFile(`${contractsDir}/${contractData.name}-address.json`)).address;
+    try {
+      const { stdout } = await execPromise(
+        `env $(cat ../../../../.env) npx hardhat verify --network ${network} ${contractAddress} ${contractData.args.join(' ')}`
+      );
+      console.log(stdout);
+    } catch (error) {
+      console.log('Error:', error);
+    }
   }
 };
 
