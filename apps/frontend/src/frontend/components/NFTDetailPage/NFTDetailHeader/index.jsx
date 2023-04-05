@@ -1,17 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { BiRefresh } from 'react-icons/bi';
-import { getIsListed, getIsOnAuction, getNFTName, getNFTOwner, getNFTSeller, getNFTURL, getUserId } from '../../../store/selectors';
+import {
+  getFormattedPrice,
+  getIsListed,
+  getIsOnAuction,
+  getNFTName,
+  getNFTOwner,
+  getNFTSeller,
+  getNFTURL,
+  getUserId
+} from '../../../store/selectors';
 import AddressDisplay from '../../AddressDisplay';
 import ShareDropdown from '../ShareDropdown';
 import '../ShareDropdown.css';
 import NewTab from '../NFTOpenNewTab';
 import { compare } from '../../../utils';
 import { loadNFT } from '../../../store/uiSlice';
-import SaleButton from '../SaleButton';
+import NFTActionButtons from '../NFTActionButtons';
 import AuctionButton from '../../AuctionButton';
 import ScNFTDetailHeader from './ScNFTDetailHeader';
-import OfferButton from '../OfferButton';
 
 const NFTDetailHeader = () => {
   const dispatch = useDispatch();
@@ -22,8 +30,8 @@ const NFTDetailHeader = () => {
   const url = useSelector(getNFTURL);
   const isListed = useSelector(getIsListed);
   const isOnAuction = useSelector(getIsOnAuction);
+  const formattedPrice = useSelector(getFormattedPrice);
   const isOwnerPage = compare(owner, userId);
-  const isSellerPage = compare(seller, userId);
 
   const [isWindowFocused, setIsWindowFocused] = useState(true);
 
@@ -78,9 +86,9 @@ const NFTDetailHeader = () => {
           </div>
         )}
       </div>
-      {(isListed || isOwnerPage) && <SaleButton />}
+      {!isOwnerPage && <p className="nft-price">{formattedPrice} ETH</p>}
       {isOnAuction && <AuctionButton />}
-      {(isListed || isOnAuction) && !isSellerPage && <OfferButton />}
+      {(isListed || isOwnerPage) && <NFTActionButtons />}
     </ScNFTDetailHeader>
   );
 };

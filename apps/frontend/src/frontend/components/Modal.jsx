@@ -27,7 +27,6 @@ const ScModal = styled.div`
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 90%;
     margin: auto;
     padding: 60px 30px 27px;
     overflow: hidden;
@@ -84,7 +83,7 @@ const ScModal = styled.div`
         }
       }
 
-      @media screen and (max-width: 768px) {
+      @media screen and (max-width: 480px) {
         left: 10px;
         right: 0;
       }

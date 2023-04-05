@@ -52,6 +52,10 @@ const ScNFTDetailHeader = styled.div`
       }
     }
   }
+  .nft-price {
+    font-size: 24px;
+    font-weight: 600;
+  }
 `;
 
 export default ScNFTDetailHeader;

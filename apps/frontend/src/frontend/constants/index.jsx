@@ -44,7 +44,8 @@ export const MODAL_TYPES = {
   BUY: 'buy',
   OFFER: 'offer',
   IMAGE_PREVIEW: 'image_preview',
-  PROFILE_EDIT: 'profile_edit'
+  PROFILE_EDIT: 'profile_edit',
+  CONVERT: 'convert'
 };
 
 export const CHAIN_PARAMS = {

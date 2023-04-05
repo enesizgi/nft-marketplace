@@ -6,9 +6,12 @@ import { Link } from 'react-router-dom';
 import { ReactComponent as DefaultProfilePhoto } from '../../assets/default-profile-photo.svg';
 import LogoutIcon from '../../assets/logout-icon.svg';
 import CreateIcon from '../../assets/add_circle_outline_white_24dp.svg';
+import { ReactComponent as ETHIcon } from '../../assets/eth-icon.svg';
 import { getUserId, getUserProfilePhoto } from '../../store/selectors';
 import { resetUser } from '../../store/userSlice';
 import Dropdown from '../Dropdown';
+import { setActiveModal } from '../../store/uiSlice';
+import { MODAL_TYPES } from '../../constants';
 
 const ScAccountBox = styled.div`
   width: 100%;
@@ -67,6 +70,8 @@ const AccountBox = () => {
     setDropdownOpened(!isDropdownOpened);
   };
 
+  const handleOpenConvertModal = () => dispatch(setActiveModal({ type: MODAL_TYPES.CONVERT, props: {} }));
+
   return (
     <ScAccountBox isDropdownOpened={isDropdownOpened}>
       <OnOutsideClick onOutsideClick={() => setDropdownOpened(false)}>
@@ -87,6 +92,10 @@ const AccountBox = () => {
               <img alt="create" src={CreateIcon} className="dropdown-content-item-icon" />
               Create
             </Link>
+            <button type="button" className="dropdown-content-item" onClick={handleOpenConvertModal}>
+              <ETHIcon className="dropdown-content-item-icon" />
+              Convert Currency
+            </button>
             <button type="button" className="dropdown-content-item" onClick={handleLogout}>
               <img alt="logout" src={LogoutIcon} className="dropdown-content-item-icon" />
               Logout

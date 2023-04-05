@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { Button, FormLabel, Input } from '@chakra-ui/react';
 import styled from 'styled-components';
 import { ethers } from 'ethers';
 import { getAuctionId, getMarketplaceContract, getNFTSeller, getPriceOfNFT, getTimeToEnd, getUserId, getWinner } from '../store/selectors';
@@ -66,6 +67,10 @@ const ScAuctionButton = styled.div`
   .buy {
     margin: 20px 0;
   }
+
+  .bid-price {
+    margin-bottom: 8px;
+  }
 `;
 
 const AuctionButton = () => {
@@ -115,27 +120,23 @@ const AuctionButton = () => {
     <ScAuctionButton>
       {auctionId && !isAuctionOver && (
         <>
-          <div className="item">{`Sale ends at ${auctionEndTime}`}</div>
-          <div className="item price">{ethers.utils.formatEther(price.toString())} ETH</div>
+          <p className="item">{`Sale ends at ${auctionEndTime}`}</p>
+          <p className="item price">{ethers.utils.formatEther(price.toString())} ETH</p>
         </>
       )}
       {auctionId && isAuctionOver && (
         <>
-          {winner.toLowerCase() === userId ? (
-            <div className="item">Sale Ended. You won the auction!</div>
-          ) : (
-            <div className="item">Auction is over.</div>
-          )}
-          <div className="item price">{ethers.utils.formatEther(price.toString())} ETH</div>
+          {winner.toLowerCase() === userId ? <p className="item">Sale Ended. You won the auction!</p> : <p className="item">Auction is over.</p>}
+          <p className="item price">{ethers.utils.formatEther(price.toString())} ETH</p>
         </>
       )}
       {auctionId && (
-        <div>
+        <p>
           Winner:
           <button type="button" className="item address" onClick={handleGoToProfile(winner)}>
             {winner.toLowerCase() === userId ? 'You' : winner}
           </button>
-        </div>
+        </p>
       )}
       {auctionId && !isAuctionOver && seller.toLowerCase() === userId && (
         <button type="button" className="sell-button buy" onClick={handleCancelAuction}>
@@ -144,21 +145,22 @@ const AuctionButton = () => {
       )}
       {auctionId && seller.toLowerCase() !== userId && !isAuctionOver && (
         <>
-          <div className="item">
-            Bid Price: <input type="number" placeholder="Price in ETH" onChange={e => setMakeBid(e.target.value)} />
-          </div>
-          <div className="item">
-            <button type="button" className="nftActionButton" onClick={makeBidHandler}>
+          <p className="item">
+            <FormLabel htmlFor="bid-price">Bid Price:</FormLabel>
+            <Input type="number" id="bid-price" className="bid-price" placeholder="Price in ETH" onChange={e => setMakeBid(e.target.value)} />
+          </p>
+          <p className="item">
+            <Button className="nftActionButton" onClick={makeBidHandler}>
               Make Bid
-            </button>
-          </div>
+            </Button>
+          </p>
         </>
       )}
       {isAuctionOver && (winner.toLowerCase() === userId || seller.toLowerCase() === userId) && (
         <div className="item">
-          <button type="button" className="nftActionButton" onClick={claimNFTHandler}>
+          <Button type="button" className="nftActionButton" onClick={claimNFTHandler}>
             Claim
-          </button>
+          </Button>
         </div>
       )}
     </ScAuctionButton>

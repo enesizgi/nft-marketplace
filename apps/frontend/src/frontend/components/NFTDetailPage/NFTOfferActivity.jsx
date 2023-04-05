@@ -1,6 +1,7 @@
 import React from 'react';
 import { ethers } from 'ethers';
 import { useSelector } from 'react-redux';
+import { Button } from '@chakra-ui/react';
 import DetailsDropdown from '../DetailsDropdown';
 import ScNFTDetailActivity from './NFTDetailActivity/ScNFTDetailActivity';
 import AddressDisplay from '../AddressDisplay';
@@ -58,15 +59,15 @@ const NFTOfferActivity = () => {
               </td>
               <td className="nft-activity-content-item">
                 {isSellerPage && (
-                  <button type="button" onClick={handleAccept(offer.offerIndex)}>
+                  <Button colorScheme="linkedin" onClick={handleAccept(offer.offerIndex)}>
                     Accept
-                  </button>
+                  </Button>
                 )}
                 {offer.offerer === userId && (
-                  <button type="button" onClick={handleCancel(offer.offerIndex)}>
+                  <Button colorScheme="linkedin" onClick={handleCancel(offer.offerIndex)}>
                     {' '}
                     Cancel
-                  </button>
+                  </Button>
                 )}
               </td>
             </tr>

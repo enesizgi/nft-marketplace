@@ -2,7 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 
 const ScDropdown = styled.div`
-  width: 180px;
   position: relative;
   border: 2px solid ${({ theme }) => theme.blue};
   border-radius: 10px;
@@ -21,6 +20,7 @@ const ScDropdown = styled.div`
     transition: all 0.2s ease;
     text-decoration: none;
     color: #fff;
+    white-space: nowrap;
 
     &:visited {
       color: #fff;
