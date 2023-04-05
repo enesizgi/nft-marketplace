@@ -112,7 +112,7 @@ export const fetchMarketplaceEvents = async chainId => {
       ? new ethers.providers.JsonRpcProvider('http://127.0.0.1:8545')
       : new ethers.providers.EtherscanProvider(Number(chainId), process.env.ETHERSCAN_API_KEY);
     const marketplaceContract = new ethers.Contract(CONTRACTS[chainId].MARKETPLACE.address, CONTRACTS[chainId].MARKETPLACE.abi, provider);
-    const maxBlockNumber = await Event.find({ marketplaceContract: marketplaceContract.address }).sort({ blockNumber: -1 }).limit(1).lean();
+    const maxBlockNumber = await Event.find().sort({ blockNumber: -1 }).limit(1).lean();
     const fromBlock = maxBlockNumber[0] ? maxBlockNumber[0].blockNumber + 1 : 0;
     const nftContract = new ethers.Contract(CONTRACTS[chainId].NFT.address, CONTRACTS[chainId].NFT.abi, provider);
     const events = await marketplaceContract.queryFilter('*', fromBlock);
