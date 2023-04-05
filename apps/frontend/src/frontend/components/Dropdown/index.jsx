@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 const ScDropdown = styled.div`
+  min-width: 150px;
   position: relative;
   border: 2px solid ${({ theme }) => theme.blue};
   border-radius: 10px;

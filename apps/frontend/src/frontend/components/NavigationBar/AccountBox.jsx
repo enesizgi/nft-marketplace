@@ -94,7 +94,7 @@ const AccountBox = () => {
             </Link>
             <button type="button" className="dropdown-content-item" onClick={handleOpenConvertModal}>
               <ETHIcon className="dropdown-content-item-icon" />
-              Convert Currency
+              Convert
             </button>
             <button type="button" className="dropdown-content-item" onClick={handleLogout}>
               <img alt="logout" src={LogoutIcon} className="dropdown-content-item-icon" />
