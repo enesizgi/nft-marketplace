@@ -12,6 +12,8 @@ import * as NFTAddressSepolia from '../contractsData/sepolia/NFT-address.json';
 import * as NFTAbiSepolia from '../contractsData/sepolia/NFT.json';
 import * as MarketplaceAddressSepolia from '../contractsData/sepolia/Marketplace-address.json';
 import * as MarketplaceAbiSepolia from '../contractsData/sepolia/Marketplace.json';
+import * as wETHAddressSepolia from '../contractsData/sepolia/wETH-address.json';
+import * as wETHAbiSepolia from '../contractsData/sepolia/wETH.json';
 
 export const NETWORK_NAMES = {
   SEPOLIA: 'Sepolia',
@@ -63,6 +65,10 @@ export const CONTRACTS = {
     MARKETPLACE: {
       address: MarketplaceAddressSepolia.address,
       abi: MarketplaceAbiSepolia.abi
+    },
+    wETH: {
+      address: wETHAddressSepolia.address,
+      abi: wETHAbiSepolia.abi
     }
   }
 };
