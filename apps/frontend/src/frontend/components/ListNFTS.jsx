@@ -88,14 +88,21 @@ const ListNFTSPage = ({ profileId, selectedTab }) => {
 
   const getItems = async isAuctionItems => {
     const { count: itemCount } = isAuctionItems
-      ? await API.getNftCount({ type: 'Auction', claimed: false, canceled: false, timeToEnd: new Date().getTime() })
-      : await API.getNftCount({ type: 'Listing', sold: false, canceled: false });
+      ? await API.getNftCount({
+          type: 'Auction',
+          claimed: false,
+          canceled: false,
+          timeToEnd: new Date().getTime(),
+          marketplaceContract: marketplaceContract.address
+        })
+      : await API.getNftCount({ type: 'Listing', sold: false, canceled: false, marketplaceContract: marketplaceContract.address });
     if (isAuctionItems) setAuctionItemCount(itemCount);
     else setListedItemCount(itemCount);
     const currentPage = isAuctionItems ? auctionCurrentPage : listedCurrentPage;
     const items = [];
     const activeCriteria = isAuctionItems ? { canceled: false, claimed: false, timeToEnd: new Date().getTime() } : { sold: false, canceled: false };
     const mongoItems = await API.getNftStatus({
+      marketplaceContract: marketplaceContract.address,
       type: isAuctionItems ? 'Auction' : 'Listing',
       limit: 5,
       skip: (currentPage - 1) * 5,
