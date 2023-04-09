@@ -4,7 +4,8 @@ const UserSchema = new mongoose.Schema(
   {
     walletId: String,
     slug: String,
-    name: String
+    name: String,
+    cart: [String]
   },
   {
     typeKey: '$type',

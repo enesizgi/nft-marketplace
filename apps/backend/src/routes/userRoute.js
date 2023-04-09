@@ -3,6 +3,7 @@ import multer from 'multer';
 import fs from 'fs';
 import User from '../models/user';
 import Image from '../models/image';
+import Nft from '../models/nft';
 import { apiBaseURL, apiProtocol } from '../constants';
 import { verifyMessage } from '../utils';
 
@@ -69,7 +70,7 @@ router.get('/user/check', async (req, res) => {
 router.post('/user/create', verifyMessage, async (req, res) => {
   try {
     try {
-      await User.create({ walletId: req.query.id, slug: null, name: 'Unnamed' });
+      await User.create({ walletId: req.query.id, slug: null, name: 'Unnamed', cart: [] });
       return res.status(201).send({ status: 'User saved successfully', id: req.query.id });
     } catch (err) {
       if (err.code === 11000) {
@@ -276,6 +277,40 @@ router.get('/user/name', async (req, res) => {
     if (user && Object.keys(user).length) {
       const { _id, walletId: id, ...rest } = user;
       return res.send({ id, ...rest });
+    }
+    return res.status(404).send();
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send();
+  }
+});
+
+router.get('/user/cart', userValidator, async (req, res) => {
+  try {
+    const user = req.query.id && (await User.findOne({ walletId: req.query.id }).lean());
+    if (user && Object.keys(user.length)) {
+      const { id, cart = [] } = user;
+      return res.send({ id, cart });
+    }
+    return res.status(404).send();
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send();
+  }
+});
+
+router.post('/user/cart', userValidator, async (req, res) => {
+  try {
+    const { cart, id } = req.body;
+    const cartItems = cart.map(cid => ({ cid }));
+    const foundNfts = await Nft.find({ $or: cartItems }).lean();
+    if (foundNfts.length < cartItems.length) {
+      // TODO: prevent duplicate cid's in nft table. This condition should've been ===
+      return res.status(404).send();
+    }
+    const result = await User.updateOne({ walletId: id }, { cart });
+    if (result.modifiedCount > 0) {
+      return res.send({ id, cart });
     }
     return res.status(404).send();
   } catch (err) {
