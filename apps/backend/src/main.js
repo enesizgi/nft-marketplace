@@ -16,6 +16,7 @@ import Metadata from './models/metadata';
 import userRouter from './routes/userRoute';
 import eventRouter from './routes/eventRoute';
 import nftStatusRouter from './routes/nftStatusRoute';
+import nftRouter from './routes/nftRoute';
 import priceRouter from './routes/priceRoute';
 import { apiBaseURL, apiProtocol } from './constants';
 import { fetchEthPrice, fetchMarketplaceEvents } from './utils';
@@ -123,6 +124,7 @@ app.get('/get-from-ipfs', async (req, res) => {
 app.use(userRouter);
 app.use(eventRouter);
 app.use(nftStatusRouter);
+app.use(nftRouter);
 app.use(priceRouter);
 
 ['/assets', '/assets/images', '/assets/nfts'].forEach(dir => {

@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { theme } from '../../constants';
 
 const ScNFTCard = styled.div`
   border: none;
@@ -6,6 +7,7 @@ const ScNFTCard = styled.div`
   overflow: hidden;
   cursor: pointer;
   height: 300px;
+  position: relative;
 
   box-shadow: 0 0 6px #fff;
   margin: 10px 10px;
@@ -15,6 +17,29 @@ const ScNFTCard = styled.div`
     .nft-image {
       & > img {
         transform: scale(1.2);
+      }
+    }
+  }
+
+  .favorite-icon {
+    z-index: 2;
+    width: 25px;
+    height: 25px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    > svg {
+      transition: 0.2s;
+      width: 100%;
+      height: 100%;
+      fill: #fff;
+      stroke-width: 10px;
+      stroke: ${theme.blue};
+    }
+    &.isFavorite {
+      > svg {
+        fill: ${theme.blue};
+        stroke: ${theme.secondaryBlue};
       }
     }
   }
@@ -90,7 +115,16 @@ const ScNFTCard = styled.div`
       }
       &-sell,
       &-buy {
-        background: ${({ theme }) => theme.blue};
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        > svg {
+          width: 18px;
+          height: 18px;
+          margin-right: 5px;
+          fill: #fff;
+        }
+        background: ${theme.blue};
         width: 100%;
         animation: 0.4s ease 0s 1 slide;
         height: 100%;

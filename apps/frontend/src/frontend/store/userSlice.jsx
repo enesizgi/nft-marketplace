@@ -7,6 +7,8 @@ const initialState = {
   name: '',
   coverPhoto: '',
   profilePhoto: '',
+  favorites: [],
+  cart: [],
   signedMessage: null
 };
 
@@ -29,13 +31,16 @@ const userSlice = createSlice({
     setUserProfilePhoto: (state, action) => {
       state.profilePhoto = action.payload;
     },
+    setUserFavorites: (state, action) => {
+      state.favorites = action.payload;
+    },
+    setCart: (state, action) => {
+      state.cart = action.payload;
+    },
     setUser: (state, action) => {
-      const { id, name, slug, coverPhoto, profilePhoto } = action.payload;
-      state.id = id;
-      state.name = name;
-      state.slug = slug;
-      state.coverPhoto = coverPhoto;
-      state.profilePhoto = profilePhoto;
+      Object.entries(action.payload).forEach(([key, val]) => {
+        state[key] = val;
+      });
     },
     setSignedMessage: (state, action) => {
       state.signedMessage = action.payload;
@@ -45,5 +50,15 @@ const userSlice = createSlice({
 });
 
 export default userSlice.reducer;
-export const { setUserId, setUsername, setUserSlug, setUserCoverPhoto, setUserProfilePhoto, setUser, setSignedMessage, resetUser } =
-  userSlice.actions;
+export const {
+  setUserId,
+  setUsername,
+  setUserSlug,
+  setUserCoverPhoto,
+  setUserProfilePhoto,
+  setUserFavorites,
+  setCart,
+  setUser,
+  setSignedMessage,
+  resetUser
+} = userSlice.actions;

@@ -1,6 +1,6 @@
 import { createListenerMiddleware, isAnyOf } from '@reduxjs/toolkit';
 import { ethers } from 'ethers';
-import { setSignedMessage, setUser } from './userSlice';
+import { setCart, setSignedMessage, setUser, setUserFavorites } from './userSlice';
 import API from '../modules/api';
 import { changeNetwork, generateSignatureData, serializeBigNumber } from '../utils';
 import { setChainId, setIsLoadingContracts } from './marketplaceSlice';
@@ -239,6 +239,34 @@ const handlePathChanges = async (action, listenerApi) => {
   }
 };
 
+const handleUpdateCart = async (action, listenerApi) => {
+  try {
+    const {
+      user: { id, cart }
+    } = listenerApi.getState();
+    const isAddition = !cart.find(cid => cid === action.payload);
+    const updatedCart = isAddition ? [...cart, action.payload] : cart.filter(cid => cid !== action.payload);
+    const result = await API.setCart(id, updatedCart);
+    listenerApi.dispatch(setCart(result?.cart));
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+const handleUpdateFavorites = async (action, listenerApi) => {
+  try {
+    const {
+      user: { id, favorites }
+    } = listenerApi.getState();
+    const isAddition = !favorites.find(cid => cid === action.payload);
+    const updatedFavorites = isAddition ? [...favorites, action.payload] : favorites.filter(cid => cid !== action.payload);
+    const result = await API.setUserFavorites(id, updatedFavorites);
+    listenerApi.dispatch(setUserFavorites(result?.favorites));
+  } catch (e) {
+    console.log(e);
+  }
+};
+
 listenerMiddleware.startListening({
   type: 'INIT_MARKETPLACE',
   effect: handleInitMarketplace
@@ -252,6 +280,16 @@ listenerMiddleware.startListening({
 listenerMiddleware.startListening({
   type: 'INIT_NFT',
   effect: handleInitNFTState
+});
+
+listenerMiddleware.startListening({
+  type: 'UPDATE_FAVORITES',
+  effect: handleUpdateFavorites
+});
+
+listenerMiddleware.startListening({
+  type: 'UPDATE_CART',
+  effect: handleUpdateCart
 });
 
 listenerMiddleware.startListening({

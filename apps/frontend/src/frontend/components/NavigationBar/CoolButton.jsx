@@ -5,6 +5,7 @@ import { theme } from '../../constants';
 const ScCoolButton = styled.div`
   background-color: ${theme.secondaryBlue};
   border-radius: 10px;
+  height: 100%;
 
   button {
     display: flex;

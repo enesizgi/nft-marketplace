@@ -17,7 +17,7 @@ const ScProfileEditModal = styled(FormControl)`
     }
   }
   label {
-    @media screen and (max-width: 768px) {
+    @media screen and (max-width: 480px) {
       align-self: flex-start;
     }
     font-weight: 600;
@@ -35,7 +35,7 @@ const ScProfileEditModal = styled(FormControl)`
     display: flex;
     justify-content: space-around;
     width: 100%;
-    @media screen and (max-width: 768px) {
+    @media screen and (max-width: 480px) {
       flex-direction: column;
     }
   }
@@ -45,10 +45,11 @@ const ScProfileEditModal = styled(FormControl)`
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 20px;
+    margin: 20px;
     width: 50%;
-    @media screen and (max-width: 768px) {
+    @media screen and (max-width: 480px) {
       width: 100%;
+      margin: 20px 0;
     }
     & > img {
       margin-bottom: 20px;

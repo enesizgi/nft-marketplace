@@ -35,8 +35,8 @@ export const NFT_ACTIVITY_TYPES = {
 };
 
 export const NFT_LISTING_TYPES = {
-  FIXED_PRICE: 'fixed_price',
-  AUCTION: 'auction'
+  FIXED_PRICE: 'Fixed Price',
+  AUCTION: 'Auction'
 };
 
 export const MODAL_TYPES = {
@@ -46,6 +46,11 @@ export const MODAL_TYPES = {
   IMAGE_PREVIEW: 'image_preview',
   PROFILE_EDIT: 'profile_edit',
   CONVERT: 'convert'
+};
+
+export const SHOPPING_TYPES = {
+  CART: 'Cart',
+  FAVORITES: 'Favorites'
 };
 
 export const CHAIN_PARAMS = {

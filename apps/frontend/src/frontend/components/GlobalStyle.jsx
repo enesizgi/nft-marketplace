@@ -51,7 +51,7 @@ const GlobalStyle = createGlobalStyle`
     background-color: ${theme.background};
   }
   
-  p, span, label {
+  p, span, label, h1, h2, h3 {
     color: #fff;
   }
   

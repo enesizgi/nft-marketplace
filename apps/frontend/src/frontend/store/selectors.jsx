@@ -35,6 +35,14 @@ export const getUserProfilePhoto = createSelector(getUser, ({ profilePhoto }) =>
 
 export const getUserCoverPhoto = createSelector(getUser, ({ coverPhoto }) => coverPhoto);
 
+export const getUserFavorites = createSelector(getUser, ({ favorites }) => favorites);
+
+export const getCart = createSelector(getUser, ({ cart }) => cart);
+
+export const getIsInCart = cid => createSelector(getUser, ({ cart }) => !!cart.find(_cid => _cid === cid));
+
+export const getIsInFavorites = cid => createSelector(getUser, ({ favorites }) => !!favorites.find(_cid => _cid === cid));
+
 export const getSignedMessage = createSelector(getUser, ({ signedMessage }) => signedMessage);
 
 export const getProfileId = createSelector(getProfile, ({ id }) => id);
@@ -75,6 +83,8 @@ export const getCurrentPath = createSelector(getUI, ({ currentPath }) => current
 export const getActiveModal = createSelector(getUI, ({ activeModal }) => activeModal);
 
 export const getNFTMetadata = createSelector(getNFT, ({ metadata }) => metadata);
+
+export const getNFTCid = createSelector(getNFTMetadata, ({ cid }) => cid);
 
 export const getIsListed = createSelector(getNFT, ({ isListed }) => isListed);
 

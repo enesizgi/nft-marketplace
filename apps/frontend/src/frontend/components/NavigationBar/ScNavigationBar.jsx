@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { theme } from '../../constants';
 
 const ScNavigationBar = styled.nav`
   position: sticky;
@@ -22,7 +23,6 @@ const ScNavigationBar = styled.nav`
   }
 
   .navigationItem {
-    height: 100%;
     box-sizing: border-box;
     color: white;
     font-size: 24px;
@@ -30,91 +30,82 @@ const ScNavigationBar = styled.nav`
     display: flex;
     align-items: center;
     text-align: center;
-    background: transparent;
-
-    :not(.accountBox, .logoPlaceHolder, .menu, .isTablet, .isMobile) {
-      cursor: pointer;
-      border: 2px solid ${({ theme }) => theme.blue};
-      border-radius: 10px;
-      height: 70%;
-      padding: 0 8px;
-      transition: all 0.2s ease-in-out;
-    }
-
-    .menu-icon {
-      fill: #fff;
-      height: 70%;
-      width: 70%;
-    }
-
-    div {
-      display: inline-block;
-      color: white;
-      text-decoration: none;
-    }
-
-    a:visited {
-      color: white;
-    }
 
     @media screen and (max-width: 480px) {
       font-size: 18px;
     }
-  }
 
-  .menu {
-    transition: all 0.4s ease-in-out;
-    order: -1;
-    flex-shrink: 0;
-
-    svg:hover {
-      fill: ${({ theme }) => theme.blue};
-      transform: scale(1.1);
-    }
-  }
-
-  .navigationItem.logo {
-    overflow: hidden;
-    border: 0;
-    border-radius: 8px;
-    padding: 0;
-    object-fit: cover;
-    transition: 0.2s;
-    height: 70px;
-    width: 70px;
-    svg {
-      margin: auto;
-      width: 80%;
-      height: 80%;
-      fill: none;
-      stroke: ${({ theme }) => theme.blue};
-      stroke-width: 10px;
+    &.logo {
+      overflow: hidden;
+      border: 0;
+      border-radius: 8px;
+      padding: 0;
+      object-fit: cover;
       transition: 0.2s;
-    }
-    &:hover {
-      border: 0px solid #fff;
+      height: 80px;
+      width: 80px;
+      @media screen and (max-width: 768px) {
+        height: 65px;
+        width: 65px;
+      }
+      @media screen and (max-width: 480px) {
+        height: 60px;
+        width: 60px;
+      }
       svg {
-        transform: scale(1.2, 1.2);
-        fill: ${({ theme }) => theme.blue};
-        stroke: #fff;
+        margin: auto;
+        width: 80%;
+        height: 80%;
+        fill: none;
+        stroke: ${theme.blue};
+        stroke-width: 10px;
+        transition: 0.2s;
+      }
+      &:hover {
+        border: 0px solid #fff;
+        svg {
+          transform: scale(1.2, 1.2);
+          fill: ${theme.blue};
+          stroke: #fff;
+        }
       }
     }
+
+    &.accountBox {
+      height: 80px;
+      width: 80px;
+      flex-shrink: 0;
+      text-align: center;
+
+      @media screen and (max-width: 768px) {
+        height: 65px;
+        width: 65px;
+      }
+
+      @media screen and (max-width: 480px) {
+        height: 60px;
+        width: 60px;
+      }
+    }
+    &.networkSelector {
+      margin-left: auto;
+      margin-right: 16px;
+    }
   }
 
-  .accountBox {
-    height: 80px;
-    width: 80px;
-    flex-shrink: 0;
-    text-align: center;
-
-    @media screen and (max-width: 768px) {
-      height: 65px;
-      width: 65px;
+  .cartIcon {
+    margin-right: 16px;
+    background: none;
+    padding: 8px;
+    border-radius: 8px;
+    transition: 0.2s;
+    :hover {
+      background: ${theme.secondaryBlue};
     }
-
-    @media screen and (max-width: 480px) {
-      height: 60px;
-      width: 60px;
+    & > svg {
+      fill: ${theme.blue};
+      width: 40px;
+      height: 40px;
     }
   }
 `;

@@ -7,10 +7,21 @@ const ScButton = styled.button`
   background: ${theme.blue};
   color: #fff;
   transition: 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  > svg {
+    margin-right: 10px;
+    width: 20px;
+    height: 20px;
+    fill: #fff;
+  }
 
-  &:hover {
-    filter: brightness(110%);
-    box-shadow: 0 0 3px rgba(0, 0, 0, 0.8);
+  :not(.switch) {
+    &:hover {
+      filter: brightness(110%);
+      box-shadow: 0 0 3px #fff;
+    }
   }
 
   &.light {

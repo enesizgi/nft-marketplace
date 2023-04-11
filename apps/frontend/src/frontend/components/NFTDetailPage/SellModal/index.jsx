@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ethers } from 'ethers';
 import { getMarketplaceContract, getNFTContract, getUserId } from '../../../store/selectors';
-import { classNames } from '../../../utils';
 import { getNFTMetadata } from '../../utils';
 import { NFT_LISTING_TYPES } from '../../../constants';
 import Button from '../../Button';
 import { loadNFT, setActiveModal, setLoading } from '../../../store/uiSlice';
 import ScSellModal from './ScSellModal';
+import Switch from '../../Switch';
 
 const SellModal = ({ tokenId }) => {
   const [nftMetadata, setNFTMetadata] = useState({});
@@ -97,6 +97,8 @@ const SellModal = ({ tokenId }) => {
     setError('');
   }, [selectedOption]);
 
+  const keys = Object.values(NFT_LISTING_TYPES);
+
   return (
     <ScSellModal>
       <div className="nft-overview">
@@ -107,24 +109,7 @@ const SellModal = ({ tokenId }) => {
         </div>
       </div>
       <div className="nftSellOptionsToggle">
-        <Button
-          className={classNames({
-            nftSellOptionsButton: true,
-            light: selectedOption !== NFT_LISTING_TYPES.FIXED_PRICE
-          })}
-          onClick={() => setSelectedOption(NFT_LISTING_TYPES.FIXED_PRICE)}
-        >
-          Fixed Price
-        </Button>
-        <Button
-          className={classNames({
-            nftSellOptionsButton: true,
-            light: selectedOption !== NFT_LISTING_TYPES.AUCTION
-          })}
-          onClick={() => setSelectedOption(NFT_LISTING_TYPES.AUCTION)}
-        >
-          Auction
-        </Button>
+        <Switch keys={keys} onChange={setSelectedOption} selected={selectedOption} />
       </div>
       {/* TODO: fee calculations and price overview */}
       {selectedOption === NFT_LISTING_TYPES.FIXED_PRICE && (

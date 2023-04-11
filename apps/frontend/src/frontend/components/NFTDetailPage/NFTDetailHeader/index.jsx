@@ -73,16 +73,17 @@ const NFTDetailHeader = () => {
       <div className="nft-header-name">
         <div className="nft-header-name-nftName">
           <p className="nftTitle">{itemName}</p>
-          <button type="button" className="refresh-button" onClick={handleReloadNftInfo}>
-            <BiRefresh />
-          </button>
-          <NewTab url={url} />
-          <ShareDropdown url={url} />
         </div>
-
         {!isOwnerPage && (
           <div className="nft-header-name-owner">
             <AddressDisplay address={seller || owner} label="Owned By" className="nft-header-name-owner-id" />
+            <div className="header-buttons">
+              <button type="button" className="refresh-button" onClick={handleReloadNftInfo}>
+                <BiRefresh />
+              </button>
+              <NewTab url={url} />
+              <ShareDropdown url={url} />
+            </div>
           </div>
         )}
       </div>

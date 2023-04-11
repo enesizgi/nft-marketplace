@@ -299,18 +299,56 @@ router.get('/user/cart', userValidator, async (req, res) => {
   }
 });
 
-router.post('/user/cart', userValidator, async (req, res) => {
+router.post('/user/cart', async (req, res) => {
   try {
     const { cart, id } = req.body;
-    const cartItems = cart.map(cid => ({ cid }));
-    const foundNfts = await Nft.find({ $or: cartItems }).lean();
-    if (foundNfts.length < cartItems.length) {
-      // TODO: prevent duplicate cid's in nft table. This condition should've been ===
-      return res.status(404).send();
+    if (cart.length) {
+      const cartItems = cart.map(cid => ({ cid }));
+      const foundNfts = await Nft.find({ $or: cartItems }).lean();
+      if (foundNfts.length < cartItems.length) {
+        // TODO: prevent duplicate cid's in nft table. This condition should've been ===
+        return res.status(404).send();
+      }
     }
     const result = await User.updateOne({ walletId: id }, { cart });
     if (result.modifiedCount > 0) {
       return res.send({ id, cart });
+    }
+    return res.status(404).send();
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send();
+  }
+});
+
+router.get('/user/favorites', userValidator, async (req, res) => {
+  try {
+    const user = req.query.id && (await User.findOne({ walletId: req.query.id }).lean());
+    if (user && Object.keys(user.length)) {
+      const { id, favorites = [] } = user;
+      return res.send({ id, favorites });
+    }
+    return res.status(404).send();
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send();
+  }
+});
+
+router.post('/user/favorites', async (req, res) => {
+  try {
+    const { favorites, id } = req.body;
+    if (favorites.length) {
+      const favoriteItems = favorites.map(cid => ({ cid }));
+      const foundNfts = await Nft.find({ $or: favoriteItems }).lean();
+      if (foundNfts.length < favoriteItems.length) {
+        // TODO: prevent duplicate cid's in nft table. This condition should've been ===
+        return res.status(404).send();
+      }
+    }
+    const result = await User.updateOne({ walletId: id }, { favorites });
+    if (result.modifiedCount > 0) {
+      return res.send({ id, favorites });
     }
     return res.status(404).send();
   } catch (err) {

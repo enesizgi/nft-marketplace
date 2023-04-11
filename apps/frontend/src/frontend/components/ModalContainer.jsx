@@ -31,7 +31,7 @@ const ModalContainer = () => {
   }
 
   return (
-    <Modal loadingInfo={loadingInfo} onClose={() => dispatch(setActiveModal(''))} fullPage={deviceType === DEVICE_TYPES.MOBILE}>
+    <Modal loadingInfo={loadingInfo} onClose={() => dispatch(setActiveModal(''))} fullPage={deviceType !== DEVICE_TYPES.DESKTOP}>
       <ActiveComponent {...props} />
     </Modal>
   );

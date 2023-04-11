@@ -21,6 +21,7 @@ import { useWindowSize } from '../hooks';
 import { initMarketplace } from '../store/actionCreators';
 import Landing from './Landing';
 import { classNames } from '../utils';
+import ShoppingCart from './ShoppingCart';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -69,6 +70,7 @@ const App = () => {
                 <Route path="/my-listed-nfts" element={<ListNFTSPage />} />
                 <Route path="/my-purchases" element={<PurchasesPage />} />
                 <Route path="/nft/*" element={<NFTDetailPage />} />
+                <Route path="/cart" element={<ShoppingCart />} />
               </Routes>
             </main>
           </div>

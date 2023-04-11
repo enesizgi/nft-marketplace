@@ -3,16 +3,21 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { useDispatch, useSelector } from 'react-redux';
 import ScNFTCard from './ScNFTCard';
-import { getNFTContract, getUserId } from '../../store/selectors';
+import { getIsInCart, getIsInFavorites, getNFTContract, getUserId } from '../../store/selectors';
 import AddressDisplay from '../AddressDisplay';
 import { ReactComponent as ImagePlaceholder } from '../../assets/image-placeholder.svg';
+import { ReactComponent as CartIcon } from '../../assets/cart-icon.svg';
+import { ReactComponent as FavoriteIcon } from '../../assets/heart-icon.svg';
 import { MODAL_TYPES } from '../../constants';
 import { setActiveModal } from '../../store/uiSlice';
-import { compare, serializeBigNumber } from '../../utils';
+import { classNames, compare, serializeBigNumber } from '../../utils';
+import { updateCart, updateFavorites } from '../../store/actionCreators';
 
 const NFTCard = ({ item, selectedTab, loading }) => {
   const userId = useSelector(getUserId);
   const nftContract = useSelector(getNFTContract);
+  const isInCart = useSelector(getIsInCart(item?.cid));
+  const isInFavorites = useSelector(getIsInFavorites(item?.cid));
 
   const [showSellButton, setShowSellButton] = useState(false);
   const [showBuyButton, setShowBuyButton] = useState(false);
@@ -58,9 +63,18 @@ const NFTCard = ({ item, selectedTab, loading }) => {
     navigate(`/nft/${nftContract.address}/${item.tokenId}`, { state: { item } });
   };
 
-  const handleBuyButtonClicked = e => {
+  const handleAddToCart = e => {
     e.stopPropagation();
-    dispatch(setActiveModal({ type: MODAL_TYPES.BUY, props: { tokenId: serializeBigNumber(item.tokenId) } }));
+    if (!isInCart) {
+      dispatch(updateCart(item.cid));
+    } else {
+      navigate('/cart');
+    }
+  };
+
+  const handleUpdateFavorites = e => {
+    e.stopPropagation();
+    dispatch(updateFavorites(item.cid));
   };
 
   const handleSellButtonClicked = e => {
@@ -70,6 +84,9 @@ const NFTCard = ({ item, selectedTab, loading }) => {
 
   return (
     <ScNFTCard onMouseEnter={handleHoverCard} onMouseLeave={handleHoverLeave} onClick={handleGoToDetailPage}>
+      <button type="button" onClick={handleUpdateFavorites} className={classNames({ 'favorite-icon': true, isFavorite: isInFavorites })}>
+        <FavoriteIcon />
+      </button>
       <div className="nft-image">{item.url && !loading ? <img src={item.url} alt="nftImage" /> : <ImagePlaceholder className="shimmer" />}</div>
       <div className="nft-info">
         <div className="nft-info-name">
@@ -79,8 +96,15 @@ const NFTCard = ({ item, selectedTab, loading }) => {
         <div className="nft-info-price">
           {!showBuyButton && !showSellButton && <div className="nft-info-price-text">{formattedPrice}</div>}
           {showBuyButton && (
-            <button type="button" className="nft-info-price-buy" onClick={handleBuyButtonClicked}>
-              Buy for {formattedPrice}
+            <button type="button" className="nft-info-price-buy" onClick={handleAddToCart}>
+              {isInCart ? (
+                <>
+                  <CartIcon />
+                  <p>In Cart</p>
+                </>
+              ) : (
+                <p>Add To Cart</p>
+              )}
             </button>
           )}
           {showSellButton && (

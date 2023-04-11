@@ -1,7 +1,6 @@
 import styled from 'styled-components';
 
 const ScNFTDetailHeader = styled.div`
-  margin-bottom: 20px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -32,10 +31,6 @@ const ScNFTDetailHeader = styled.div`
         font-size: 36px;
       }
 
-      .refresh-button {
-        display: flex;
-      }
-
       .btn-secondary {
         display: flex;
         margin: 0;
@@ -47,6 +42,20 @@ const ScNFTDetailHeader = styled.div`
     }
     &-owner {
       width: 100%;
+      display: flex;
+      flex-direction: column;
+      .header-buttons {
+        align-self: flex-end;
+        .refresh-button {
+          width: 38px;
+          height: 34px;
+          margin-right: 16px;
+          > svg {
+            width: 100%;
+            height: 100%;
+          }
+        }
+      }
       &-id {
         max-width: 100%;
       }

@@ -1,6 +1,7 @@
 import express from 'express';
 import Nft from '../models/nft';
 import { verifyMessage } from '../utils';
+import { apiBaseURL, apiProtocol } from '../constants';
 
 const router = express.Router();
 // Currently we are not using nftRoute file, but if we decide to use it, we need to migrate this to MongoDB.
@@ -9,8 +10,11 @@ const router = express.Router();
 router.get('/nft', async (req, res) => {
   try {
     const nft = req.query.id ? await Nft.find({ cid: req.query.id }).limit(1).lean() : [];
+
     if (nft.length) {
-      return res.send(nft[0]);
+      const pathList = JSON.parse(nft[0].path) || [];
+      const realPath = pathList.join('/');
+      return res.send({ ...nft[0], path: `${apiProtocol}://${apiBaseURL}/${realPath}` });
     }
     // default response for the demo: will be changed
     return res.status(404).send();

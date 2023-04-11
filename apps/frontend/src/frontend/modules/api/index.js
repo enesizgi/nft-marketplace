@@ -17,13 +17,16 @@ class API {
 
     this.baseRequest =
       type =>
-      ({ endpoint, qs = {}, headers, body, timeout }) => {
+      ({ endpoint, qs = {}, extraHeaders, body, timeout }) => {
         const fetchMethod = timeout ? this.fetchWithTimeout(timeout) : fetch;
 
         return fetchMethod(`${this.baseURL}${endpoint}${this.createQs(qs)}`, {
           method: type,
-          ...(headers && { headers }),
-          ...(body && { body })
+          headers: {
+            ...(type === 'POST' && { 'Content-Type': 'application/json' }),
+            ...(extraHeaders && { extraHeaders })
+          },
+          ...(body && { body: JSON.stringify(body) })
         })
           .then(response => response.json())
           .catch(error => {
@@ -116,6 +119,14 @@ class API {
   getNftCount = async qs => this.getRequest({ endpoint: '/nftStatus/count', qs });
 
   getETHUSDPrice = async () => this.getRequest({ endpoint: '/price/ethereum/usd' });
+
+  getUserFavorites = async id => this.getRequest({ endpoint: '/user/favorites', qs: { id } });
+
+  getUserCart = async id => this.getRequest({ endpoint: '/user/cart', qs: { id } });
+
+  setUserFavorites = async (id, favorites) => this.postRequest({ endpoint: '/user/favorites', body: { favorites, id } });
+
+  setCart = async (id, cart) => this.postRequest({ endpoint: '/user/cart', body: { cart, id } });
 }
 
 export default new API();

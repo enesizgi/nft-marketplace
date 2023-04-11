@@ -10,6 +10,7 @@ import CoolButton from './CoolButton';
 import NetworkSelector from './NetworkSelector';
 import ScNavigationBar from './ScNavigationBar';
 import { ReactComponent as LogoSvg } from '../../assets/nftao-logo.svg';
+import { ReactComponent as CartIcon } from '../../assets/cart-icon.svg';
 
 const NavigationBar = () => {
   const dispatch = useDispatch();
@@ -65,13 +66,25 @@ const NavigationBar = () => {
       ) */}
       {/* TODO: consider overflow in navigation bar when search is implemented. */}
       {/* <Search /> */}
-      <NetworkSelector />
+      <div className="navigationItem button networkSelector">
+        <NetworkSelector />
+      </div>
+
       {userId && (
-        <div className="navigationItem accountBox">
-          <AccountBox />
+        <>
+          <Link to="/cart" className="navigationItem button cartIcon">
+            <CartIcon />
+          </Link>
+          <div className="navigationItem accountBox">
+            <AccountBox />
+          </div>
+        </>
+      )}
+      {(isLoadingContracts || !userId) && (
+        <div className="navigationItem button">
+          <CoolButton onClick={handleInitMarketplace}>Connect</CoolButton>
         </div>
       )}
-      {(isLoadingContracts || !userId) && <CoolButton onClick={handleInitMarketplace}>Connect</CoolButton>}
     </ScNavigationBar>
   );
 };
