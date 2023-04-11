@@ -9,7 +9,7 @@ import { initProfile } from '../../../store/actionCreators';
 import { setUser } from '../../../store/userSlice';
 import LoadingSpinner from '../../LoadingSpinner';
 import ScProfileEditModal from './ScProfileEditModal';
-import { generateSignatureData } from '../../../utils';
+import { classNames, generateSignatureData } from '../../../utils';
 
 const ProfileEditModal = ({ profile, updateSignedMessage }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -142,7 +142,7 @@ const ProfileEditModal = ({ profile, updateSignedMessage }) => {
       <Input
         type="text"
         id="slug"
-        value={currentProfile.slug}
+        value={currentProfile.slug ?? ''}
         isInvalid={!!errorMessages.slug}
         onChange={e => setCurrentProfile(prev => ({ ...prev, slug: e.target.value }))}
         onBlur={validateSlug}
@@ -150,23 +150,41 @@ const ProfileEditModal = ({ profile, updateSignedMessage }) => {
       />
       <FormHelperText>{errorMessages.slug}</FormHelperText>
       <div className="photoUpload-group">
-        <div className="photoUpload-container">
-          <FormLabel htmlFor="profilePhoto">Profile Photo</FormLabel>
-          <img className="profilePhoto" alt="profilePhoto" id="profilePhoto" src={currentProfile.profilePhoto} />
+        <div
+          className={classNames({
+            'photoUpload-container': true,
+            'no-photo': !currentProfile.profilePhoto
+          })}
+        >
+          {currentProfile.profilePhoto && (
+            <>
+              <FormLabel htmlFor="profilePhoto">Profile Photo</FormLabel>
+              <img className="profilePhoto" alt="profilePhoto" id="profilePhoto" src={currentProfile.profilePhoto} />
+            </>
+          )}
           <div className="upload-button-container">
             <Button size={buttonSize} colorScheme="linkedin" onClick={handleOpenProfilePhotoUpload}>
-              Change Profile Photo
+              {currentProfile.profilePhoto ? 'Change Profile Photo' : 'Upload Profile Photo'}
             </Button>
             <FormHelperText>{errorMessages.profile}</FormHelperText>
           </div>
           <input ref={profilePhotoUploadRef} type="file" accept="image/*" onChange={handleProfilePhotoUpload} style={{ display: 'none' }} />
         </div>
-        <div className="photoUpload-container">
-          <FormLabel htmlFor="coverPhoto">Cover Photo</FormLabel>
-          <img className="coverPhoto" alt="coverPhoto" id="coverPhoto" src={currentProfile.coverPhoto} />
+        <div
+          className={classNames({
+            'photoUpload-container': true,
+            'no-photo': !currentProfile.coverPhoto
+          })}
+        >
+          {currentProfile.coverPhoto && (
+            <>
+              <FormLabel htmlFor="coverPhoto">Cover Photo</FormLabel>
+              <img className="coverPhoto" alt="coverPhoto" id="coverPhoto" src={currentProfile.coverPhoto} />
+            </>
+          )}
           <div className="upload-button-container">
             <Button size={buttonSize} colorScheme="linkedin" onClick={handeOpenCoverPhotoUpload}>
-              Change Cover Photo
+              {currentProfile.profilePhoto ? 'Change Cover Photo' : 'Upload Cover Photo'}
             </Button>
             <FormHelperText>{errorMessages.cover}</FormHelperText>
           </div>

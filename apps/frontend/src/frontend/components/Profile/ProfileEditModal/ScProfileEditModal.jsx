@@ -55,6 +55,11 @@ const ScProfileEditModal = styled(FormControl)`
       margin-bottom: 20px;
     }
   }
+
+  .no-photo {
+    justify-content: center;
+  }
+
   .profilePhoto {
     display: inline;
     width: 200px;
