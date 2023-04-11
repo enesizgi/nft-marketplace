@@ -37,7 +37,7 @@ const NFTOfferActivity = () => {
     await marketplaceContract.cancelERCOffer(wEthContract.address, nftTokenId, offerIndex);
   };
 
-  const headers = [<th>Price</th>, <th>Expiration</th>, <th>From</th>, <th> Action </th>];
+  const headers = [<th key={1}>Price</th>, <th key={2}>Expiration</th>, <th key={3}>From</th>, <th key={4}> Action </th>];
   const content =
     offers &&
     Object.entries(offers).map(([offerIndex, offer]) => (

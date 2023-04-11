@@ -97,6 +97,12 @@ contract Marketplace is ReentrancyGuard {
         uint auctionId
     );
 
+    event BidPlaced(
+        uint auctionId,
+        address bidder,
+        uint amount
+    );
+
     constructor(uint _feePercent) {
         feeAccount = payable(msg.sender);
         feePercent = _feePercent;
@@ -218,8 +224,12 @@ contract Marketplace is ReentrancyGuard {
         auctionItem.price = msg.value;
         auctionItem.winner = payable(msg.sender);
         auctionItem.deposited = msg.value;
-        // TODO Emit event
 
+        emit BidPlaced(
+            _auctionId,
+            msg.sender,
+            msg.value
+        );
     }
 
     function claimNFT(uint _auctionId) external nonReentrant {
@@ -292,7 +302,7 @@ contract Marketplace is ReentrancyGuard {
         );
     }
 
-    function makeERCOffer(IERC20Permit erc20, IERC721 nft, uint256 _tokenId, uint256 _amount, uint256 _deadline, uint8 _v, bytes32 _r, bytes32 _s) external payable {
+    function makeERCOffer(IERC20Permit erc20, IERC721 nft, uint256 _tokenId, uint256 _amount, uint256 _deadline, uint8 _v, bytes32 _r, bytes32 _s) external payable nonReentrant {
         require(_amount > 0, "Amount must be greater than zero");
         require(nft.ownerOf(_tokenId) != address(0), "Token does not exist");
         erc20.permit(msg.sender, address(this), _amount, _deadline, _v, _r, _s);
@@ -300,7 +310,7 @@ contract Marketplace is ReentrancyGuard {
         offers[_tokenId].push(ERCOffer(offers[_tokenId].length, msg.sender, _amount, _tokenId, _deadline));
     }
 
-    function acceptERCOffer(IERC20Permit erc20, IERC721 nft, uint256 _tokenId, uint _itemId, uint256 _offerIndex, bool isOnSale) external {
+    function acceptERCOffer(IERC20Permit erc20, IERC721 nft, uint256 _tokenId, uint _itemId, uint256 _offerIndex, bool isOnSale) external nonReentrant {
         //TODO: cancel offerers other offers for nft and emit event for marketplace item and sellable without listed
         ERCOffer memory offer = offers[_tokenId][_offerIndex];
         address owner = nft.ownerOf(_tokenId);
@@ -336,7 +346,7 @@ contract Marketplace is ReentrancyGuard {
         delete offers[_tokenId][_offerIndex];
     }
 
-    function cancelERCOffer(IERC20Permit erc20, uint256 _tokenId, uint256 _offerIndex) external {
+    function cancelERCOffer(IERC20Permit erc20, uint256 _tokenId, uint256 _offerIndex) external nonReentrant {
         ERCOffer memory offer = offers[_tokenId][_offerIndex];
         require(msg.sender == offer.offerer, "Only offerer can cancel offer");
         erc20.transfer(msg.sender, offer.amount);

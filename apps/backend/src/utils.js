@@ -92,9 +92,11 @@ export const getLastStatusOfNft = async events => {
             }
           });
           return acc;
+        case 'BidPlaced':
+          return acc;
         default:
           console.warn(`Unknown event type: ${event.type}`);
-          return null;
+          return acc;
       }
     },
     { insertEvents: [], updateEvents: [] }
@@ -129,19 +131,21 @@ export const fetchMarketplaceEvents = async chainId => {
         transactionIndex,
         transactionHash,
         event: type,
-        args: { itemId, auctionId, nft, price, tokenId, seller, buyer, timeToEnd }
+        args: { itemId, auctionId, nft, price, tokenId, seller, buyer, timeToEnd, bidder, amount }
       } = event;
       return {
         type,
         ...(itemId ? { itemId: ethers.BigNumber.from(itemId).toNumber() } : {}),
         ...(auctionId ? { auctionId: ethers.BigNumber.from(auctionId).toNumber() } : {}),
-        nft,
+        ...(nft ? { nft } : {}),
         marketplaceContract: CONTRACTS[chainId].MARKETPLACE.address,
         ...(price ? { price: ethers.BigNumber.from(price).toString() } : {}),
         ...(tokenId ? { tokenId: ethers.BigNumber.from(tokenId).toNumber() } : {}),
-        seller,
+        ...(seller ? { seller } : {}),
         ...(buyer ? { buyer } : {}),
         ...(timeToEnd ? { timeToEnd: new Date(ethers.BigNumber.from(timeToEnd).toNumber() * 1000) } : {}),
+        ...(bidder ? { bidder } : {}),
+        ...(amount ? { amount: ethers.BigNumber.from(amount).toString() } : {}),
         blockNumber,
         transactionIndex,
         transactionHash,

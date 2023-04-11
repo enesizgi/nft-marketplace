@@ -4,7 +4,8 @@ import { defaultChainId } from '../constants';
 
 const initialState = {
   chainId: sessionStorage.getItem('chainId') || defaultChainId,
-  isLoadingContracts: true
+  isLoadingContracts: true,
+  ethPriceUSD: 1
 };
 
 const marketplaceSlice = createSlice({
@@ -21,9 +22,12 @@ const marketplaceSlice = createSlice({
     },
     setIsLoadingContracts: (state, action) => {
       state.isLoadingContracts = action.payload;
+    },
+    setETHPriceUSD: (state, action) => {
+      state.ethPriceUSD = action.payload;
     }
   }
 });
 
 export default marketplaceSlice.reducer;
-export const { setMarketplace, setChainId, setIsLoadingContracts } = marketplaceSlice.actions;
+export const { setMarketplace, setChainId, setIsLoadingContracts, setETHPriceUSD } = marketplaceSlice.actions;

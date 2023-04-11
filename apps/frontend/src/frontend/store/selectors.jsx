@@ -31,6 +31,8 @@ export const getwETHContract = createSelector(getUserId, getChainId, getwETHCont
 
 export const getIsLoadingContracts = createSelector(getMarketplace, ({ isLoadingContracts }) => isLoadingContracts);
 
+export const getETHPriceUSD = createSelector(getMarketplace, ({ ethPriceUSD }) => ethPriceUSD);
+
 export const getUserProfilePhoto = createSelector(getUser, ({ profilePhoto }) => profilePhoto);
 
 export const getUserCoverPhoto = createSelector(getUser, ({ coverPhoto }) => coverPhoto);
@@ -105,6 +107,8 @@ export const getNFTURL = createSelector(getNFTMetadata, ({ url }) => url);
 export const getNFTDescription = createSelector(getNFTMetadata, ({ description }) => description);
 
 export const getNFTTransactions = createSelector(getNFT, ({ transactions }) => transactions);
+
+export const getNFTBids = createSelector(getNFT, ({ bids }) => bids);
 
 export const getNFTOffers = createSelector(getNFT, ({ offers }) => offers);
 

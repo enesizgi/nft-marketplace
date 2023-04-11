@@ -1,5 +1,6 @@
 import { createListenerMiddleware, isAnyOf } from '@reduxjs/toolkit';
 import { ethers } from 'ethers';
+import { CONTRACTS } from 'contracts';
 import { setCart, setSignedMessage, setUser, setUserFavorites } from './userSlice';
 import API from '../modules/api';
 import { changeNetwork, generateSignatureData, serializeBigNumber } from '../utils';
@@ -119,10 +120,11 @@ const handleInitNFTState = async (action, listenerApi) => {
   const uri = await nftContract.tokenURI(tokenId);
   const cid = uri.split('ipfs://')[1];
   const mongoEvents = await API.getEvents({ network: chainId, nft: nftContract.address, tokenId: parseInt(tokenId) });
+  let bidEvents = await API.getEvents({ network: chainId, marketplaceContract: CONTRACTS[chainId].MARKETPLACE.address, type: 'BidPlaced' });
+  bidEvents = bidEvents.sort((a, b) => ethers.BigNumber.from(b.amount) - ethers.BigNumber.from(a.amount));
   const isSameToken = tokenId === currentTokenId?.toString();
   const metadata = currentMetadata && isSameToken ? currentMetadata : await API.getFromIPFS(cid);
 
-  // TODO @Enes: Cache mechanism for transactions maybe? Get events from mongodb?
   const transferQuery = mongoEvents.filter(e => e.type === 'Transfer' && e.from === ethers.constants.AddressZero);
   const boughtQuery = mongoEvents.filter(e => e.type === 'Bought');
   const offeredQuery = mongoEvents.filter(e => e.type === 'Offered');
@@ -213,7 +215,9 @@ const handleInitNFTState = async (action, listenerApi) => {
 
   const seller = isListed || isOnAuction ? lastEvent.seller.toLowerCase() : '';
 
-  listenerApi.dispatch(setNFT({ ...finalItem, transactions: nftTransactionData, offers: offers, owner, seller, isListed, isOnAuction }));
+  listenerApi.dispatch(
+    setNFT({ ...finalItem, transactions: nftTransactionData, offers: offers, bids: bidEvents, owner, seller, isListed, isOnAuction })
+  );
   listenerApi.dispatch(setLoading(false));
 };
 
