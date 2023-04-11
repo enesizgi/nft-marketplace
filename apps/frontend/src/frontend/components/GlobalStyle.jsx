@@ -47,7 +47,6 @@ const GlobalStyle = createGlobalStyle`
     &.isHomepage {
       padding-top: 0;
     }
-    transition: .2s;
     background-color: ${theme.background};
   }
   

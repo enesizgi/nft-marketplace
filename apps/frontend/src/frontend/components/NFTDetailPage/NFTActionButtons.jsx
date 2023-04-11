@@ -28,7 +28,7 @@ const ScNFTActionButtons = styled.div`
   display: flex;
   align-items: center;
   button {
-    max-width: 300px;
+    max-width: 350px;
     margin-bottom: 20px;
     width: calc(50% - 40px);
     margin-right: 20px;
