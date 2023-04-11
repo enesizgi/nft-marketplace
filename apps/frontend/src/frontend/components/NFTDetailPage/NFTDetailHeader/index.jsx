@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { BiRefresh } from 'react-icons/bi';
 import {
+  getActiveModal,
   getFormattedPrice,
   getIsListed,
   getIsOnAuction,
@@ -31,6 +32,7 @@ const NFTDetailHeader = () => {
   const isListed = useSelector(getIsListed);
   const isOnAuction = useSelector(getIsOnAuction);
   const formattedPrice = useSelector(getFormattedPrice);
+  const { type: modalType } = useSelector(getActiveModal);
   const isOwnerPage = compare(owner, userId);
 
   const [isWindowFocused, setIsWindowFocused] = useState(true);
@@ -59,14 +61,14 @@ const NFTDetailHeader = () => {
       dispatch(loadNFT());
     }
     const intervalId = setInterval(() => {
-      if (isWindowFocused) {
+      if (isWindowFocused && !modalType) {
         dispatch(loadNFT());
       }
     }, 15000);
     return () => {
       clearInterval(intervalId);
     };
-  }, [isWindowFocused]);
+  }, [isWindowFocused, modalType, dispatch]);
 
   return (
     <ScNFTDetailHeader>
