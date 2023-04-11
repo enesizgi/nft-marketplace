@@ -1,11 +1,15 @@
 import { createPortal } from 'react-dom';
 import { useToast } from '@chakra-ui/react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getToastInfo } from '../store/selectors';
+import { setToast } from '../store/uiSlice';
 
 const Toaster = () => {
   const toastInfo = useSelector(getToastInfo);
   const toast = useToast();
+  const dispatch = useDispatch();
+
+  setTimeout(() => dispatch(setToast('')), 2000);
 
   const action = toastInfo
     ? toast({
