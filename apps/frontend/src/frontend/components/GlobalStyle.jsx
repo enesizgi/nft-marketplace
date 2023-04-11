@@ -34,6 +34,13 @@ const GlobalStyle = createGlobalStyle`
     height: 100%;
   }
   
+  #chakra-toast-manager-top-right {
+    top: 100px !important;
+    @media screen and (max-width: 768px) {
+      top: 80px !important;
+    }
+  }
+  
   .routes-container {
     position: absolute;
     bottom: 0;

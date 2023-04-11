@@ -7,7 +7,8 @@ const initialState = {
   leftPanelOpened: false,
   currentPath: '/',
   loading: { isLoading: false, message: '' },
-  activeModal: { type: '', props: {} }
+  activeModal: { type: '', props: {} },
+  toast: ''
 };
 
 const uiSlice = createSlice({
@@ -37,9 +38,12 @@ const uiSlice = createSlice({
         state.activeModal = { type: '', props: {} };
       }
     },
+    setToast: (state, action) => {
+      state.toast = action.payload;
+    },
     loadNFT: () => {}
   }
 });
 
 export default uiSlice.reducer;
-export const { setDeviceType, setLeftPanelOpened, setCurrentPath, setLoading, setActiveModal, loadNFT } = uiSlice.actions;
+export const { setDeviceType, setLeftPanelOpened, setCurrentPath, setLoading, setActiveModal, loadNFT, setToast } = uiSlice.actions;

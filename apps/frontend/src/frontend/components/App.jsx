@@ -22,6 +22,7 @@ import { initMarketplace } from '../store/actionCreators';
 import Landing from './Landing';
 import { classNames } from '../utils';
 import ShoppingCart from './ShoppingCart';
+import Toaster from './Toaster';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -55,6 +56,7 @@ const App = () => {
   return (
     <BrowserRouter>
       <RouteListener />
+      <Toaster />
       <GlobalStyle />
       <ThemeProvider theme={theme}>
         <ChakraProvider>

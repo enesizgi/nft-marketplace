@@ -5,7 +5,7 @@ import API from '../modules/api';
 import { changeNetwork, generateSignatureData, serializeBigNumber } from '../utils';
 import { setChainId, setIsLoadingContracts } from './marketplaceSlice';
 import { setProfile } from './profileSlice';
-import { loadNFT, setCurrentPath, setLoading } from './uiSlice';
+import { loadNFT, setCurrentPath, setLoading, setToast } from './uiSlice';
 import { NFT_ACTIVITY_TYPES } from '../constants';
 import { getMarketplaceContractFn, getNFTContractFn } from '../components/utils';
 import { setNFT } from './nftSlice';
@@ -248,6 +248,21 @@ const handleUpdateCart = async (action, listenerApi) => {
     const updatedCart = isAddition ? [...cart, action.payload] : cart.filter(cid => cid !== action.payload);
     const result = await API.setCart(id, updatedCart);
     listenerApi.dispatch(setCart(result?.cart));
+    if (isAddition) {
+      listenerApi.dispatch(
+        setToast({
+          title: 'Item added to your cart.',
+          status: 'success'
+        })
+      );
+    } else {
+      listenerApi.dispatch(
+        setToast({
+          title: 'Item removed from your cart.',
+          status: 'error'
+        })
+      );
+    }
   } catch (e) {
     console.log(e);
   }
@@ -262,6 +277,21 @@ const handleUpdateFavorites = async (action, listenerApi) => {
     const updatedFavorites = isAddition ? [...favorites, action.payload] : favorites.filter(cid => cid !== action.payload);
     const result = await API.setUserFavorites(id, updatedFavorites);
     listenerApi.dispatch(setUserFavorites(result?.favorites));
+    if (isAddition) {
+      listenerApi.dispatch(
+        setToast({
+          title: 'Item added to your favorites.',
+          status: 'success'
+        })
+      );
+    } else {
+      listenerApi.dispatch(
+        setToast({
+          title: 'Item removed from your favorites.',
+          status: 'error'
+        })
+      );
+    }
   } catch (e) {
     console.log(e);
   }

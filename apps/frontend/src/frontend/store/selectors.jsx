@@ -74,6 +74,8 @@ export const getIsLeftPanelOpened = createSelector(getUI, ({ leftPanelOpened }) 
 
 export const getLoadingInfo = createSelector(getUI, ({ loading }) => loading);
 
+export const getToastInfo = createSelector(getUI, ({ toast }) => toast);
+
 export const getIsLoading = createSelector(getLoadingInfo, ({ isLoading }) => isLoading);
 
 export const getLoadingMessage = createSelector(getLoadingInfo, ({ message }) => message);
