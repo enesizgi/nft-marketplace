@@ -10,7 +10,7 @@ const Toaster = () => {
   const action = toastInfo
     ? toast({
         title: toastInfo.title,
-        description: toastInfo.title,
+        description: toastInfo.description,
         status: toastInfo.status,
         duration: 2000,
         position: 'top-right',
