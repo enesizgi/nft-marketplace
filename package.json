@@ -146,6 +146,9 @@
     "vitest": "^0.25.8",
     "web3.storage": "^4.4.0"
   },
+  "engines": {
+    "node": ">=18.15.0"
+  },
   "nx": {
     "targets": {
       "build": {
