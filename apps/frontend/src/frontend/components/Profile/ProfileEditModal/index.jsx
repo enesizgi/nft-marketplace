@@ -107,7 +107,7 @@ const ProfileEditModal = ({ profile, updateSignedMessage }) => {
       signature,
       message,
       name: currentProfile.name,
-      slug: currentProfile.slug
+      slug: JSON.stringify(currentProfile.slug)
     };
 
     try {

@@ -184,3 +184,11 @@ export const fetchEthPrice = async () => {
     console.log(err);
   }
 };
+
+export const safeJSONParse = json => {
+  try {
+    return json ? JSON.parse(json) : null;
+  } catch (err) {
+    return json;
+  }
+};

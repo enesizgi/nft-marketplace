@@ -15,5 +15,6 @@ const UserSchema = new mongoose.Schema(
 );
 
 UserSchema.index({ walletId: 1 }, { unique: true });
+UserSchema.index({ slug: 'text' }, { unique: true });
 
 export default mongoose.model('User', UserSchema, 'users');

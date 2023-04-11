@@ -5,7 +5,7 @@ import User from '../models/user';
 import Image from '../models/image';
 import Nft from '../models/nft';
 import { apiBaseURL, apiProtocol } from '../constants';
-import { verifyMessage } from '../utils';
+import { safeJSONParse, verifyMessage } from '../utils';
 
 const router = express.Router();
 
@@ -168,7 +168,8 @@ router.post(
   async (req, res) => {
     const coverPhoto = req.files?.coverPhoto?.at(0) ?? null;
     const profilePhoto = req.files?.profilePhoto?.at(0) ?? null;
-    const { name, slug } = req.query;
+    const { name, slug: _slug } = req.query;
+    const slug = safeJSONParse(_slug);
 
     try {
       if (profilePhoto) {
