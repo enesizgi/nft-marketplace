@@ -17,16 +17,13 @@ class API {
 
     this.baseRequest =
       type =>
-      ({ endpoint, qs = {}, extraHeaders, body, timeout }) => {
+      ({ endpoint, qs = {}, headers, body, timeout }) => {
         const fetchMethod = timeout ? this.fetchWithTimeout(timeout) : fetch;
 
         return fetchMethod(`${this.baseURL}${endpoint}${this.createQs(qs)}`, {
           method: type,
-          headers: {
-            ...(type === 'POST' && { 'Content-Type': 'application/json' }),
-            ...(extraHeaders && { extraHeaders })
-          },
-          ...(body && { body: JSON.stringify(body) })
+          ...(headers && { headers }),
+          ...(body && { body })
         })
           .then(response => response.json())
           .catch(error => {

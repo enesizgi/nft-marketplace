@@ -100,8 +100,8 @@ const ProfileEditModal = ({ profile, updateSignedMessage }) => {
     const { signature, message } = await generateSignatureData(signedMessage);
     updateSignedMessage(signature, message);
     const formData = new FormData();
-    if (uploadedProfilePhoto) formData.append('coverPhoto', uploadedCoverPhoto);
-    if (uploadedCoverPhoto) formData.append('profilePhoto', uploadedProfilePhoto);
+    formData.append('coverPhoto', uploadedCoverPhoto);
+    formData.append('profilePhoto', uploadedProfilePhoto);
     const qs = {
       id: profile.id,
       signature,

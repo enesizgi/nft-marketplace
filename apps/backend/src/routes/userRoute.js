@@ -166,9 +166,8 @@ router.post(
     { name: 'coverPhoto', maxCount: 1 }
   ]),
   async (req, res) => {
-    const { coverPhoto: _coverPhoto, profilePhoto: _profilePhoto } = req.files;
-    const coverPhoto = _coverPhoto ? _coverPhoto[0] : null;
-    const profilePhoto = _profilePhoto ? _profilePhoto[0] : null;
+    const coverPhoto = req.files?.coverPhoto?.at(0) ?? null;
+    const profilePhoto = req.files?.profilePhoto?.at(0) ?? null;
     const { name, slug } = req.query;
 
     try {
