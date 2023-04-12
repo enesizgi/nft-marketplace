@@ -27,6 +27,105 @@ export const verifyMessage = async (req, res, next) => {
   return next();
 };
 
+const deleteOldDocuments = async () => {
+  const oldDocumentIds = await NftStatus.aggregate([
+    {
+      $group: {
+        _id: {
+          type: '$type',
+          marketplaceContract: '$marketplaceContract',
+          network: '$network',
+          tokenId: '$tokenId'
+        },
+        docs: {
+          $push: '$$ROOT'
+        }
+      }
+    },
+    {
+      $set: {
+        maxAuctionId: {
+          $reduce: {
+            input: '$docs',
+            initialValue: {
+              auctionId: -1
+            },
+            in: {
+              $cond: [
+                {
+                  $gte: ['$$this.auctionId', '$$value.auctionId']
+                },
+                '$$this',
+                '$$value'
+              ]
+            }
+          }
+        },
+        maxItemId: {
+          $reduce: {
+            input: '$docs',
+            initialValue: {
+              itemId: -1
+            },
+            in: {
+              $cond: [
+                {
+                  $gte: ['$$this.itemId', '$$value.itemId']
+                },
+                '$$this',
+                '$$value'
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      $set: {
+        maxItemId: '$maxItemId.itemId',
+        maxAuctionId: '$maxAuctionId.auctionId'
+      }
+    },
+    {
+      $set: {
+        docs: {
+          $filter: {
+            input: '$docs',
+            cond: {
+              $ne: ['$$item.itemId', '$maxItemId']
+            },
+            as: 'item'
+          }
+        }
+      }
+    },
+    {
+      $set: {
+        docs: {
+          $filter: {
+            input: '$docs',
+            cond: {
+              $ne: ['$$item.auctionId', '$maxAuctionId']
+            },
+            as: 'item'
+          }
+        }
+      }
+    },
+    {
+      $unwind: {
+        path: '$docs'
+      }
+    },
+    {
+      $project: {
+        _id: '$docs._id'
+      }
+    }
+  ]);
+  await NftStatus.deleteMany({ _id: { $in: oldDocumentIds.map(t => t._id) } });
+};
+
 export const getLastStatusOfNft = async events => {
   const { insertEvents, updateEvents } = events.reduce(
     (acc, event) => {
@@ -103,6 +202,7 @@ export const getLastStatusOfNft = async events => {
   );
   await NftStatus.insertMany(insertEvents.filter(i => i));
   await NftStatus.bulkWrite(updateEvents.filter(i => i));
+  await deleteOldDocuments();
 };
 
 export const fetchMarketplaceEvents = async chainId => {

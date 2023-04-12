@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { ethers } from 'ethers';
 import {
+  getAuctionId,
   getButtonSize,
   getFormattedPrice,
   getIsInCart,
@@ -21,6 +22,7 @@ import Button from '../Button';
 import { ReactComponent as CartIcon } from '../../assets/cart-icon.svg';
 import { MODAL_TYPES } from '../../constants';
 import { updateCart } from '../../store/actionCreators';
+import { compare } from '../../utils';
 
 const ScNFTActionButtons = styled.div`
   margin: 10px 0;
@@ -57,6 +59,7 @@ const NFTActionButtons = () => {
   const seller = useSelector(getNFTSeller);
   const tokenId = useSelector(getTokenId);
   const itemId = useSelector(getItemId);
+  const auctionId = useSelector(getAuctionId);
   const marketplaceContract = useSelector(getMarketplaceContract);
   const isListed = useSelector(getIsListed);
   const isOnAuction = useSelector(getIsOnAuction);
@@ -65,8 +68,7 @@ const NFTActionButtons = () => {
   const cid = useSelector(getNFTCid);
   const isInCart = useSelector(getIsInCart(cid));
 
-  const isOwner = owner && userId && owner.toLowerCase() === userId.toLowerCase();
-  const isSeller = seller && userId && seller.toLowerCase() === userId.toLowerCase();
+  const isOwner = seller ? compare(seller, userId) : compare(owner, userId);
 
   const handleBuy = async () => {
     await (await marketplaceContract.purchaseItem(itemId, { value: ethers.utils.parseEther(formattedPrice) })).wait();
@@ -80,26 +82,30 @@ const NFTActionButtons = () => {
   }
 
   const handleCancel = async () => {
-    await (await marketplaceContract.cancelOffered(itemId)).wait();
+    if (isListed) {
+      await (await marketplaceContract.cancelOffered(itemId)).wait();
+    } else if (isOnAuction) {
+      await (await marketplaceContract.cancelAuction(auctionId)).wait();
+    }
     dispatch(loadNFT());
   };
 
   return (
     <ScNFTActionButtons>
-      {isOwner && (
+      {isOwner && !isListed && !isOnAuction && (
         <Button colorScheme="linkedin" size={buttonSize} onClick={() => dispatch(setActiveModal({ type: MODAL_TYPES.SELL, props: { tokenId } }))}>
           Sell Item
         </Button>
       )}
-      {!isOwner && (
-        <>
-          {isSeller && (
-            <Button size={buttonSize} colorScheme="linkedin" onClick={handleCancel}>
-              Cancel Sale
-            </Button>
-          )}
-          {!isSeller && (
-            <div className="buyer-actions">
+      {isOwner && (isListed || isOnAuction) && (
+        <Button size={buttonSize} colorScheme="linkedin" onClick={handleCancel}>
+          Cancel {isListed ? 'Sale' : 'Auction'}
+        </Button>
+      )}
+      {!isOwner && (isListed || isOnAuction) && (
+        <div className="buyer-actions">
+          {isListed && (
+            <>
               <Button className="cart-button" onClick={handleUpdateCart}>
                 <CartIcon />
                 {isInCart ? 'Remove From ' : 'Add To '} Cart
@@ -107,18 +113,12 @@ const NFTActionButtons = () => {
               <Button size={buttonSize} className="buy-button" colorScheme="linkedin" onClick={handleBuy}>
                 Buy Item
               </Button>
-              {(isListed || isOnAuction) && (
-                <Button
-                  size={buttonSize}
-                  colorScheme="linkedin"
-                  onClick={() => dispatch(setActiveModal({ type: MODAL_TYPES.OFFER, props: { tokenId } }))}
-                >
-                  Make Offer
-                </Button>
-              )}
-            </div>
+            </>
           )}
-        </>
+          <Button size={buttonSize} colorScheme="linkedin" onClick={() => dispatch(setActiveModal({ type: MODAL_TYPES.OFFER, props: { tokenId } }))}>
+            Make Offer
+          </Button>
+        </div>
       )}
     </ScNFTActionButtons>
   );

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { ethers } from 'ethers';
 import { getUserId } from '../store/selectors';
 import API from '../modules/api';
 import { compare } from '../utils';
@@ -30,6 +31,7 @@ const AddressDisplay = ({ address, className, label, onClick, isShortAddress }) 
   const displayAddress = isShortAddress ? `${lowerAddress.slice(0, 6)}...${lowerAddress.slice(lowerAddress.length - 4)}` : lowerAddress;
   const [displayed, setDisplayed] = useState(displayAddress);
   const showYou = compare(lowerAddress, userId);
+  const isNullAddress = address === ethers.constants.AddressZero;
 
   const handleGoToAddress = e => {
     e.stopPropagation();
@@ -38,11 +40,14 @@ const AddressDisplay = ({ address, className, label, onClick, isShortAddress }) 
 
   useEffect(() => {
     const runAsync = async () => {
-      // TODO @Enes: Why is address 'Null' string?
-      if (address && address.toLowerCase() !== 'null' && !showYou) {
-        const { name } = (await API.getUsername(address.toLowerCase())) || {};
-        if (name && name !== 'Unnamed') {
-          setDisplayed(name);
+      if (address && !isNullAddress && !showYou) {
+        try {
+          const response = await API.getUsername(address.toLowerCase());
+          if (response?.name && response.name !== 'Unnamed') {
+            setDisplayed(response.name);
+          }
+        } catch (error) {
+          console.log('error', error);
         }
       }
     };
@@ -52,9 +57,13 @@ const AddressDisplay = ({ address, className, label, onClick, isShortAddress }) 
   return (
     <ScAddressDisplay className={className}>
       <span className="label">{label && `${label}: `}</span>
-      <button type="button" className="address" onClick={onClick || handleGoToAddress}>
-        {showYou ? 'You' : displayed}
-      </button>
+      {!isNullAddress ? (
+        <button type="button" className="address" onClick={onClick || handleGoToAddress}>
+          {showYou ? 'You' : displayed}
+        </button>
+      ) : (
+        'NullAddress'
+      )}
     </ScAddressDisplay>
   );
 };

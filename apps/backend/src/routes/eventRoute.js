@@ -11,7 +11,8 @@ router.get('/events', async (req, res) => {
       ...(req.query.seller && { seller: req.query.seller }),
       ...(req.query.nft && { nft: req.query.nft }),
       ...(req.query.marketplaceContract && { marketplaceContract: req.query.marketplaceContract }),
-      ...(req.query.tokenId && { tokenId: parseInt(req.query.tokenId, 10) })
+      ...(req.query.tokenId && { tokenId: parseInt(req.query.tokenId, 10) }),
+      ...(req.query.auctionId && { auctionId: parseInt(req.query.auctionId, 10) })
     };
     const events = await Event.find(filters).lean();
     return res.send(events || []);

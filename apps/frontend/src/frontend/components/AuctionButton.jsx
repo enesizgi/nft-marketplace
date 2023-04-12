@@ -100,16 +100,10 @@ const AuctionButton = () => {
     dispatch(loadNFT());
   };
   const now = Math.floor(new Date().getTime() / 1000);
-  /* eslint-disable no-underscore-dangle */
   const isAuctionOver = auctionId && now > timeToEnd;
-  const auctionEndTime = auctionId && new Date(timeToEnd * 1000).toString();
+  const auctionEndTime = auctionId && new Date(timeToEnd * 1000).toLocaleString();
   const handleGoToProfile = id => () => {
     navigate(`/user/${id}`);
-  };
-
-  const handleCancelAuction = async () => {
-    await (await marketplaceContract.cancelAuction(auctionId)).wait();
-    dispatch(loadNFT());
   };
 
   if (!userId) {
@@ -137,11 +131,6 @@ const AuctionButton = () => {
             {winner.toLowerCase() === userId ? 'You' : winner}
           </button>
         </p>
-      )}
-      {auctionId && !isAuctionOver && seller.toLowerCase() === userId && (
-        <button type="button" className="sell-button buy" onClick={handleCancelAuction}>
-          Cancel
-        </button>
       )}
       {auctionId && seller.toLowerCase() !== userId && !isAuctionOver && (
         <>

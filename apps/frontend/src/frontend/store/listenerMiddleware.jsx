@@ -120,50 +120,52 @@ const handleInitNFTState = async (action, listenerApi) => {
   const uri = await nftContract.tokenURI(tokenId);
   const cid = uri.split('ipfs://')[1];
   const mongoEvents = await API.getEvents({ network: chainId, nft: nftContract.address, tokenId: parseInt(tokenId) });
-  let bidEvents = await API.getEvents({ network: chainId, marketplaceContract: CONTRACTS[chainId].MARKETPLACE.address, type: 'BidPlaced' });
-  bidEvents = bidEvents.sort((a, b) => ethers.BigNumber.from(b.amount) - ethers.BigNumber.from(a.amount));
+  const nftStatusAuction = await API.getNftStatus({
+    network: chainId,
+    marketplaceContract: marketplaceContract.address,
+    nftContract: nftContract.address,
+    tokenId: parseInt(tokenId),
+    type: 'Auction',
+    limit: 1
+  });
+  const nftStatusListing = await API.getNftStatus({
+    network: chainId,
+    marketplaceContract: marketplaceContract.address,
+    nftContract: nftContract.address,
+    tokenId: parseInt(tokenId),
+    type: 'Listing',
+    limit: 1
+  });
+  let bidEvents = [];
+  if (nftStatusAuction.length > 0) {
+    bidEvents = await API.getEvents({
+      network: chainId,
+      marketplaceContract: CONTRACTS[chainId].MARKETPLACE.address,
+      type: 'BidPlaced',
+      auctionId: nftStatusAuction[0].auctionId
+    });
+    bidEvents = bidEvents.sort((a, b) => ethers.BigNumber.from(b.amount) - ethers.BigNumber.from(a.amount));
+  }
   const isSameToken = tokenId === currentTokenId?.toString();
   const metadata = currentMetadata && isSameToken ? currentMetadata : await API.getFromIPFS(cid);
 
   const transferQuery = mongoEvents.filter(e => e.type === 'Transfer' && e.from === ethers.constants.AddressZero);
   const boughtQuery = mongoEvents.filter(e => e.type === 'Bought');
-  const offeredQuery = mongoEvents.filter(e => e.type === 'Offered');
-  const auctionQuery = mongoEvents.filter(e => e.type === 'AuctionStarted');
   const auctionEndedQuery = mongoEvents.filter(e => e.type === 'AuctionEnded');
-  const promiseList = await Promise.allSettled([transferQuery, boughtQuery, offeredQuery, auctionQuery, auctionEndedQuery]);
-  const [transferPromise, ...eventPromiseList] = promiseList;
-  const eventsArray = eventPromiseList.reduce((acc, eventPromise) => {
-    if (eventPromise.status === 'fulfilled' && eventPromise.value != null) acc.push(eventPromise.value);
-    else acc.push([]);
-    return acc;
-  }, []);
-  const [boughtResults, , , auctionEndedResults] = eventsArray;
-  const events = eventsArray.flat(1);
-  const lastEvent = events.reduce((acc, event) => {
-    if (acc === null) return event;
-    if (parseFloat(`${event.blockNumber}.${event.transactionIndex}`) > parseFloat(`${acc.blockNumber}.${acc.transactionIndex}`)) return event;
-    return acc;
-  }, null);
-
   const sortFn = (a, b) => parseFloat(`${b.blockNumber}.${b.transactionIndex}`) - parseFloat(`${a.blockNumber}.${a.transactionIndex}`);
-  const itemId = lastEvent?.itemId;
-  const auctionId = lastEvent?.auctionId;
 
   let i;
   let totalPrice;
-  if (lastEvent?.type === 'Offered' || lastEvent?.type === 'AuctionStarted') {
-    if (itemId) {
-      i = await marketplaceContract.items(itemId);
-      totalPrice = await marketplaceContract.getTotalPrice(itemId);
-    } else if (auctionId) {
-      i = await marketplaceContract.auctionItems(auctionId);
-    }
+  if (nftStatusAuction.length > 0 && !nftStatusAuction[0].claimed && !nftStatusAuction[0].canceled) {
+    i = await marketplaceContract.auctionItems(nftStatusAuction[0].auctionId);
+  } else if (nftStatusListing.length > 0 && !nftStatusListing[0].sold && !nftStatusListing[0].canceled) {
+    i = await marketplaceContract.items(nftStatusListing[0].itemId);
+    totalPrice = await marketplaceContract.getTotalPrice(nftStatusListing[0].itemId);
   }
   // TODO: handle if data comes from ipfs
   const it = {
     metadata,
     tokenId: tokenId,
-    ...(itemId ? { itemId: parseInt(itemId._hex, 16) } : {}),
     ...(i ?? {}),
     ...(totalPrice ? { totalPrice } : {}),
     ...(i?.price ? { price: i.price } : {})
@@ -179,14 +181,14 @@ const handleInitNFTState = async (action, listenerApi) => {
 
   const finalItem = removeIndexKeys(serializeBigNumber(it));
 
-  const nftTransactionData = [...boughtResults, ...auctionEndedResults, ...(transferPromise.value || [])].sort(sortFn).map(e => {
+  const nftTransactionData = [...boughtQuery, ...auctionEndedQuery, ...(transferQuery || [])].sort(sortFn).map(e => {
     const isMintTransaction = e.type === 'Transfer' && e.from === ethers.constants.AddressZero;
     return {
       event: e.event,
       ...(e.args ? { args: removeIndexKeys(serializeBigNumber(e.args)) } : {}),
       type: isMintTransaction ? NFT_ACTIVITY_TYPES.MINT : NFT_ACTIVITY_TYPES.SALE,
       ...(e.price ? { price: isMintTransaction ? '' : ethers.utils.formatEther(ethers.BigNumber.from(e.price.toString())) } : {}),
-      from: isMintTransaction ? 'Null' : e.seller,
+      from: isMintTransaction ? ethers.constants.AddressZero : e.seller,
       to: isMintTransaction ? e.to ?? e.to : e.buyer,
       blockNumber: e.blockNumber,
       blockHash: e.blockHash,
@@ -209,11 +211,11 @@ const handleInitNFTState = async (action, listenerApi) => {
     })
     .filter(item => item);
 
-  const isNFTOwnedByMarketplace = owner === marketplaceContract.address.toLowerCase();
-  const isListed = isNFTOwnedByMarketplace && lastEvent?.type === 'Offered';
-  const isOnAuction = isNFTOwnedByMarketplace && lastEvent?.type === 'AuctionStarted';
+  const isListed = nftStatusListing.length > 0 && !nftStatusListing[0].sold && !nftStatusListing[0].canceled;
+  const isOnAuction = nftStatusAuction.length > 0 && !nftStatusAuction[0].claimed && !nftStatusAuction[0].canceled;
 
-  const seller = isListed || isOnAuction ? lastEvent.seller.toLowerCase() : '';
+  let seller = isListed ? nftStatusListing[0].seller.toLowerCase() : '';
+  seller = isOnAuction ? nftStatusAuction[0].seller.toLowerCase() : seller;
 
   listenerApi.dispatch(
     setNFT({ ...finalItem, transactions: nftTransactionData, offers: offers, bids: bidEvents, owner, seller, isListed, isOnAuction })

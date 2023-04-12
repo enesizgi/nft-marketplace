@@ -15,7 +15,7 @@ const NFTDetailActivity = () => {
       <td className="nft-activity-content-item">{transaction.price && `${transaction.price} ETH`}</td>
       <td className="nft-activity-content-item">
         <ScContractAddress>
-          <AddressDisplay address={transaction.from} />
+          <AddressDisplay address={transaction.from} isShortAddress />
         </ScContractAddress>
       </td>
       <td className="nft-activity-content-item">

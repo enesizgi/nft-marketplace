@@ -33,7 +33,7 @@ const NFTDetailHeader = () => {
   const isOnAuction = useSelector(getIsOnAuction);
   const formattedPrice = useSelector(getFormattedPrice);
   const { type: modalType } = useSelector(getActiveModal);
-  const isOwnerPage = compare(owner, userId);
+  const isOwnerPage = seller ? compare(seller, userId) : compare(owner, userId);
 
   const [isWindowFocused, setIsWindowFocused] = useState(true);
 
@@ -76,20 +76,19 @@ const NFTDetailHeader = () => {
         <div className="nft-header-name-nftName">
           <p className="nftTitle">{itemName}</p>
         </div>
-        {!isOwnerPage && (
-          <div className="nft-header-name-owner">
-            <AddressDisplay address={seller || owner} label="Owned By" className="nft-header-name-owner-id" />
-            <div className="header-buttons">
-              <button type="button" className="refresh-button" onClick={handleReloadNftInfo}>
-                <BiRefresh />
-              </button>
-              <NewTab url={url} />
-              <ShareDropdown url={url} />
-            </div>
+        <div className="nft-header-name-owner">
+          <AddressDisplay address={seller || owner} label="Owned By" className="nft-header-name-owner-id" />
+          <div className="header-buttons">
+            <button type="button" className="refresh-button" onClick={handleReloadNftInfo}>
+              <BiRefresh />
+            </button>
+            <NewTab url={url} />
+            <ShareDropdown url={url} />
           </div>
-        )}
+        </div>
       </div>
-      {!isOwnerPage && <p className="nft-price">{formattedPrice} ETH</p>}
+      {!isOwnerPage && isListed && <p className="nft-price">{formattedPrice} ETH</p>}
+      {isOwnerPage && isListed && <p className="nft-price">Listed for {formattedPrice} ETH</p>}
       {isOnAuction && <AuctionButton />}
       {(isListed || isOwnerPage) && <NFTActionButtons />}
     </ScNFTDetailHeader>
