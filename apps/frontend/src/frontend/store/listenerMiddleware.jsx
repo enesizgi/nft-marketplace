@@ -149,9 +149,6 @@ const handleInitNFTState = async (action, listenerApi) => {
   const isSameToken = tokenId === currentTokenId?.toString();
   const metadata = currentMetadata && isSameToken ? currentMetadata : await API.getFromIPFS(cid);
 
-  const transferQuery = mongoEvents.filter(e => e.type === 'Transfer' && e.from === ethers.constants.AddressZero);
-  const boughtQuery = mongoEvents.filter(e => e.type === 'Bought');
-  const auctionEndedQuery = mongoEvents.filter(e => e.type === 'AuctionEnded');
   const sortFn = (a, b) => parseFloat(`${b.blockNumber}.${b.transactionIndex}`) - parseFloat(`${a.blockNumber}.${a.transactionIndex}`);
 
   let i;
@@ -162,14 +159,6 @@ const handleInitNFTState = async (action, listenerApi) => {
     i = await marketplaceContract.items(nftStatusListing[0].itemId);
     totalPrice = await marketplaceContract.getTotalPrice(nftStatusListing[0].itemId);
   }
-  // TODO: handle if data comes from ipfs
-  const it = {
-    metadata,
-    tokenId: tokenId,
-    ...(i ?? {}),
-    ...(totalPrice ? { totalPrice } : {}),
-    ...(i?.price ? { price: i.price } : {})
-  };
 
   const removeIndexKeys = obj => {
     return Object.entries(obj).reduce((acc, [key, value]) => {
@@ -179,22 +168,32 @@ const handleInitNFTState = async (action, listenerApi) => {
     }, {});
   };
 
-  const finalItem = removeIndexKeys(serializeBigNumber(it));
+  const finalItem = removeIndexKeys(
+    serializeBigNumber({
+      ...(i ?? {}),
+      ...(totalPrice ? { totalPrice } : {}),
+      metadata,
+      tokenId: parseInt(tokenId)
+    })
+  );
 
-  const nftTransactionData = [...boughtQuery, ...auctionEndedQuery, ...(transferQuery || [])].sort(sortFn).map(e => {
-    const isMintTransaction = e.type === 'Transfer' && e.from === ethers.constants.AddressZero;
-    return {
-      event: e.event,
-      ...(e.args ? { args: removeIndexKeys(serializeBigNumber(e.args)) } : {}),
-      type: isMintTransaction ? NFT_ACTIVITY_TYPES.MINT : NFT_ACTIVITY_TYPES.SALE,
-      ...(e.price ? { price: isMintTransaction ? '' : ethers.utils.formatEther(ethers.BigNumber.from(e.price.toString())) } : {}),
-      from: isMintTransaction ? ethers.constants.AddressZero : e.seller,
-      to: isMintTransaction ? e.to ?? e.to : e.buyer,
-      blockNumber: e.blockNumber,
-      blockHash: e.blockHash,
-      transactionHash: e.transactionHash
-    };
-  });
+  const nftTransactionData = mongoEvents
+    .filter(e => (e.from === ethers.constants.AddressZero ? e.type === 'Transfer' : ['Bought', 'AuctionEnded'].includes(e.type)))
+    .sort(sortFn)
+    .map(e => {
+      const isMintTransaction = e.type === 'Transfer' && e.from === ethers.constants.AddressZero;
+      return {
+        event: e.event,
+        ...(e.args ? { args: removeIndexKeys(serializeBigNumber(e.args)) } : {}),
+        type: isMintTransaction ? NFT_ACTIVITY_TYPES.MINT : NFT_ACTIVITY_TYPES.SALE,
+        ...(e.price ? { price: isMintTransaction ? '' : ethers.utils.formatEther(ethers.BigNumber.from(e.price.toString())) } : {}),
+        from: isMintTransaction ? ethers.constants.AddressZero : e.seller,
+        to: isMintTransaction ? e.to ?? e.to : e.buyer,
+        blockNumber: e.blockNumber,
+        blockHash: e.blockHash,
+        transactionHash: e.transactionHash
+      };
+    });
   const nftOffers = await marketplaceContract.getERCOffers(tokenId);
   const offers = nftOffers
     .map(e => {
@@ -205,7 +204,6 @@ const handleInitNFTState = async (action, listenerApi) => {
         offerIndex: serializeBigNumber(e.offerIndex),
         offerer: e.offerer.toLowerCase(),
         amount: serializeBigNumber(e.amount),
-        tokenId: serializeBigNumber(e.tokenId),
         deadline: serializeBigNumber(e.deadline)
       };
     })
