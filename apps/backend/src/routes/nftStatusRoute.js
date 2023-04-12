@@ -13,7 +13,8 @@ router.get('/nftStatus', async (req, res) => {
       ...(req.query.marketplaceContract && { marketplaceContract: req.query.marketplaceContract }),
       ...(req.query.sold && { sold: req.query.sold }),
       ...(req.query.canceled && { canceled: req.query.canceled }),
-      ...(req.query.timeToEnd && { timeToEnd: { $gte: parseInt(req.query.timeToEnd, 10) } })
+      ...(req.query.timeToEnd && { timeToEnd: { $gte: parseInt(req.query.timeToEnd, 10) } }),
+      ...(req.query.tokenId && { tokenId: req.query.tokenId })
     };
     const nfts = await NftStatus.find(filters)
       .skip(req.query.skip || 0)
