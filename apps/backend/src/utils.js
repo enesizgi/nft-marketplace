@@ -4,6 +4,7 @@ import { CONTRACTS, NETWORK_IDS } from 'contracts';
 import Event from './models/event';
 import Price from './models/price';
 import NftStatus from './models/nft_status';
+import Offer from './models/offer';
 
 export const verifyMessage = async (req, res, next) => {
   try {
@@ -294,5 +295,19 @@ export const safeJSONParse = json => {
     return json ? JSON.parse(json) : null;
   } catch (err) {
     return json;
+  }
+};
+
+export const deleteOldOffers = async () => {
+  try {
+    const now = new Date();
+    const fiveSecAfter = Math.floor(now.getTime() / 1000) + 5;
+    await Offer.deleteMany({
+      deadline: {
+        $lte: fiveSecAfter
+      }
+    });
+  } catch (error) {
+    console.log(error);
   }
 };

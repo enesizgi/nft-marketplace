@@ -14,6 +14,7 @@ import {
   getUserId,
   getwETHContract
 } from '../../store/selectors';
+import API from '../../modules/api/index';
 import ScContractAddress from './ScContractAddress';
 import { compare } from '../../utils';
 import DetailsTable from './DetailsTable';
@@ -29,12 +30,33 @@ const NFTOfferActivity = () => {
   const nftTokenId = useSelector(getTokenId);
   const nftItemId = useSelector(getItemId);
   const isListed = useSelector(getIsListed);
-  const handleAccept = offerIndex => async () => {
-    await marketplaceContract.acceptERCOffer(wEthContract.address, nftContract.address, nftTokenId, nftItemId, offerIndex, isListed);
+  const handleAccept = offer => async () => {
+    try {
+      await marketplaceContract.acceptERCOffer(
+        wEthContract.address,
+        nftContract.address,
+        nftTokenId,
+        nftItemId,
+        isListed,
+        offer.deadline,
+        offer.offerer,
+        offer.amount,
+        parseInt(offer.v, 16),
+        offer.r,
+        offer.s
+      );
+      await API.deleteAcceptedOffers({ offerer: offer.offerer, tokenId: nftTokenId });
+    } catch (err) {
+      console.log(err);
+    }
   };
 
-  const handleCancel = offerIndex => async () => {
-    await marketplaceContract.cancelERCOffer(wEthContract.address, nftTokenId, offerIndex);
+  const handleCancel = offer => async () => {
+    try {
+      await API.deleteOffer({ offerer: offer.offerer, tokenId: nftTokenId, deadline: parseInt(offer.deadline._hex, 16) });
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const getOfferDeadlineDate = offer => {
@@ -57,12 +79,12 @@ const NFTOfferActivity = () => {
         </td>
         <td className="nft-activity-content-item">
           {isSellerPage && (
-            <Button colorScheme="linkedin" onClick={handleAccept(offer.offerIndex)}>
+            <Button colorScheme="linkedin" onClick={handleAccept(offer)}>
               Accept
             </Button>
           )}
           {offer.offerer === userId && (
-            <Button colorScheme="linkedin" onClick={handleCancel(offer.offerIndex)}>
+            <Button colorScheme="linkedin" onClick={handleCancel(offer)}>
               {' '}
               Cancel
             </Button>

@@ -194,17 +194,19 @@ const handleInitNFTState = async (action, listenerApi) => {
         transactionHash: e.transactionHash
       };
     });
-  const nftOffers = await marketplaceContract.getERCOffers(tokenId);
+  const nftOffers = await API.getOffers(tokenId);
   const offers = nftOffers
-    .map(e => {
-      if (e.offerer === ethers.constants.AddressZero) {
+    ?.map(e => {
+      if (!e.offerer || e.offerer === ethers.constants.AddressZero) {
         return;
       }
       return {
-        offerIndex: serializeBigNumber(e.offerIndex),
         offerer: e.offerer.toLowerCase(),
-        amount: serializeBigNumber(e.amount),
-        deadline: serializeBigNumber(e.deadline)
+        amount: serializeBigNumber(ethers.BigNumber.from(e.amount.toString())),
+        deadline: serializeBigNumber(ethers.BigNumber.from(e.deadline.toString())),
+        v: e.v,
+        r: e.r,
+        s: e.s
       };
     })
     .filter(item => item);

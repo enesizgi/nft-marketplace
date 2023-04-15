@@ -18,8 +18,9 @@ import eventRouter from './routes/eventRoute';
 import nftStatusRouter from './routes/nftStatusRoute';
 import nftRouter from './routes/nftRoute';
 import priceRouter from './routes/priceRoute';
+import offerRouter from './routes/offerRoute';
 import { apiBaseURL, apiProtocol } from './constants';
-import { fetchEthPrice, fetchMarketplaceEvents } from './utils';
+import { deleteOldOffers, fetchEthPrice, fetchMarketplaceEvents } from './utils';
 import Event from './models/event';
 import NftStatus from './models/nft_status';
 
@@ -126,6 +127,7 @@ app.use(eventRouter);
 app.use(nftStatusRouter);
 app.use(nftRouter);
 app.use(priceRouter);
+app.use(offerRouter);
 
 ['/assets', '/assets/images', '/assets/nfts'].forEach(dir => {
   if (!fs.existsSync(`${dirname}${dir}`)) {
@@ -150,6 +152,7 @@ app.use('/assets', express.static(path.join(dirname, '/assets')));
     }
   }, 1000 * 5);
   setInterval(fetchEthPrice, 1000 * 10);
+  setInterval(deleteOldOffers, 1000 * 5);
 })();
 if (apiBaseURL.includes('localhost')) {
   app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`)); // eslint-disable-line

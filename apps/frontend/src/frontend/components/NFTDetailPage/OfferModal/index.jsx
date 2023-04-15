@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ethers } from 'ethers';
-import { getMarketplaceContract, getNFTContract, getUserId, getwETHContract } from '../../../store/selectors';
+import { getMarketplaceContract, getUserId, getwETHContract } from '../../../store/selectors';
 import { getNFTMetadata } from '../../utils';
 import Button from '../../Button';
 import { loadNFT, setActiveModal, setLoading } from '../../../store/uiSlice';
+import API from '../../../modules/api/index';
 import ScOfferModal from './ScOfferModal';
 
 const OfferModal = ({ tokenId }) => {
   const [nftMetadata, setNFTMetadata] = useState({});
   const userId = useSelector(getUserId);
   const marketplaceContract = useSelector(getMarketplaceContract);
-  const nftContract = useSelector(getNFTContract);
   const wEthContract = useSelector(getwETHContract);
 
   const [expireTime, setExpireTime] = useState('');
@@ -102,7 +102,10 @@ const OfferModal = ({ tokenId }) => {
     dispatch(setLoading({ isLoading: true, message: 'The item is getting prepared for sale...' }));
     try {
       const { v, r, s } = await getPermitSignature(signer, wEthContract, marketplaceContract.address, amount, deadline);
-      await marketplaceContract.makeERCOffer(wEthContract.address, nftContract.address, tokenId, amount, deadline, v, r, s);
+      const vStr = ethers.utils.hexlify(v);
+      const rStr = ethers.utils.hexlify(r);
+      const sStr = ethers.utils.hexlify(s);
+      await API.createOffer({ offerer: userId, amount, tokenId, deadline, v: vStr, r: rStr, s: sStr });
       dispatch(setLoading(false));
       dispatch(setActiveModal(''));
       dispatch(loadNFT());

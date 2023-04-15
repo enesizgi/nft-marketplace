@@ -111,6 +111,14 @@ class API {
 
   getEvents = async qs => this.getRequest({ endpoint: '/events', qs });
 
+  getOffers = async tokenId => this.getRequest({ endpoint: '/offers', qs: { tokenId } });
+
+  createOffer = async qs => this.postRequest({ endpoint: '/offers/create', qs });
+
+  deleteOffer = async qs => this.postRequest({ endpoint: '/offers/delete', qs });
+
+  deleteAcceptedOffers = async qs => this.postRequest({ endpoint: '/offers/deleteAccepted', qs });
+
   getNftStatus = async qs => this.getRequest({ endpoint: '/nftStatus', qs });
 
   getNftCount = async qs => this.getRequest({ endpoint: '/nftStatus/count', qs });
