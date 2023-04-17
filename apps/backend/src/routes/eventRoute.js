@@ -1,5 +1,6 @@
 import express from 'express';
 import Event from '../models/event';
+import { fetchMarketplaceEvents } from '../utils';
 
 const router = express.Router();
 
@@ -19,6 +20,17 @@ router.get('/events', async (req, res) => {
   } catch (err) {
     console.log(err);
     return res.status(500).send();
+  }
+});
+
+router.get('/events/sync', async (req, res) => {
+  try {
+    if (!req.query.chainId) return res.status(400).send('Missing networkId');
+    await fetchMarketplaceEvents(req.query.chainId);
+    return res.status(200).json('OK!');
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json(null);
   }
 });
 

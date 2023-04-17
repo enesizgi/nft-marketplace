@@ -111,6 +111,8 @@ class API {
 
   getEvents = async qs => this.getRequest({ endpoint: '/events', qs });
 
+  syncEvents = async qs => this.getRequest({ endpoint: '/events/sync', qs });
+
   getOffers = async tokenId => this.getRequest({ endpoint: '/offers', qs: { tokenId } });
 
   createOffer = async qs => this.postRequest({ endpoint: '/offers/create', qs });

@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ethers } from 'ethers';
-import { getMarketplaceContract, getNFTContract, getUserId } from '../../../store/selectors';
+import { getChainId, getMarketplaceContract, getNFTContract, getUserId } from '../../../store/selectors';
 import { getNFTMetadata } from '../../utils';
 import { NFT_LISTING_TYPES } from '../../../constants';
 import Button from '../../Button';
 import { loadNFT, setActiveModal, setLoading } from '../../../store/uiSlice';
 import ScSellModal from './ScSellModal';
 import Switch from '../../Switch';
+import API from '../../../modules/api';
 
 const SellModal = ({ tokenId }) => {
   const [nftMetadata, setNFTMetadata] = useState({});
@@ -15,6 +16,7 @@ const SellModal = ({ tokenId }) => {
   const userId = useSelector(getUserId);
   const marketplaceContract = useSelector(getMarketplaceContract);
   const nftContract = useSelector(getNFTContract);
+  const chainId = useSelector(getChainId);
 
   const [sellPrice, setSellPrice] = useState('');
   const [expireTime, setExpireTime] = useState('');
@@ -41,6 +43,7 @@ const SellModal = ({ tokenId }) => {
     const listingPrice = ethers.utils.parseEther(sellPrice.toString());
     try {
       await (await marketplaceContract.makeItem(nftContract.address, tokenId, listingPrice)).wait();
+      await API.syncEvents({ chainId });
       dispatch(setLoading(false));
       dispatch(setActiveModal(''));
       dispatch(loadNFT());
@@ -64,6 +67,7 @@ const SellModal = ({ tokenId }) => {
 
     try {
       await (await marketplaceContract.startAuction(nftContract.address, tokenId, minimumBidPrice, untilDate)).wait();
+      await API.syncEvents({ chainId });
       dispatch(setLoading(false));
       dispatch(setActiveModal(''));
       dispatch(loadNFT());

@@ -5,6 +5,7 @@ import { ethers } from 'ethers';
 import {
   getAuctionId,
   getButtonSize,
+  getChainId,
   getFormattedPrice,
   getIsInCart,
   getIsListed,
@@ -23,6 +24,7 @@ import { ReactComponent as CartIcon } from '../../assets/cart-icon.svg';
 import { MODAL_TYPES } from '../../constants';
 import { updateCart } from '../../store/actionCreators';
 import { compare } from '../../utils';
+import API from '../../modules/api';
 
 const ScNFTActionButtons = styled.div`
   margin: 10px 0;
@@ -67,11 +69,13 @@ const NFTActionButtons = () => {
   const formattedPrice = useSelector(getFormattedPrice);
   const cid = useSelector(getNFTCid);
   const isInCart = useSelector(getIsInCart(cid));
+  const chainId = useSelector(getChainId);
 
   const isOwner = seller ? compare(seller, userId) : compare(owner, userId);
 
   const handleBuy = async () => {
     await (await marketplaceContract.purchaseItem(itemId, { value: ethers.utils.parseEther(formattedPrice) })).wait();
+    await API.syncEvents({ chainId });
     dispatch(loadNFT());
   };
 
@@ -82,10 +86,15 @@ const NFTActionButtons = () => {
   }
 
   const handleCancel = async () => {
-    if (isListed) {
-      await (await marketplaceContract.cancelOffered(itemId)).wait();
-    } else if (isOnAuction) {
-      await (await marketplaceContract.cancelAuction(auctionId)).wait();
+    try {
+      if (isListed) {
+        await (await marketplaceContract.cancelOffered(itemId)).wait();
+      } else if (isOnAuction) {
+        await (await marketplaceContract.cancelAuction(auctionId)).wait();
+      }
+      await API.syncEvents({ chainId });
+    } catch (error) {
+      console.log(error);
     }
     dispatch(loadNFT());
   };

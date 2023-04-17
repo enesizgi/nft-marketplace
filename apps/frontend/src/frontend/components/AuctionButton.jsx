@@ -4,8 +4,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Button, FormLabel, Input } from '@chakra-ui/react';
 import styled from 'styled-components';
 import { ethers } from 'ethers';
-import { getAuctionId, getMarketplaceContract, getNFTSeller, getPriceOfNFT, getTimeToEnd, getUserId, getWinner } from '../store/selectors';
+import {
+  getAuctionId,
+  getChainId,
+  getMarketplaceContract,
+  getNFTSeller,
+  getPriceOfNFT,
+  getTimeToEnd,
+  getUserId,
+  getWinner
+} from '../store/selectors';
 import { loadNFT } from '../store/uiSlice';
+import API from '../modules/api';
 
 const ScAuctionButton = styled.div`
   margin-bottom: 20px;
@@ -81,6 +91,7 @@ const AuctionButton = () => {
   const price = useSelector(getPriceOfNFT);
   const winner = useSelector(getWinner);
   const seller = useSelector(getNFTSeller);
+  const chainId = useSelector(getChainId);
 
   const timeToEnd = useSelector(getTimeToEnd);
   const [makeBid, setMakeBid] = React.useState(null);
@@ -92,11 +103,13 @@ const AuctionButton = () => {
     const bidPrice = ethers.utils.parseEther(makeBid.toString());
     await (await marketplaceContract.makeOffer(auctionId, { value: bidPrice })).wait();
     await (await marketplaceContract.makeOffer(auctionId, { value: bidPrice })).wait();
+    await API.syncEvents({ chainId });
     dispatch(loadNFT());
   };
 
   const claimNFTHandler = async () => {
     await (await marketplaceContract.claimNFT(auctionId)).wait();
+    await API.syncEvents({ chainId });
     dispatch(loadNFT());
   };
   const now = Math.floor(new Date().getTime() / 1000);
