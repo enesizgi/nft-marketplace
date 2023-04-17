@@ -14,6 +14,7 @@ const EventSchema = new mongoose.Schema(
     timeToEnd: Date,
     blockNumber: Number,
     transactionIndex: Number,
+    logIndex: Number,
     transactionHash: String,
     network: String
   },
@@ -24,5 +25,5 @@ const EventSchema = new mongoose.Schema(
   }
 );
 
-EventSchema.index({ transactionIndex: 1, blockNumber: 1, network: 1 }, { unique: true });
+EventSchema.index({ transactionIndex: 1, blockNumber: 1, logIndex: 1, network: 1 }, { unique: true });
 export default mongoose.model('Event', EventSchema, 'events');

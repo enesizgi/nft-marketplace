@@ -226,10 +226,12 @@ export const fetchMarketplaceEvents = async chainId => {
       marketplaceContract.queryFilter('*', fromBlock),
       nftContract.queryFilter('Transfer', fromBlockTransfer)
     ]);
-    insertData = events.map(event => {
+    insertData = isLocalhost ? events.filter(e => e.blockNumber >= fromBlock) : events;
+    insertData = insertData.map(event => {
       const {
         blockNumber,
         transactionIndex,
+        logIndex,
         transactionHash,
         event: type,
         args: { itemId, auctionId, nft, price, tokenId, seller, buyer, timeToEnd, bidder, amount }
@@ -249,14 +251,17 @@ export const fetchMarketplaceEvents = async chainId => {
         ...(amount ? { amount: ethers.BigNumber.from(amount).toString() } : {}),
         blockNumber,
         transactionIndex,
+        logIndex,
         transactionHash,
         network: chainId
       };
     });
-    const nftInsertData = nftEvents.map(event => {
+    let nftInsertData = isLocalhost ? nftEvents.filter(e => e.blockNumber >= fromBlockTransfer) : nftEvents;
+    nftInsertData = nftInsertData.map(event => {
       const {
         blockNumber,
         transactionIndex,
+        logIndex,
         transactionHash,
         event: type,
         args: { tokenId, from, to }
@@ -269,6 +274,7 @@ export const fetchMarketplaceEvents = async chainId => {
         nft: CONTRACTS[chainId].NFT.address,
         blockNumber,
         transactionIndex,
+        logIndex,
         transactionHash,
         network: chainId
       };
