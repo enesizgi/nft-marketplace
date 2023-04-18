@@ -62,12 +62,12 @@ const ShoppingCart = () => {
   const [selectedTab, setSelectedTab] = useState(SHOPPING_TYPES.CART);
   const listedItems = selectedTab === SHOPPING_TYPES.CART ? cart : userFavorites;
 
-  const handleRemoveFromList = async (e, cid) => {
+  const handleRemoveFromList = async (e, tokenId) => {
     e.stopPropagation();
     if (selectedTab === SHOPPING_TYPES.CART) {
-      dispatch(updateCart(cid));
+      dispatch(updateCart(tokenId));
     } else {
-      dispatch(updateFavorites(cid));
+      dispatch(updateFavorites(tokenId));
     }
   };
 
@@ -79,7 +79,7 @@ const ShoppingCart = () => {
       {listedItems.length > 0 && <h1 className="title">Your {selectedTab}</h1>}
       <div className="nfts-container">
         {listedItems.length > 0 ? (
-          listedItems.map(cid => <CartItem key={cid} cid={cid} onRemoveFromList={e => handleRemoveFromList(e, cid)} />)
+          listedItems.map(tokenId => <CartItem key={tokenId} tokenId={tokenId} onRemoveFromList={e => handleRemoveFromList(e, tokenId)} />)
         ) : (
           <div className="emptyCart">
             <p className="emptyCart-text">There is no item in your {selectedTab.toLowerCase()} yet.</p>

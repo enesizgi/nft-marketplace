@@ -15,7 +15,6 @@ const ScNFTDetailHeader = styled.div`
     display: flex;
     flex-direction: column;
     width: 100%;
-    margin-bottom: 20px;
     &-nftName {
       display: flex;
       align-items: center;
@@ -63,7 +62,6 @@ const ScNFTDetailHeader = styled.div`
   }
   .nft-price {
     font-size: 24px;
-    font-weight: 600;
   }
 `;
 

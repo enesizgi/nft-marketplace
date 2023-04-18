@@ -144,6 +144,20 @@ class API {
       body: JSON.stringify({ cart, id }),
       headers: { 'Content-Type': 'application/json' }
     });
+
+  getNft = async ({ tokenId, cid }) =>
+    this.getRequest({
+      endpoint: '/nft',
+      qs: { ...(tokenId && { tokenId }), ...(cid && { cid }) }
+    });
+
+  setTokenId = async (cid, tokenId) =>
+    this.postRequest({
+      endpoint: '/nft/tokenId',
+      body: JSON.stringify({ tokenId }),
+      qs: { cid },
+      headers: { 'Content-Type': 'application/json' }
+    });
 }
 
 export default new API();

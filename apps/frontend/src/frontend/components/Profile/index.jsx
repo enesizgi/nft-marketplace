@@ -13,10 +13,10 @@ const Profile = () => {
   }
 
   return (
-    <>
+    <div className="profile-page">
       <ProfileHeader id={profileId} />
       <ProfileContent id={profileId} />
-    </>
+    </div>
   );
 };
 

@@ -77,7 +77,7 @@ const NFTDetailHeader = () => {
           <p className="nftTitle">{itemName}</p>
         </div>
         <div className="nft-header-name-owner">
-          <AddressDisplay address={seller || owner} label="Owned By" className="nft-header-name-owner-id" />
+          {!isOwnerPage && <AddressDisplay address={seller || owner} label="Owned By" className="nft-header-name-owner-id" />}
           <div className="header-buttons">
             <button type="button" className="refresh-button" onClick={handleReloadNftInfo}>
               <BiRefresh />
@@ -87,8 +87,16 @@ const NFTDetailHeader = () => {
           </div>
         </div>
       </div>
-      {!isOwnerPage && isListed && <p className="nft-price">{formattedPrice} ETH</p>}
-      {isOwnerPage && isListed && <p className="nft-price">Listed for {formattedPrice} ETH</p>}
+      {!isOwnerPage && isListed && (
+        <p className="nft-price">
+          <strong>{formattedPrice} ETH</strong>
+        </p>
+      )}
+      {isOwnerPage && isListed && (
+        <p className="nft-price">
+          Listed for <strong>{formattedPrice} ETH</strong>
+        </p>
+      )}
       {isOnAuction && <AuctionButton />}
       {(isListed || isOwnerPage) && <NFTActionButtons />}
     </ScNFTDetailHeader>

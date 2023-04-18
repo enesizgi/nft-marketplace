@@ -54,6 +54,10 @@ const GlobalStyle = createGlobalStyle`
     &.isHomepage {
       padding-top: 0;
     }
+    > * {
+      margin-bottom: 30px;
+      height: unset;
+    }
     background-color: ${theme.background};
   }
   

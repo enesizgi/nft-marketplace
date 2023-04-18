@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { FaEthereum } from 'react-icons/fa';
 import { theme, MODAL_TYPES } from '../../constants';
-import { getIsInFavorites, getNFTCid, getNFTURL } from '../../store/selectors';
+import { getIsInFavorites, getNFTURL, getTokenId } from '../../store/selectors';
 import { setActiveModal } from '../../store/uiSlice';
 import { ReactComponent as FavoriteIcon } from '../../assets/heart-icon.svg';
 import { classNames } from '../../utils';
@@ -62,15 +62,15 @@ const ScNFTDetailImage = styled.div`
 
 const NFTDetailImage = () => {
   const url = useSelector(getNFTURL);
-  const cid = useSelector(getNFTCid);
-  const isInFavorites = useSelector(getIsInFavorites(cid));
+  const tokenId = useSelector(getTokenId);
+  const isInFavorites = useSelector(getIsInFavorites(tokenId));
   const dispatch = useDispatch();
 
   const handleOpenImage = () => {
     dispatch(setActiveModal({ type: MODAL_TYPES.IMAGE_PREVIEW, props: { src: url } }));
   };
 
-  const handleUpdateFavorites = () => dispatch(updateFavorites(cid));
+  const handleUpdateFavorites = () => dispatch(updateFavorites(tokenId));
 
   return (
     <ScNFTDetailImage>

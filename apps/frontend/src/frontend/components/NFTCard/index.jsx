@@ -10,14 +10,15 @@ import { ReactComponent as CartIcon } from '../../assets/cart-icon.svg';
 import { ReactComponent as FavoriteIcon } from '../../assets/heart-icon.svg';
 import { MODAL_TYPES } from '../../constants';
 import { setActiveModal } from '../../store/uiSlice';
-import { classNames, compare, serializeBigNumber } from '../../utils';
+import { classNames, compare } from '../../utils';
 import { updateCart, updateFavorites } from '../../store/actionCreators';
 
 const NFTCard = ({ item, selectedTab, loading }) => {
+  const { tokenId } = item;
   const userId = useSelector(getUserId);
   const nftContract = useSelector(getNFTContract);
-  const isInCart = useSelector(getIsInCart(item?.cid));
-  const isInFavorites = useSelector(getIsInFavorites(item?.cid));
+  const isInCart = useSelector(getIsInCart(tokenId));
+  const isInFavorites = useSelector(getIsInFavorites(tokenId));
 
   const [showSellButton, setShowSellButton] = useState(false);
   const [showBuyButton, setShowBuyButton] = useState(false);
@@ -60,13 +61,13 @@ const NFTCard = ({ item, selectedTab, loading }) => {
   // TODO @Bugra: add onclick event for detail page
   // eslint-disable-next-line no-unused-vars
   const handleGoToDetailPage = () => {
-    navigate(`/nft/${nftContract.address}/${item.tokenId}`, { state: { item } });
+    navigate(`/nft/${nftContract.address}/${tokenId}`, { state: { item } });
   };
 
   const handleAddToCart = e => {
     e.stopPropagation();
     if (!isInCart) {
-      dispatch(updateCart(item.cid));
+      dispatch(updateCart(tokenId));
     } else {
       navigate('/cart');
     }
@@ -74,12 +75,12 @@ const NFTCard = ({ item, selectedTab, loading }) => {
 
   const handleUpdateFavorites = e => {
     e.stopPropagation();
-    dispatch(updateFavorites(item.cid));
+    dispatch(updateFavorites(tokenId));
   };
 
   const handleSellButtonClicked = e => {
     e.stopPropagation();
-    dispatch(setActiveModal({ type: MODAL_TYPES.SELL, props: { tokenId: serializeBigNumber(item.tokenId) } }));
+    dispatch(setActiveModal({ type: MODAL_TYPES.SELL, props: { tokenId } }));
   };
 
   return (

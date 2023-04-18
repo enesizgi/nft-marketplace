@@ -12,7 +12,6 @@ import {
   getIsOnAuction,
   getItemId,
   getMarketplaceContract,
-  getNFTCid,
   getNFTOwner,
   getNFTSeller,
   getTokenId,
@@ -23,7 +22,7 @@ import Button from '../Button';
 import { ReactComponent as CartIcon } from '../../assets/cart-icon.svg';
 import { MODAL_TYPES } from '../../constants';
 import { updateCart } from '../../store/actionCreators';
-import { compare } from '../../utils';
+import { classNames, compare } from '../../utils';
 import API from '../../modules/api';
 
 const ScNFTActionButtons = styled.div`
@@ -32,7 +31,7 @@ const ScNFTActionButtons = styled.div`
   display: flex;
   align-items: center;
   button {
-    max-width: 350px;
+    max-width: 450px;
     margin-bottom: 20px;
     width: calc(50% - 40px);
     margin-right: 20px;
@@ -42,9 +41,7 @@ const ScNFTActionButtons = styled.div`
     }
     @media screen and (max-width: 600px) {
       width: 100%;
-      &.buy-button {
-        margin-right: 20px;
-      }
+      margin-right: 0;
     }
   }
   .buyer-actions {
@@ -67,8 +64,7 @@ const NFTActionButtons = () => {
   const isOnAuction = useSelector(getIsOnAuction);
   const buttonSize = useSelector(getButtonSize);
   const formattedPrice = useSelector(getFormattedPrice);
-  const cid = useSelector(getNFTCid);
-  const isInCart = useSelector(getIsInCart(cid));
+  const isInCart = useSelector(getIsInCart(tokenId));
   const chainId = useSelector(getChainId);
 
   const isOwner = seller ? compare(seller, userId) : compare(owner, userId);
@@ -79,7 +75,7 @@ const NFTActionButtons = () => {
     dispatch(loadNFT());
   };
 
-  const handleUpdateCart = () => dispatch(updateCart(cid));
+  const handleUpdateCart = () => dispatch(updateCart(tokenId));
 
   if (!userId) {
     return null;
@@ -107,7 +103,7 @@ const NFTActionButtons = () => {
         </Button>
       )}
       {isOwner && (isListed || isOnAuction) && (
-        <Button size={buttonSize} colorScheme="linkedin" onClick={handleCancel}>
+        <Button size={buttonSize} className={classNames({ cancel: isListed })} onClick={handleCancel}>
           Cancel {isListed ? 'Sale' : 'Auction'}
         </Button>
       )}
@@ -115,7 +111,7 @@ const NFTActionButtons = () => {
         <div className="buyer-actions">
           {isListed && (
             <>
-              <Button className="cart-button" onClick={handleUpdateCart}>
+              <Button className={classNames({ cancel: isInCart })} onClick={handleUpdateCart}>
                 <CartIcon />
                 {isInCart ? 'Remove From ' : 'Add To '} Cart
               </Button>

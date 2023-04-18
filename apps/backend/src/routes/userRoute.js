@@ -303,7 +303,7 @@ router.post('/user/cart', async (req, res) => {
   try {
     const { cart, id } = req.body;
     if (cart.length) {
-      const cartItems = cart.map(cid => ({ cid }));
+      const cartItems = cart.map(tokenId => ({ tokenId }));
       const foundNfts = await Nft.find({ $or: cartItems }).lean();
       if (foundNfts.length < cartItems.length) {
         // TODO: prevent duplicate cid's in nft table. This condition should've been ===
@@ -339,7 +339,7 @@ router.post('/user/favorites', async (req, res) => {
   try {
     const { favorites, id } = req.body;
     if (favorites.length) {
-      const favoriteItems = favorites.map(cid => ({ cid }));
+      const favoriteItems = favorites.map(tokenId => ({ tokenId }));
       const foundNfts = await Nft.find({ $or: favoriteItems }).lean();
       if (foundNfts.length < favoriteItems.length) {
         // TODO: prevent duplicate cid's in nft table. This condition should've been ===

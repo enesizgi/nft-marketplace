@@ -248,10 +248,11 @@ const handlePathChanges = async (action, listenerApi) => {
 const handleUpdateCart = async (action, listenerApi) => {
   try {
     const {
-      user: { id, cart }
+      user: { id, cart },
+      ui: { currentPath }
     } = listenerApi.getState();
-    const isAddition = !cart.find(cid => cid === action.payload);
-    const updatedCart = isAddition ? [...cart, action.payload] : cart.filter(cid => cid !== action.payload);
+    const isAddition = !cart.find(tokenId => tokenId === action.payload);
+    const updatedCart = isAddition ? [...cart, action.payload] : cart.filter(tokenId => tokenId !== action.payload);
     const result = await API.setCart(id, updatedCart);
     listenerApi.dispatch(setCart(result?.cart));
     if (isAddition) {
@@ -261,7 +262,7 @@ const handleUpdateCart = async (action, listenerApi) => {
           status: 'success'
         })
       );
-    } else {
+    } else if (currentPath !== '/cart') {
       listenerApi.dispatch(
         setToast({
           title: 'Item removed from your cart.',
@@ -277,10 +278,11 @@ const handleUpdateCart = async (action, listenerApi) => {
 const handleUpdateFavorites = async (action, listenerApi) => {
   try {
     const {
-      user: { id, favorites }
+      user: { id, favorites },
+      ui: { currentPath }
     } = listenerApi.getState();
-    const isAddition = !favorites.find(cid => cid === action.payload);
-    const updatedFavorites = isAddition ? [...favorites, action.payload] : favorites.filter(cid => cid !== action.payload);
+    const isAddition = !favorites.find(tokenId => tokenId === action.payload);
+    const updatedFavorites = isAddition ? [...favorites, action.payload] : favorites.filter(tokenId => tokenId !== action.payload);
     const result = await API.setUserFavorites(id, updatedFavorites);
     listenerApi.dispatch(setUserFavorites(result?.favorites));
     if (isAddition) {
@@ -290,7 +292,7 @@ const handleUpdateFavorites = async (action, listenerApi) => {
           status: 'success'
         })
       );
-    } else {
+    } else if (currentPath !== '/cart') {
       listenerApi.dispatch(
         setToast({
           title: 'Item removed from your favorites.',

@@ -1,16 +1,29 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import API from '../../modules/api';
 import { ReactComponent as TrashIcon } from '../../assets/trash-icon.svg';
+import { getMarketplaceContract } from '../../store/selectors';
+import Shimmer from '../Shimmer';
 
 const ScCartItem = styled.div`
   display: flex;
   width: 100%;
   margin: 15px 0;
-  padding-left: 10px;
   border-radius: 8px;
+  padding-left: 10px;
   box-shadow: 0 0 6px #fff;
   cursor: pointer;
+  overflow: hidden;
+  ${({ isLoaded }) =>
+    !isLoaded
+      ? `
+    height: 150px;
+    padding-left: 0;
+  `
+      : ''}
+  transition: .2s;
   &:hover {
     box-shadow: 0 0 10px #fff;
   }
@@ -46,9 +59,11 @@ const ScCartItem = styled.div`
     width: 40px;
     height: 40px;
     padding: 8px;
-    background: red;
     border-radius: 50%;
     margin-right: 10px;
+    border: 3px solid red;
+    box-shadow: 0 0 5px red;
+    transition: 0.2s;
     @media screen and (max-width: 480px) {
       height: 100%;
       width: 30px;
@@ -57,6 +72,10 @@ const ScCartItem = styled.div`
       border-bottom-right-radius: 8px;
       border-top-right-radius: 8px;
       margin-right: 0;
+    }
+    &:hover {
+      background: red;
+      box-shadow: 0 0 0;
     }
     margin-left: auto;
     & > svg {
@@ -67,32 +86,39 @@ const ScCartItem = styled.div`
   }
 `;
 
-const CartItem = ({ cid, onRemoveFromList }) => {
-  const [nftInfo, setNftInfo] = useState({});
-  // const navigate = useNavigate();
+const CartItem = ({ tokenId, onRemoveFromList }) => {
+  const [nftInfo, setNftInfo] = useState();
+  const marketplaceContract = useSelector(getMarketplaceContract);
+  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
-      API.getFromIPFS(cid).then(setNftInfo);
+      API.getNft({ tokenId }).then(res => setNftInfo(res));
     })();
-  }, [cid]);
+  }, [tokenId]);
 
   const handleGoToNFTDetailPage = () => {
-    // navigate('/nft/')// needs tokenId
+    navigate(`/nft/${marketplaceContract.address}/${tokenId}`);
   };
 
   return (
-    <ScCartItem onClick={handleGoToNFTDetailPage}>
-      <div className="nftImage">
-        <img alt="nftImage" src={nftInfo.url} />
-      </div>
-      <div className="nftInfo">
-        <h2 className="nftInfo-name">{nftInfo.name}</h2>
-        <p className="nftInfo-description">{nftInfo.description}</p>
-      </div>
-      <button type="button" className="trash" onClick={onRemoveFromList}>
-        <TrashIcon />
-      </button>
+    <ScCartItem onClick={handleGoToNFTDetailPage} isLoaded={!!nftInfo}>
+      {nftInfo ? (
+        <>
+          <div className="nftImage">
+            <img alt="nftImage" src={nftInfo?.path} />
+          </div>
+          <div className="nftInfo">
+            <h2 className="nftInfo-name">{nftInfo?.metadata?.name}</h2>
+            <p className="nftInfo-description">{nftInfo?.metadata?.description}</p>
+          </div>
+          <button type="button" className="trash" onClick={onRemoveFromList}>
+            <TrashIcon />
+          </button>
+        </>
+      ) : (
+        <Shimmer />
+      )}
     </ScCartItem>
   );
 };

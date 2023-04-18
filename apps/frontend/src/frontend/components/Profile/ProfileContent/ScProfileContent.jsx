@@ -21,6 +21,7 @@ const ScProfileContent = styled.div`
       align-items: center;
       font-size: 24px;
       padding: 16px;
+      padding-bottom: 13px;
       transition: transform 0.3s ease;
       opacity: 0.7;
       @media screen and (max-width: 480px) {

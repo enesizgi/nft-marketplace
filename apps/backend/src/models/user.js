@@ -5,8 +5,8 @@ const UserSchema = new mongoose.Schema(
     walletId: String,
     slug: String,
     name: String,
-    cart: [String],
-    favorites: [String]
+    cart: [Number],
+    favorites: [Number]
   },
   {
     typeKey: '$type',

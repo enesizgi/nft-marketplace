@@ -3,7 +3,8 @@ import * as mongoose from 'mongoose';
 const NftSchema = new mongoose.Schema(
   {
     cid: String,
-    path: String
+    path: String,
+    tokenId: Number
   },
   {
     typeKey: '$type',

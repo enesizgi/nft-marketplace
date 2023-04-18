@@ -29,6 +29,16 @@ const ScButton = styled.button`
     color: ${theme.blue};
   }
 
+  &.cancel {
+    background: ${theme.background};
+    border: 3px solid red;
+    box-shadow: 0 0 5px red;
+    &:hover {
+      background: red;
+      box-shadow: 0 0 0;
+    }
+  }
+
   height: 50px;
   font-size: 18px;
   font-weight: 600;

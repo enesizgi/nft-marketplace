@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 const ScProfileHeader = styled.div`
   width: 100%;
-  height: 400px;
+  height: 500px;
   margin-bottom: 20px;
 
   @media screen and (max-width: 768px) {
@@ -73,6 +73,7 @@ const ScProfileHeader = styled.div`
       padding: 2px 5px;
       font-size: 18px;
       height: 50px;
+      max-width: 50%;
       @media screen and (max-width: 768px) {
         font-size: 16px;
         height: 40px;
