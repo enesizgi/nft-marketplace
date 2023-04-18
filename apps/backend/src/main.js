@@ -19,6 +19,7 @@ import nftStatusRouter from './routes/nftStatusRoute';
 import nftRouter from './routes/nftRoute';
 import priceRouter from './routes/priceRoute';
 import offerRouter from './routes/offerRoute';
+import searchRouter from './routes/searchRoute';
 import { apiBaseURL, apiProtocol } from './constants';
 import { deleteOldOffers, fetchEthPrice, fetchMarketplaceEvents } from './utils';
 import Event from './models/event';
@@ -128,6 +129,7 @@ app.use(nftStatusRouter);
 app.use(nftRouter);
 app.use(priceRouter);
 app.use(offerRouter);
+app.use(searchRouter);
 
 ['/assets', '/assets/images', '/assets/nfts'].forEach(dir => {
   if (!fs.existsSync(`${dirname}${dir}`)) {

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Input } from '@chakra-ui/react';
+import API from '../../../modules/api';
 
 function useDebounce(value, delay) {
   // State and setters for debounced value
@@ -25,6 +26,10 @@ function useDebounce(value, delay) {
 const HomePage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   // const [nfts, setNfts] = useState([]);
+  const [searchResults, setSearchResults] = useState({
+    nfts: [],
+    users: []
+  });
 
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
@@ -34,8 +39,16 @@ const HomePage = () => {
 
   useEffect(() => {
     if (!debouncedSearchTerm) return;
-    console.log('searching for', debouncedSearchTerm);
+    const search = async () => {
+      console.log('searching for', debouncedSearchTerm);
+      const response = await API.search({ searchTerm: debouncedSearchTerm });
+      if (response) {
+        setSearchResults(response);
+      }
+    };
+    search();
   }, [debouncedSearchTerm]);
+  console.log(searchResults);
   return <Input placeholder="Search nfts, users, transactions..." onChange={handleSearchTermChange} />;
 };
 

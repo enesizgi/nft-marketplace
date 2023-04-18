@@ -158,6 +158,8 @@ class API {
       qs: { cid },
       headers: { 'Content-Type': 'application/json' }
     });
+
+  search = async qs => this.getRequest({ endpoint: '/search', qs });
 }
 
 export default new API();
