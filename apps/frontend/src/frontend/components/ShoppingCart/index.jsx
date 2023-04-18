@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 import { SHOPPING_TYPES } from '../../constants';
 import Switch from '../Switch';
 import { getCart, getUserFavorites } from '../../store/selectors';
 import CartItem from './CartItem';
+import Button from '../Button';
 import { updateCart, updateFavorites } from '../../store/actionCreators';
 
 const ScShoppingCart = styled.div`
@@ -32,6 +34,24 @@ const ScShoppingCart = styled.div`
     display: flex;
     flex-direction: column;
   }
+  .emptyCart {
+    margin: auto;
+    &-text {
+      text-align: center;
+      margin: 20px auto;
+      font-size: 36px;
+      @media screen and (max-width: 768px) {
+        font-size: 28px;
+      }
+      @media screen and (max-width: 480px) {
+        font-size: 24px;
+      }
+    }
+    &-button {
+      margin: auto;
+      padding: 5px 20px;
+    }
+  }
 `;
 
 const ShoppingCart = () => {
@@ -56,11 +76,18 @@ const ShoppingCart = () => {
       <div className="switch-container">
         <Switch keys={Object.values(SHOPPING_TYPES)} selected={selectedTab} onChange={setSelectedTab} />
       </div>
-      <h1 className="title">Your {selectedTab}</h1>
+      {listedItems.length > 0 && <h1 className="title">Your {selectedTab}</h1>}
       <div className="nfts-container">
-        {listedItems.map(cid => (
-          <CartItem key={cid} cid={cid} onRemoveFromList={e => handleRemoveFromList(e, cid)} />
-        ))}
+        {listedItems.length > 0 ? (
+          listedItems.map(cid => <CartItem key={cid} cid={cid} onRemoveFromList={e => handleRemoveFromList(e, cid)} />)
+        ) : (
+          <div className="emptyCart">
+            <p className="emptyCart-text">There is no item in your {selectedTab.toLowerCase()} yet.</p>
+            <Link to="/">
+              <Button className="emptyCart-button">Start Shopping</Button>
+            </Link>
+          </div>
+        )}
       </div>
     </ScShoppingCart>
   );

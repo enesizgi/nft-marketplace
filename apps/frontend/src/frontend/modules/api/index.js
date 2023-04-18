@@ -131,9 +131,19 @@ class API {
 
   getUserCart = async id => this.getRequest({ endpoint: '/user/cart', qs: { id } });
 
-  setUserFavorites = async (id, favorites) => this.postRequest({ endpoint: '/user/favorites', body: { favorites, id } });
+  setUserFavorites = async (id, favorites) =>
+    this.postRequest({
+      endpoint: '/user/favorites',
+      body: JSON.stringify({ favorites, id }),
+      headers: { 'Content-Type': 'application/json' }
+    });
 
-  setCart = async (id, cart) => this.postRequest({ endpoint: '/user/cart', body: { cart, id } });
+  setCart = async (id, cart) =>
+    this.postRequest({
+      endpoint: '/user/cart',
+      body: JSON.stringify({ cart, id }),
+      headers: { 'Content-Type': 'application/json' }
+    });
 }
 
 export default new API();
