@@ -24,7 +24,7 @@ const upload = multer({ storage });
 const client = new Web3Storage({ token: process.env.WEB3_STORAGE_API_TOKEN });
 const dirname = path.resolve();
 
-router.post('/upload-to-ipfs', upload.array('files'), async (req, res) => {
+router.post('/ipfs/upload', upload.array('files'), async (req, res) => {
   try {
     const imageFile = await getFilesFromPath([req.files[0].path]);
     const metadataCid = await client.put(imageFile, { wrapWithDirectory: false });
@@ -58,7 +58,7 @@ router.post('/upload-to-ipfs', upload.array('files'), async (req, res) => {
   }
 });
 
-router.get('/get-from-ipfs', async (req, res) => {
+router.get('/ipfs', async (req, res) => {
   try {
     console.log(req.query.cid);
     if (!req.query.cid) return res.status(422).send("Missing 'cid' query parameter");
