@@ -139,16 +139,16 @@ class API {
       headers: { 'Content-Type': 'application/json' }
     });
 
-  getNft = async ({ tokenId, cid }) =>
+  getNft = async ({ tokenId, nftContract, network, cid }) =>
     this.getRequest({
       endpoint: '/nft',
-      qs: { ...(tokenId && { tokenId }), ...(cid && { cid }) }
+      qs: { ...(tokenId && { tokenId }), ...(nftContract && { nftContract }), ...(network && { network }), ...(cid && { cid }) }
     });
 
-  setTokenId = async (cid, tokenId) =>
+  setTokenId = async (cid, tokenId, nftContract, network) =>
     this.postRequest({
       endpoint: '/nft/tokenId',
-      body: JSON.stringify({ tokenId }),
+      body: JSON.stringify({ tokenId, nftContract, network }),
       qs: { cid },
       headers: { 'Content-Type': 'application/json' }
     });

@@ -4,7 +4,9 @@ const NftSchema = new mongoose.Schema(
   {
     cid: String,
     path: String,
-    tokenId: Number
+    tokenId: Number,
+    nftContract: String,
+    network: String
   },
   {
     typeKey: '$type',

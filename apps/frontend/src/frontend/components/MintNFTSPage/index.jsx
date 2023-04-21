@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { Button, FormLabel, Input, Switch } from '@chakra-ui/react';
 import { ethers } from 'ethers';
 import API from '../../modules/api';
-import { getMarketplaceContract, getNFTContract, getUserId } from '../../store/selectors';
+import { getChainId, getMarketplaceContract, getNFTContract, getUserId } from '../../store/selectors';
 import ScMintNFTSPage from './ScMintNFTSPage';
 import { classNames } from '../../utils';
 
@@ -20,6 +20,7 @@ const MintNFTSPage = () => {
   const userId = useSelector(getUserId);
   const marketplaceContract = useSelector(getMarketplaceContract);
   const nftContract = useSelector(getNFTContract);
+  const chainId = useSelector(getChainId);
 
   const handleOpenFileUpload = () => {
     fileUploadRef.current?.click();
@@ -40,7 +41,7 @@ const MintNFTSPage = () => {
     // mint nft
     const response = await (await nftContract.mintNFT(uri)).wait();
     const { tokenId } = response.events[0].args;
-    await API.setTokenId(cid, tokenId.toNumber());
+    await API.setTokenId(cid, tokenId.toNumber(), nftContract.address, chainId);
     // get tokenId of new nft
     return cid;
   };

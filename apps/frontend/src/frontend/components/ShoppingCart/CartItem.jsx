@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import API from '../../modules/api';
 import { ReactComponent as TrashIcon } from '../../assets/trash-icon.svg';
 import { getMarketplaceContract } from '../../store/selectors';
 import Shimmer from '../Shimmer';
@@ -86,19 +85,12 @@ const ScCartItem = styled.div`
   }
 `;
 
-const CartItem = ({ tokenId, onRemoveFromList }) => {
-  const [nftInfo, setNftInfo] = useState();
+const CartItem = ({ onRemoveFromList, nftInfo }) => {
   const marketplaceContract = useSelector(getMarketplaceContract);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    (async () => {
-      API.getNft({ tokenId }).then(res => setNftInfo(res));
-    })();
-  }, [tokenId]);
-
   const handleGoToNFTDetailPage = () => {
-    navigate(`/nft/${marketplaceContract.address}/${tokenId}`);
+    navigate(`/nft/${marketplaceContract.address}/${nftInfo.tokenId}`);
   };
 
   return (
