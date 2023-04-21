@@ -16,9 +16,9 @@ import { initProfile } from './actionCreators';
 const listenerMiddleware = createListenerMiddleware();
 
 const userLoginFlow = async (id, listenerApi) => {
-  const userExists = await API.checkUser(id);
+  const user = await API.getUser(id);
 
-  if (!userExists) {
+  if (!user) {
     const { signature, message } = await generateSignatureData();
     const createdUser = await API.createUser(id, signature, message);
     if (!createdUser) {
@@ -29,8 +29,7 @@ const userLoginFlow = async (id, listenerApi) => {
   } else {
     const signature = localStorage.getItem('signature');
     const message = localStorage.getItem('signedMessage');
-    const userInfo = await API.getUser(id);
-    listenerApi.dispatch(setUser({ ...userInfo, id: id.toLowerCase() }));
+    listenerApi.dispatch(setUser({ ...user, id: id.toLowerCase() }));
     if (signature && message) listenerApi.dispatch(setSignedMessage({ signature, message }));
   }
 };

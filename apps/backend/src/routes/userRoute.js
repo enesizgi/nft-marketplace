@@ -5,7 +5,7 @@ import User from '../models/user';
 import Image from '../models/image';
 import Nft from '../models/nft';
 import { apiBaseURL, apiProtocol } from '../constants';
-import { safeJSONParse, verifyMessage } from '../utils';
+import { safeJSONParse, snakeToCamel, verifyMessage } from '../utils';
 
 const router = express.Router();
 
@@ -53,19 +53,6 @@ const upload = multer({
   fileFilter
 });
 // TODO: Merge /user/check and /user/create endpoints. Create user if not exists. And after creating user, return user data.
-router.get('/user/check', async (req, res) => {
-  try {
-    const user = req.query.id && (await User.findOne({ walletId: req.query.id }).lean());
-    if (user) {
-      const { walletId: id, _id, ...rest } = user;
-      return res.send({ id, ...rest });
-    }
-    return res.status(404).send('User not found');
-  } catch (err) {
-    console.log(err);
-    return res.status(500).send();
-  }
-});
 
 router.post('/user/create', verifyMessage, async (req, res) => {
   try {
@@ -86,28 +73,18 @@ router.post('/user/create', verifyMessage, async (req, res) => {
 
 router.get('/user', async (req, res) => {
   try {
-    let user;
-    if (req.query.slug) {
-      user = await User.findOne({ slug: req.query.slug }).lean();
-    } else {
-      // id
-      user = await User.findOne({ walletId: req.query.id }).lean();
-    }
-    const images = user ? await Image.find({ user_id: user.walletId }).lean() : [];
-    const imageObj = {};
-    images.forEach(row => {
-      if (row.type === imageType.ProfilePhoto) {
-        imageObj.profilePhoto = `${apiProtocol}://${apiBaseURL}/${row.image_path}`;
-      } else if (row.type === imageType.CoverPhoto) {
-        imageObj.coverPhoto = `${apiProtocol}://${apiBaseURL}/${row.image_path}`;
+    const filter = req.query.slug ? { slug: req.query.slug } : { walletId: req.query.id };
+    const user = await User.findOne(filter).lean();
+    if (!user) return res.status(404).send();
+    let images = user ? await Image.find({ user_id: user.walletId }).lean() : [];
+    images = images.reduce((acc, row) => {
+      if (Object.values(imageType).includes(row.type)) {
+        acc[snakeToCamel(row.type)] = `${apiProtocol}://${apiBaseURL}/${row.image_path}`;
       }
-    });
+      return acc;
+    }, {});
 
-    if (user) {
-      const { _id, walletId: id, ...rest } = user;
-      return res.send({ ...rest, ...imageObj, id });
-    }
-    return res.status(404).send();
+    return res.send({ ...user, ...images, id: user.walletId });
   } catch (err) {
     console.log(err);
     return res.status(500).send();

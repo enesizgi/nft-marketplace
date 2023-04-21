@@ -6,6 +6,8 @@ import Price from './models/price';
 import NftStatus from './models/nft_status';
 import Offer from './models/offer';
 
+export const snakeToCamel = s => s.replace(/(_\w)/g, k => k[1].toUpperCase());
+
 export const verifyMessage = async (req, res, next) => {
   try {
     if (!req.query.message || !req.query.signature) {

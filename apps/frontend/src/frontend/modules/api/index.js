@@ -78,12 +78,6 @@ class API {
       body: formData
     });
 
-  checkUser = async id =>
-    this.getRequest({
-      endpoint: '/user/check',
-      qs: { id }
-    });
-
   createUser = async (id, signature, message) =>
     this.postRequest({
       endpoint: '/user/create',
