@@ -41,9 +41,9 @@ export const getUserFavorites = createSelector(getUser, ({ favorites }) => favor
 
 export const getCart = createSelector(getUser, ({ cart }) => cart);
 
-export const getIsInCart = id => createSelector(getUser, ({ cart }) => !!cart.find(_id => _id === id));
+export const getIsInCart = id => createSelector(getCart, cart => !!cart.find(_id => _id === id));
 
-export const getIsInFavorites = id => createSelector(getUser, ({ favorites }) => !!favorites.find(_id => _id === id));
+export const getIsInFavorites = id => createSelector(getUserFavorites, favorites => !!favorites.find(_id => _id === id));
 
 export const getSignedMessage = createSelector(getUser, ({ signedMessage }) => signedMessage);
 

@@ -37,11 +37,7 @@ const userSlice = createSlice({
     setCart: (state, action) => {
       state.cart = action.payload;
     },
-    setUser: (state, action) => {
-      Object.entries(action.payload).forEach(([key, val]) => {
-        state[key] = val;
-      });
-    },
+    setUser: (state, action) => ({ ...initialState, ...action.payload }),
     setSignedMessage: (state, action) => {
       state.signedMessage = action.payload;
     },

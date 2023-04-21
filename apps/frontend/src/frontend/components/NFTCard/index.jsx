@@ -14,7 +14,7 @@ import { classNames, compare } from '../../utils';
 import { updateCart, updateFavorites } from '../../store/actionCreators';
 
 const NFTCard = ({ item, selectedTab, loading }) => {
-  const { tokenId } = item;
+  const tokenId = ethers.BigNumber.isBigNumber(item.tokenId) ? parseInt(item.tokenId._hex, 16) : item.tokenId;
   const userId = useSelector(getUserId);
   const nftContract = useSelector(getNFTContract);
   const isInCart = useSelector(getIsInCart(tokenId));
