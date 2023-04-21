@@ -1,6 +1,6 @@
 import React from 'react';
 import { ethers } from 'ethers';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Button } from '@chakra-ui/react';
 import AddressDisplay from '../AddressDisplay';
 import {
@@ -16,8 +16,9 @@ import {
 } from '../../store/selectors';
 import API from '../../modules/api/index';
 import ScContractAddress from './ScContractAddress';
-import { compare } from '../../utils';
+import { compare, convertBigNumberToNumber } from '../../utils';
 import DetailsTable from './DetailsTable';
+import { loadNFT } from '../../store/uiSlice';
 
 const NFTOfferActivity = () => {
   const userId = useSelector(getUserId);
@@ -30,6 +31,8 @@ const NFTOfferActivity = () => {
   const nftTokenId = useSelector(getTokenId);
   const nftItemId = useSelector(getItemId);
   const isListed = useSelector(getIsListed);
+
+  const dispatch = useDispatch();
   const handleAccept = offer => async () => {
     try {
       await marketplaceContract.acceptERCOffer(
@@ -49,18 +52,20 @@ const NFTOfferActivity = () => {
     } catch (err) {
       console.log(err);
     }
+    dispatch(loadNFT());
   };
 
   const handleCancel = offer => async () => {
     try {
-      await API.deleteOffer({ offerer: offer.offerer, tokenId: nftTokenId, deadline: parseInt(offer.deadline._hex, 16) });
+      await API.deleteOffer({ offerer: offer.offerer, tokenId: nftTokenId, deadline: convertBigNumberToNumber(offer.deadline) });
     } catch (err) {
       console.log(err);
     }
+    dispatch(loadNFT());
   };
 
   const getOfferDeadlineDate = offer => {
-    const deadline = parseInt(offer.deadline._hex, 16);
+    const deadline = convertBigNumberToNumber(offer.deadline);
     const date = new Date(deadline * 1000);
     return date.toLocaleString();
   };

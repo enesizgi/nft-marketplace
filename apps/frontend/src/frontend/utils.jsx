@@ -1,6 +1,16 @@
 import { ethers } from 'ethers';
 import { CHAIN_PARAMS } from './constants';
 
+export const convertBigNumberToNumber = value => {
+  // Gives error in some cases, use with caution !!!
+  try {
+    return ethers.BigNumber.isBigNumber(value) ? ethers.BigNumber.from(value).toNumber() : value;
+  } catch (error) {
+    console.error(error);
+    return value;
+  }
+};
+
 export const classNames = classes => {
   let str = '';
   if (typeof classes === 'object') {

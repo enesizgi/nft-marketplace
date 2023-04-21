@@ -10,11 +10,11 @@ import { ReactComponent as CartIcon } from '../../assets/cart-icon.svg';
 import { ReactComponent as FavoriteIcon } from '../../assets/heart-icon.svg';
 import { MODAL_TYPES } from '../../constants';
 import { setActiveModal } from '../../store/uiSlice';
-import { classNames, compare } from '../../utils';
+import { classNames, compare, convertBigNumberToNumber } from '../../utils';
 import { updateCart, updateFavorites } from '../../store/actionCreators';
 
 const NFTCard = ({ item, selectedTab, loading }) => {
-  const tokenId = ethers.BigNumber.isBigNumber(item.tokenId) ? parseInt(item.tokenId._hex, 16) : item.tokenId;
+  const tokenId = convertBigNumberToNumber(item.tokenId);
   const userId = useSelector(getUserId);
   const nftContract = useSelector(getNFTContract);
   const isInCart = useSelector(getIsInCart(tokenId));
