@@ -19,6 +19,7 @@ import { apiBaseURL } from './constants';
 import { deleteOldOffers, fetchEthPrice, fetchMarketplaceEvents } from './utils';
 import Event from './models/event';
 import NftStatus from './models/nft_status';
+import { importRandomNfts } from './scripts';
 
 if (+process.versions.node.split('.')[0] < 18) {
   throw new Error('Node version must be 18 or higher');
@@ -57,7 +58,7 @@ app.use('/assets', express.static(path.join(dirname, '/assets')));
 
 (async () => {
   await mongoose.connect(process.env.MONGO_URI, {});
-  if (process.env.NODE_ENV !== 'production') await Promise.all([await Event.deleteMany({}), await NftStatus.deleteMany({})]);
+  if (process.env.NODE_ENV !== 'production') await Promise.all([Event.deleteMany({}), NftStatus.deleteMany({}), importRandomNfts()]);
 
   setInterval(async () => {
     try {

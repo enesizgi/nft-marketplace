@@ -16,6 +16,7 @@
     "prepare": "husky install",
     "start": "nx serve frontend",
     "start:all": "concurrently --names \"HARDHAT,API,FRONTEND\" -p \"[{name}:{time}]\" -t \"HH:mm:ss\" -c auto --kill-others \"pnpm hardhat\" \"nx serve backend\" \"nx serve frontend\"",
+    "start:hardhat:api": "concurrently --names \"HARDHAT,API\" -p \"[{name}:{time}]\" -t \"HH:mm:ss\" -c auto --kill-others \"pnpm hardhat\" \"nx serve backend\"",
     "start:api": "nx run backend:serve:development"
   },
   "lint-staged": {

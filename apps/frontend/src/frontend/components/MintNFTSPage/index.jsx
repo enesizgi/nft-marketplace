@@ -79,6 +79,18 @@ const MintNFTSPage = () => {
     }
   };
 
+  const getRandomNFT = async () => {
+    const response = await API.getRandomNFT();
+    const imageResponse = await fetch(response.image);
+    const blob = await imageResponse.blob();
+    const url = URL.createObjectURL(blob);
+    const imageFile = new File([blob], 'image.jpg', { type: 'image/jpeg' });
+    setName('NFTAO');
+    setDescription('Randomly generated NFT by NFTAO');
+    setImage(url);
+    setFile(imageFile);
+  };
+
   return (
     <ScMintNFTSPage className="mintContainer">
       <label htmlFor="images" className={classNames({ 'drop-container': true, withImage: !!image })}>
@@ -95,14 +107,24 @@ const MintNFTSPage = () => {
         )}
       </label>
       <div className="formContainer">
+        <Button size="lg" colorScheme="linkedin" onClick={getRandomNFT}>
+          Give me a random NFT
+        </Button>
         <FormLabel className="input-flat" htmlFor="name">
           Name
         </FormLabel>
-        <Input id="name" type="text" onChange={e => setName(e.target.value)} placeholder="Name" className="input-control" />
+        <Input id="name" type="text" onChange={e => setName(e.target.value)} value={name} placeholder="Name" className="input-control" />
         <FormLabel className="input-flat" htmlFor="description">
           Description
         </FormLabel>
-        <Input id="description" type="text" onChange={e => setDescription(e.target.value)} placeholder="Description" className="input-control" />
+        <Input
+          id="description"
+          type="text"
+          onChange={e => setDescription(e.target.value)}
+          value={description}
+          placeholder="Description"
+          className="input-control"
+        />
         {willBeListed && (
           <>
             <FormLabel htmlFor="price" className="input-flat">

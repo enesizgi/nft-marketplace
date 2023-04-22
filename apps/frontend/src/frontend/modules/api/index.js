@@ -154,6 +154,8 @@ class API {
     });
 
   search = async qs => this.getRequest({ endpoint: '/search', qs });
+
+  getRandomNFT = async () => this.getRequest({ endpoint: '/nft/random' });
 }
 
 export default new API();

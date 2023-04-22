@@ -60,7 +60,6 @@ router.post('/ipfs/upload', upload.array('files'), async (req, res) => {
 
 router.get('/ipfs', async (req, res) => {
   try {
-    console.log(req.query.cid);
     if (!req.query.cid) return res.status(422).send("Missing 'cid' query parameter");
     const nft = await Nft.find({ cid: req.query.cid }).lean();
     if (nft.length) {
