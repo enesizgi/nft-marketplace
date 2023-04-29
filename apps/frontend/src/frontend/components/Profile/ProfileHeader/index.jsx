@@ -1,14 +1,14 @@
 import React from 'react';
 import { string } from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
-import { setUserProfilePhoto, setUserCoverPhoto, setSignedMessage } from '../../../store/userSlice';
+import { setUserProfilePhoto, setUserCoverPhoto } from '../../../store/userSlice';
 import API from '../../../modules/api';
 import ScProfileHeader from './ScProfileHeader';
 import ImageUpload from '../../ImageUpload';
 import { ReactComponent as DefaultProfilePhoto } from '../../../assets/default-profile-photo.svg';
 import { ReactComponent as EditIcon } from '../../../assets/edit-icon.svg';
-import { generateSignatureData } from '../../../utils';
-import { getIsProfileOwner, getProfile, getSignedMessage } from '../../../store/selectors';
+import { generateSignatureData, getSignedMessage, updateSignedMessage } from '../../../utils';
+import { getIsProfileOwner, getProfile } from '../../../store/selectors';
 import { initProfile } from '../../../store/actionCreators';
 import Button from '../../Button';
 import { setActiveModal } from '../../../store/uiSlice';
@@ -19,19 +19,12 @@ const ProfileHeader = ({ id }) => {
   const isProfileOwner = useSelector(getIsProfileOwner);
   const profile = useSelector(getProfile);
   const { name: username, profilePhoto, coverPhoto } = profile;
-  const signedMessage = useSelector(getSignedMessage);
+  const signedMessage = getSignedMessage();
 
-  const updateSignedMessage = (signature, message) => {
-    if (signedMessage?.signature !== signature) {
-      localStorage.setItem('signature', signature);
-      localStorage.setItem('signedMessage', message);
-      dispatch(setSignedMessage({ signature, message }));
-    }
-  };
   const handleCoverPhotoUpload = async e => {
     e.preventDefault();
     const { signature, message } = await generateSignatureData(signedMessage);
-    updateSignedMessage(signature, message);
+    updateSignedMessage(signedMessage, signature, message);
     const file = e.target.files[0];
     if (file) {
       try {
@@ -51,7 +44,7 @@ const ProfileHeader = ({ id }) => {
   const handleProfilePhotoUpload = async e => {
     e.preventDefault();
     const { signature, message } = await generateSignatureData(signedMessage);
-    updateSignedMessage(signature, message);
+    updateSignedMessage(signedMessage, signature, message);
     const file = e.target.files[0];
     if (file) {
       try {
@@ -69,7 +62,7 @@ const ProfileHeader = ({ id }) => {
   };
 
   const openEditModal = () => {
-    dispatch(setActiveModal({ type: MODAL_TYPES.PROFILE_EDIT, props: { profile, updateSignedMessage } }));
+    dispatch(setActiveModal({ type: MODAL_TYPES.PROFILE_EDIT, props: { profile } }));
   };
 
   return (

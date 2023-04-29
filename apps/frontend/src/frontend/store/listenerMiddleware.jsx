@@ -1,7 +1,7 @@
 import { createListenerMiddleware, isAnyOf } from '@reduxjs/toolkit';
 import { ethers } from 'ethers';
 import { CONTRACTS } from 'contracts';
-import { setCart, setSignedMessage, setUser, setUserFavorites } from './userSlice';
+import { setCart, setUser, setUserFavorites } from './userSlice';
 import API from '../modules/api';
 import { changeNetwork, generateSignatureData, serializeBigNumber } from '../utils';
 import { setChainId, setIsLoadingContracts } from './marketplaceSlice';
@@ -27,10 +27,7 @@ const userLoginFlow = async (id, listenerApi) => {
       listenerApi.dispatch(setUser({ ...createdUser, id: id.toLowerCase() }));
     }
   } else {
-    const signature = localStorage.getItem('signature');
-    const message = localStorage.getItem('signedMessage');
     listenerApi.dispatch(setUser({ ...user, id: id.toLowerCase() }));
-    if (signature && message) listenerApi.dispatch(setSignedMessage({ signature, message }));
   }
 };
 

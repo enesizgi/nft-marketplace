@@ -2,16 +2,16 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Input, FormLabel, Button, FormHelperText } from '@chakra-ui/react';
 import isEqual from 'lodash/isEqual';
 import { useDispatch, useSelector } from 'react-redux';
-import { getButtonSize, getSignedMessage } from '../../../store/selectors';
+import { getButtonSize } from '../../../store/selectors';
 import { setActiveModal } from '../../../store/uiSlice';
 import API from '../../../modules/api';
 import { initProfile } from '../../../store/actionCreators';
 import { setUser } from '../../../store/userSlice';
 import LoadingSpinner from '../../LoadingSpinner';
 import ScProfileEditModal from './ScProfileEditModal';
-import { classNames, generateSignatureData } from '../../../utils';
+import { classNames, generateSignatureData, getSignedMessage, updateSignedMessage } from '../../../utils';
 
-const ProfileEditModal = ({ profile, updateSignedMessage }) => {
+const ProfileEditModal = ({ profile }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isChanged, setIsChanged] = useState(false);
   const [currentProfile, setCurrentProfile] = useState(profile);
@@ -22,7 +22,7 @@ const ProfileEditModal = ({ profile, updateSignedMessage }) => {
   const coverPhotoUploadRef = useRef();
   const dispatch = useDispatch();
   const buttonSize = useSelector(getButtonSize);
-  const signedMessage = useSelector(getSignedMessage);
+  const signedMessage = getSignedMessage();
 
   useEffect(() => {
     setIsChanged(!isEqual(profile, currentProfile));
@@ -98,7 +98,7 @@ const ProfileEditModal = ({ profile, updateSignedMessage }) => {
   const handleSubmitData = async () => {
     setIsLoading(true);
     const { signature, message } = await generateSignatureData(signedMessage);
-    updateSignedMessage(signature, message);
+    updateSignedMessage(signedMessage, signature, message);
     const formData = new FormData();
     formData.append('coverPhoto', uploadedCoverPhoto);
     formData.append('profilePhoto', uploadedProfilePhoto);

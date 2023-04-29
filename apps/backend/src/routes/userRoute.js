@@ -138,6 +138,7 @@ async function uploadPhoto(req, id, url, type) {
 router.post(
   '/user/bulkUpdate',
   userValidator,
+  verifyMessage,
   upload.fields([
     { name: 'profilePhoto', maxCount: 1 },
     { name: 'coverPhoto', maxCount: 1 }

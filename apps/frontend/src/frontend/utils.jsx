@@ -21,6 +21,20 @@ export const classNames = classes => {
   return str.trim();
 };
 
+export const updateSignedMessage = (signedMessage, signature, message) => {
+  if (signedMessage?.signature !== signature) {
+    localStorage.setItem('signature', signature);
+    localStorage.setItem('signedMessage', message);
+  }
+};
+
+export const getSignedMessage = () => {
+  const signature = localStorage.getItem('signature');
+  const message = localStorage.getItem('signedMessage');
+  if (signature && message) return { signature, message };
+  return null;
+};
+
 export const generateSignatureData = async (signedMessage = null, message = 'NFTAO') => {
   if (signedMessage) {
     const messageCreationDate = new Date(signedMessage.message.split(' ').pop());

@@ -8,8 +8,7 @@ const initialState = {
   coverPhoto: '',
   profilePhoto: '',
   favorites: [],
-  cart: [],
-  signedMessage: null
+  cart: []
 };
 
 const userSlice = createSlice({
@@ -38,23 +37,10 @@ const userSlice = createSlice({
       state.cart = action.payload;
     },
     setUser: (state, action) => ({ ...initialState, ...action.payload }),
-    setSignedMessage: (state, action) => {
-      state.signedMessage = action.payload;
-    },
     resetUser: () => initialState
   }
 });
 
 export default userSlice.reducer;
-export const {
-  setUserId,
-  setUsername,
-  setUserSlug,
-  setUserCoverPhoto,
-  setUserProfilePhoto,
-  setUserFavorites,
-  setCart,
-  setUser,
-  setSignedMessage,
-  resetUser
-} = userSlice.actions;
+export const { setUserId, setUsername, setUserSlug, setUserCoverPhoto, setUserProfilePhoto, setUserFavorites, setCart, setUser, resetUser } =
+  userSlice.actions;
