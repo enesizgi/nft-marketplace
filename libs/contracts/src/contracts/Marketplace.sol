@@ -257,7 +257,6 @@ contract Marketplace is ReentrancyGuard {
         address offerer, uint256 amount, uint8 _v, bytes32 _r, bytes32 _s ) external nonReentrant {
         require(block.timestamp < deadline, "Offer deadline is exceeded");
         require(address(this) == nft.ownerOf(_tokenId) , "Only marketplace items can be accepted");
-        require(erc20.balanceOf(offerer) > amount, "Offerer does not have enough wETH");
         erc20.permit(offerer, address(this), amount, deadline, _v, _r, _s);
         erc20.transferFrom(offerer, msg.sender, amount);
         nft.transferFrom(address(this), offerer, _tokenId);
