@@ -75,7 +75,13 @@ router.get('/user', async (req, res) => {
   try {
     const filter = req.query.slug ? { slug: req.query.slug } : { walletId: req.query.id };
     const user = await User.findOne(filter).lean();
-    if (!user) return res.status(404).send();
+    if (!user) {
+      if (req.query.id) {
+        const newUser = await User.create({ walletId: req.query.id, slug: null, name: 'Unnamed', cart: [] });
+        return res.send({ ...newUser, id: newUser.walletId });
+      }
+      return res.status(404).send();
+    }
     let images = user ? await Image.find({ user_id: user.walletId }).lean() : [];
     images = images.reduce((acc, row) => {
       if (Object.values(imageType).includes(row.type)) {
