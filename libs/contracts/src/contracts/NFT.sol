@@ -10,7 +10,7 @@ contract NFT is ERC721URIStorage, ERC721Enumerable {
     uint public tokenCounter;
     constructor() ERC721("NFT", "NFT") {}
 
-    function mintNFT(string memory _tokenURI) external returns (uint)
+    function mintNFT(string calldata _tokenURI) external returns (uint)
     {
         tokenCounter++;
         _safeMint(msg.sender, tokenCounter);
