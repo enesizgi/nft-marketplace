@@ -56,7 +56,7 @@ const PurchasesPage = ({ profileId, selectedTab }) => {
   }
   // TODO @Enes: Find better way for Math.random below
 
-  return <NFTShowcase NFTs={purchases} loadItems={loadPurchasedItems} selectedTab={selectedTab} />;
+  return <NFTShowcase NFTs={purchases} selectedTab={selectedTab} />;
 };
 
 export default PurchasesPage;

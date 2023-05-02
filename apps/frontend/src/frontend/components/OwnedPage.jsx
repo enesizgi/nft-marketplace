@@ -140,7 +140,7 @@ const OwnedPage = ({ profileId, selectedTab }) => {
   if (loading) {
     return <LoadingSpinner />;
   }
-  return <NFTShowcase NFTs={ownedItems} loadItems={loadOwnedItems} selectedTab={selectedTab} />;
+  return <NFTShowcase NFTs={ownedItems} selectedTab={selectedTab} />;
 };
 
 export default OwnedPage;

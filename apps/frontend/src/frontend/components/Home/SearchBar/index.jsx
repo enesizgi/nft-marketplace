@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Input } from '@chakra-ui/react';
 import API from '../../../modules/api';
 import { useDebounce } from '../../../hooks';
+import NFTShowcase from '../../NFTShowcase';
 
 const HomePage = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -28,7 +29,12 @@ const HomePage = () => {
     })();
   }, [debouncedSearchTerm]);
   console.log(searchResults);
-  return <Input placeholder="Search nfts, users, transactions..." onChange={handleSearchTermChange} />;
+  return (
+    <>
+      <Input placeholder="Search nfts, users, transactions..." onChange={handleSearchTermChange} />
+      <NFTShowcase NFTs={searchResults.nfts} loading={false} />
+    </>
+  );
 };
 
 export default HomePage;

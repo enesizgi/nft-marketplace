@@ -59,7 +59,6 @@ const NFTCard = ({ item, selectedTab, loading }) => {
     setShowBuyButton(false);
   };
   // TODO @Bugra: add onclick event for detail page
-  // eslint-disable-next-line no-unused-vars
   const handleGoToDetailPage = () => {
     navigate(`/nft/${nftContract.address}/${tokenId}`, { state: { item } });
   };
@@ -83,12 +82,14 @@ const NFTCard = ({ item, selectedTab, loading }) => {
     dispatch(setActiveModal({ type: MODAL_TYPES.SELL, props: { tokenId } }));
   };
 
+  const imageUrl = item.url || item.image;
+
   return (
     <ScNFTCard onMouseEnter={handleHoverCard} onMouseLeave={handleHoverLeave} onClick={handleGoToDetailPage}>
       <button type="button" onClick={handleUpdateFavorites} className={classNames({ 'favorite-icon': true, isFavorite: isInFavorites })}>
         <FavoriteIcon />
       </button>
-      <div className="nft-image">{item.url && !loading ? <img src={item.url} alt="nftImage" /> : <ImagePlaceholder className="shimmer" />}</div>
+      <div className="nft-image">{imageUrl && !loading ? <img src={imageUrl} alt="nftImage" /> : <ImagePlaceholder className="shimmer" />}</div>
       <div className="nft-info">
         <div className="nft-info-name">
           <span className="nft-info-name-itemName">{item.name}</span>
