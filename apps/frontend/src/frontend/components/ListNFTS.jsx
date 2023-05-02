@@ -3,8 +3,7 @@ import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import API from '../modules/api';
 import NFTShowcase from './NFTShowcase';
-import { getMarketplaceContract, getNFTContract } from '../store/selectors';
-import LoadingSpinner from './LoadingSpinner';
+import { getIsLoadingContracts, getMarketplaceContract, getNFTContract } from '../store/selectors';
 import NFTSlider from './NFTSlider';
 import { theme } from '../constants';
 
@@ -73,7 +72,6 @@ const ScListNFTSPage = styled.div`
 `;
 
 const ListNFTSPage = ({ profileId, selectedTab }) => {
-  const [loading, setLoading] = useState(true);
   const [marketplaceItems, setMarketplaceItems] = useState([[], []]);
   const [listedItems, setListedItems] = useState([]);
   const [listedItemCount, setListedItemCount] = useState(0);
@@ -85,108 +83,106 @@ const ListNFTSPage = ({ profileId, selectedTab }) => {
   const [auctionItemsLoading, setAuctionItemsLoading] = useState(false);
   const marketplaceContract = useSelector(getMarketplaceContract);
   const nftContract = useSelector(getNFTContract);
+  const isLoadingContracts = useSelector(getIsLoadingContracts);
 
-  const getItems = async isAuctionItems => {
-    const { count: itemCount } = isAuctionItems
-      ? await API.getNftCount({
-          type: 'Auction',
-          claimed: false,
-          canceled: false,
-          timeToEnd: new Date().getTime(),
-          marketplaceContract: marketplaceContract.address
+  useEffect(() => {
+    (async () => {
+      const listedPromise = API.getNftCount({
+        type: 'Listing',
+        sold: false,
+        canceled: false,
+        marketplaceContract: marketplaceContract.address
+      });
+      const auctionPromise = API.getNftCount({
+        type: 'Auction',
+        claimed: false,
+        canceled: false,
+        timeToEnd: new Date().getTime(),
+        marketplaceContract: marketplaceContract.address
+      });
+      const [{ count: listedCount }, { count: auctionCount }] = await Promise.all([listedPromise, auctionPromise]);
+      setListedItemCount(listedCount);
+      setAuctionItemCount(auctionCount);
+    })();
+  }, [marketplaceContract.address]);
+
+  useEffect(() => {
+    (async () => {
+      if (isLoadingContracts) return;
+      setListedItemsLoading(true);
+      const items = [];
+      const mongoItems = await API.getNftStatus({
+        marketplaceContract: marketplaceContract.address,
+        type: 'Listing',
+        sold: false,
+        canceled: false,
+        limit: 5,
+        skip: (listedCurrentPage - 1) * 5
+      });
+      const batchItems = await Promise.allSettled(
+        mongoItems.map(async i => {
+          if (selectedTab !== 'Home' && i.seller.toLowerCase() !== profileId) return null;
+          // get uri url from nft contract
+          const uri = await nftContract.tokenURI(i.tokenId);
+          const cid = uri.split('ipfs://')[1];
+          // use uri to fetch the nft metadata stored on ipfs
+          const metadata = await API.getFromIPFS(cid);
+          const totalPrice = await marketplaceContract.getTotalPrice(i.itemId);
+          // define listed item object
+          return {
+            ...i,
+            ...metadata,
+            totalPrice,
+            price: i.price,
+            itemId: i.itemId
+          };
         })
-      : await API.getNftCount({ type: 'Listing', sold: false, canceled: false, marketplaceContract: marketplaceContract.address });
-    if (isAuctionItems) setAuctionItemCount(itemCount);
-    else setListedItemCount(itemCount);
-    const currentPage = isAuctionItems ? auctionCurrentPage : listedCurrentPage;
-    const items = [];
-    const activeCriteria = isAuctionItems ? { canceled: false, claimed: false, timeToEnd: new Date().getTime() } : { sold: false, canceled: false };
-    const mongoItems = await API.getNftStatus({
-      marketplaceContract: marketplaceContract.address,
-      type: isAuctionItems ? 'Auction' : 'Listing',
-      limit: 5,
-      skip: (currentPage - 1) * 5,
-      ...activeCriteria
-    });
-    // eslint-disable-next-line no-await-in-loop
-    const batchItems = await Promise.allSettled(
-      mongoItems.map(async i => {
-        if (selectedTab !== 'Home' && i.seller.toLowerCase() !== profileId) return null;
-        // get uri url from nft contract
-        const uri = await nftContract.tokenURI(i.tokenId);
-        const cid = uri.split('ipfs://')[1];
-        // use uri to fetch the nft metadata stored on ipfs
-        const metadata = await API.getFromIPFS(cid);
-        // define listed item object
-        if (isAuctionItems) {
+      );
+      const batchItemsResult = batchItems.filter(i => i.status === 'fulfilled' && i.value != null).map(i => i.value);
+      items.push(...batchItemsResult);
+      setListedItems(items);
+      setMarketplaceItems(prev => [items, prev[1]]);
+      setListedItemsLoading(false);
+    })();
+  }, [isLoadingContracts, listedCurrentPage, marketplaceContract, nftContract, profileId, selectedTab]);
+
+  useEffect(() => {
+    (async () => {
+      if (isLoadingContracts) return;
+      setAuctionItemsLoading(true);
+      const items = [];
+      const mongoItems = await API.getNftStatus({
+        marketplaceContract: marketplaceContract.address,
+        type: 'Auction',
+        limit: 5,
+        skip: (auctionCurrentPage - 1) * 5,
+        canceled: false,
+        claimed: false,
+        timeToEnd: new Date().getTime()
+      });
+      const batchItems = await Promise.allSettled(
+        mongoItems.map(async i => {
+          if (selectedTab !== 'Home' && i.seller.toLowerCase() !== profileId) return null;
+          // get uri url from nft contract
+          const uri = await nftContract.tokenURI(i.tokenId);
+          const cid = uri.split('ipfs://')[1];
+          // use uri to fetch the nft metadata stored on ipfs
+          const metadata = await API.getFromIPFS(cid);
+          // define listed item object
           return {
             ...i,
             ...metadata
           };
-        }
-        const totalPrice = await marketplaceContract.getTotalPrice(i.itemId);
-        // define listed item object
-        return {
-          ...i,
-          ...metadata,
-          totalPrice,
-          price: i.price,
-          itemId: i.itemId
-        };
-      })
-    );
-    const batchItemsResult = batchItems.filter(i => i.status === 'fulfilled' && i.value != null).map(i => i.value);
-    items.push(...batchItemsResult);
-    return items;
-  };
-  const loadAuctionItems = async () => getItems(true);
-  const loadListedItems = async () => getItems(false);
-
-  const loadItems = isAuction => async () => {
-    const items = await (isAuction ? loadAuctionItems() : loadListedItems());
-    if (isAuction) {
+        })
+      );
+      const batchItemsResult = batchItems.filter(i => i.status === 'fulfilled' && i.value != null).map(i => i.value);
+      items.push(...batchItemsResult);
       setAuctionItems(items);
       setMarketplaceItems(prev => [prev[0], items]);
-    } else {
-      setListedItems(items);
-      setMarketplaceItems(prev => [items, prev[1]]);
-    }
-  };
-
-  const loadAllItems = async () => {
-    await Promise.allSettled([loadItems(false)(), loadItems(true)()]);
-  };
-
-  useEffect(() => {
-    const runAsync = async () => {
-      setLoading(true);
-      await Promise.allSettled([loadItems(false)(), loadItems(true)()]);
-      setLoading(false);
-    };
-    runAsync();
-  }, [profileId, marketplaceContract, nftContract]);
-
-  useEffect(() => {
-    const runAsync = async () => {
-      setListedItemsLoading(true);
-      await loadItems(false)();
-      setListedItemsLoading(false);
-    };
-    runAsync();
-  }, [listedCurrentPage]);
-
-  useEffect(() => {
-    const runAsync = async () => {
-      setAuctionItemsLoading(true);
-      await loadItems(true)();
       setAuctionItemsLoading(false);
-    };
-    runAsync();
-  }, [auctionCurrentPage]);
+    })();
+  }, [isLoadingContracts, auctionCurrentPage, marketplaceContract, nftContract, profileId, selectedTab]);
 
-  if (loading) {
-    return <LoadingSpinner />;
-  }
   if (selectedTab === 'Home') {
     if (listedItemCount === 0 && auctionItemCount === 0) {
       return null;
@@ -196,7 +192,6 @@ const ListNFTSPage = ({ profileId, selectedTab }) => {
         {listedItemCount && (
           <NFTSlider
             itemCount={listedItemCount}
-            loadItems={loadItems(false)}
             selectedTab={selectedTab}
             loading={listedItemsLoading}
             currentPage={listedCurrentPage}
@@ -207,7 +202,6 @@ const ListNFTSPage = ({ profileId, selectedTab }) => {
         {auctionItemCount && (
           <NFTSlider
             itemCount={auctionItemCount}
-            loadItems={loadItems(true)}
             selectedTab={selectedTab}
             loading={auctionItemsLoading}
             currentPage={auctionCurrentPage}
@@ -218,7 +212,7 @@ const ListNFTSPage = ({ profileId, selectedTab }) => {
       </ScListNFTSPage>
     );
   }
-  return <NFTShowcase NFTs={marketplaceItems.flat(1)} loadItems={loadAllItems} selectedTab={selectedTab} />;
+  return <NFTShowcase NFTs={marketplaceItems.flat(1)} selectedTab={selectedTab} />;
 };
 
 export default ListNFTSPage;
