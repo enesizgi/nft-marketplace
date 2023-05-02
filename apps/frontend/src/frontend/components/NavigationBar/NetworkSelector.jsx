@@ -90,7 +90,7 @@ const NetworkSelector = () => {
     setDropdownOpened(false);
   };
 
-  const { src: Logo } = NETWORK_LOGOS[chainId] || {};
+  const { src: Logo, type: logoType } = NETWORK_LOGOS[chainId] || {};
   const isLocalhost = window.location.hostname === 'localhost';
 
   return (
@@ -98,7 +98,8 @@ const NetworkSelector = () => {
       <OnOutsideClick onOutsideClick={() => setDropdownOpened(false)}>
         <div className="title-container">
           <CoolButton className="title-container-title" onClick={() => setDropdownOpened(!isDropdownOpened)} isDropdownOpened={isDropdownOpened}>
-            <Logo className="title-container-logo" />
+            {logoType === 'svg' && <Logo className="title-container-logo" />}
+            {logoType && logoType !== 'svg' && <img src={Logo} alt="network logo" className="title-container-logo" />}
             {deviceType !== DEVICE_TYPES.MOBILE && <div className="network-name">{CHAIN_PARAMS[chainId]?.chainName ?? 'Unknown'}</div>}
           </CoolButton>
         </div>

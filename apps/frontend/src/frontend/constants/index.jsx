@@ -113,7 +113,7 @@ export const NETWORK_LOGOS = {
     src: PolygonLogo
   },
   '0x7a69': {
-    type: 'png',
+    type: 'svg',
     src: LocalhostIcon
   }
 };
