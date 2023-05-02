@@ -33,10 +33,12 @@ const ScModal = styled.div`
     background: ${theme.background};
     border-radius: 10px;
     position: relative;
+    max-height: 90%;
 
     &.fullPage {
       height: 100vh;
       width: 100vw;
+      max-height: 100vh;
       padding: 78px 20px 27px;
       margin: 0;
     }
@@ -44,7 +46,6 @@ const ScModal = styled.div`
     > * {
       overflow: auto;
       max-height: 100%;
-      max-width: 100%;
     }
     @keyframes appear {
       0% {

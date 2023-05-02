@@ -5,6 +5,7 @@ const ScProfileEditModal = styled(FormControl)`
   display: flex;
   flex-direction: column;
   padding: 16px;
+  max-width: 800px;
   @media screen and (max-width: 768px) {
     height: 100%;
   }

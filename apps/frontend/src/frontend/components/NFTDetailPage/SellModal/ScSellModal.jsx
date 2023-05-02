@@ -2,9 +2,10 @@ import styled from 'styled-components';
 import { theme } from '../../../constants';
 
 const ScSellModal = styled.div`
-  width: 100%;
+  max-width: 800px;
   @media screen and (max-width: 768px) {
     height: 100%;
+    width: auto;
   }
 
   display: flex;
@@ -13,7 +14,7 @@ const ScSellModal = styled.div`
   .nft-overview {
     display: flex;
     width: 100%;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 
     &-image {
       width: 30%;
@@ -41,10 +42,7 @@ const ScSellModal = styled.div`
     flex-direction: row;
     justify-content: center;
     align-self: center;
-    @media screen and (min-width: 768px) {
-      width: 40%;
-    }
-    margin: 20px 0;
+    margin: 30px 0;
   }
 
   .nftSellOptionsButton {

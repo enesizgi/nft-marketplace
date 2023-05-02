@@ -6,10 +6,13 @@ import { theme } from '../constants';
 const ScSwitch = styled.div`
   background: ${theme.secondaryBlue};
   display: flex;
-  width: 300px;
+  width: 400px;
   align-items: center;
   padding: 5px 8px;
   border-radius: 8px;
+  @media screen and (max-width: 480px) {
+    width: 300px;
+  }
   .switch-item {
     width: 50%;
     display: inline-flex;
