@@ -68,6 +68,7 @@ export const changeNetwork = async networkId => {
       method: 'wallet_switchEthereumChain',
       params: [{ chainId: networkId }] // chainId must be in hexadecimal numbers
     });
+    return true;
   } catch (error) {
     // This error code indicates that the chain has not been added to MetaMask
     // if it is not, then install it into the user MetaMask
@@ -77,10 +78,13 @@ export const changeNetwork = async networkId => {
           method: 'wallet_addEthereumChain',
           params: [CHAIN_PARAMS[networkId]]
         });
+        return true;
       } catch (addError) {
         console.error(addError);
+        return false;
       }
     }
     console.error(error);
+    return false;
   }
 };

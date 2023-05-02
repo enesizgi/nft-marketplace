@@ -20,6 +20,9 @@ const userLoginFlow = async (id, listenerApi) => {
 
   if (!user) {
     const { signature, message } = await generateSignatureData();
+    if (!signature) {
+      return;
+    }
     const createdUser = await API.createUser(id, signature, message);
     if (!createdUser) {
       console.warn('User could not be created.');
@@ -48,7 +51,8 @@ const handleInitMarketplace = async (action, listenerApi) => {
   const sessionChainId = sessionStorage.getItem('chainId');
   const metamaskChainId = await window.ethereum.request({ method: 'eth_chainId' });
   if (sessionChainId && sessionChainId !== metamaskChainId) {
-    await changeNetwork(sessionChainId);
+    const success = await changeNetwork(sessionChainId);
+    if (!success) return;
   }
 
   const id = sessionAccount || (await setAccounts());
