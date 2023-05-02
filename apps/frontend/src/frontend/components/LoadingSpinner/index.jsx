@@ -8,6 +8,8 @@ const ScLoadingSpinner = Styled.div`
     justify-content: center;
     width: 100%;
     height: 100%;
+    min-height: 100px;
+    min-width: 100px;
  
     .loading-spinner {
       border: 8px solid rgba(0, 137, 168, 0.3);
