@@ -1,5 +1,5 @@
 import EthereumLogo from '../assets/ethereum-logo.png';
-import HardhatLogo from '../assets/hardhat-logo.png';
+import { ReactComponent as LocalhostIcon } from '../assets/localhost-icon.svg';
 import { ReactComponent as PolygonLogo } from '../assets/polygon-logo.svg';
 
 export const defaultChainId = '0xaa36a7';
@@ -114,6 +114,6 @@ export const NETWORK_LOGOS = {
   },
   '0x7a69': {
     type: 'png',
-    src: HardhatLogo
+    src: LocalhostIcon
   }
 };

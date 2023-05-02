@@ -13,7 +13,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="profile-page">
+    <div className="profile-page" style={{ minHeight: '100%', maxWidth: '1200px', margin: 'auto', boxShadow: '0 0 3px #fff' }}>
       <ProfileHeader id={profileId} />
       <ProfileContent id={profileId} />
     </div>

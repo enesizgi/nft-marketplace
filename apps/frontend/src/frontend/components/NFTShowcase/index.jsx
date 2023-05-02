@@ -34,12 +34,12 @@ const ScNFTShowcase = styled.div`
     &-text {
       margin-bottom: 20px;
       text-align: center;
-      font-size: 36px;
+      font-size: 24px;
       @media screen and (max-width: 768px) {
-        font-size: 30px;
+        font-size: 18px;
       }
       @media screen and (max-width: 480px) {
-        font-size: 24px;
+        font-size: 16px;
       }
     }
   }

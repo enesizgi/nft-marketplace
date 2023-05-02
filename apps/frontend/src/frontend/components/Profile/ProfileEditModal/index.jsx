@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Input, FormLabel, Button, FormHelperText } from '@chakra-ui/react';
+import { Input, FormLabel, FormHelperText } from '@chakra-ui/react';
 import isEqual from 'lodash/isEqual';
 import { useDispatch, useSelector } from 'react-redux';
 import { getButtonSize } from '../../../store/selectors';
@@ -9,6 +9,7 @@ import { initProfile } from '../../../store/actionCreators';
 import { setUser } from '../../../store/userSlice';
 import LoadingSpinner from '../../LoadingSpinner';
 import ScProfileEditModal from './ScProfileEditModal';
+import Button from '../../Button';
 import { classNames, generateSignatureData, getSignedMessage, updateSignedMessage } from '../../../utils';
 
 const ProfileEditModal = ({ profile }) => {
@@ -159,12 +160,14 @@ const ProfileEditModal = ({ profile }) => {
           {currentProfile.profilePhoto && (
             <>
               <FormLabel htmlFor="profilePhoto">Profile Photo</FormLabel>
-              <img className="profilePhoto" alt="profilePhoto" id="profilePhoto" src={currentProfile.profilePhoto} />
+              <div className="profilePhoto-container">
+                <img className="profilePhoto" alt="profilePhoto" id="profilePhoto" src={currentProfile.profilePhoto} />
+              </div>
             </>
           )}
           <div className="upload-button-container">
-            <Button size={buttonSize} colorScheme="linkedin" onClick={handleOpenProfilePhotoUpload}>
-              {currentProfile.profilePhoto ? 'Change Profile Photo' : 'Upload Profile Photo'}
+            <Button size={buttonSize} className="outline" onClick={handleOpenProfilePhotoUpload}>
+              {currentProfile.profilePhoto ? 'Change' : 'Upload'}
             </Button>
             <FormHelperText>{errorMessages.profile}</FormHelperText>
           </div>
@@ -179,12 +182,14 @@ const ProfileEditModal = ({ profile }) => {
           {currentProfile.coverPhoto && (
             <>
               <FormLabel htmlFor="coverPhoto">Cover Photo</FormLabel>
-              <img className="coverPhoto" alt="coverPhoto" id="coverPhoto" src={currentProfile.coverPhoto} />
+              <div className="coverPhoto-container">
+                <img className="coverPhoto" alt="coverPhoto" id="coverPhoto" src={currentProfile.coverPhoto} />
+              </div>
             </>
           )}
           <div className="upload-button-container">
-            <Button size={buttonSize} colorScheme="linkedin" onClick={handeOpenCoverPhotoUpload}>
-              {currentProfile.profilePhoto ? 'Change Cover Photo' : 'Upload Cover Photo'}
+            <Button size={buttonSize} className="outline" onClick={handeOpenCoverPhotoUpload}>
+              {currentProfile.profilePhoto ? 'Change' : 'Upload'}
             </Button>
             <FormHelperText>{errorMessages.cover}</FormHelperText>
           </div>
@@ -192,7 +197,7 @@ const ProfileEditModal = ({ profile }) => {
         </div>
       </div>
       <div className="form-footer">
-        <Button isDisabled={!isChanged} colorScheme="linkedin" className="submitButton" size={buttonSize} type="submit" onClick={handleSubmitData}>
+        <Button isDisabled={!isChanged} className="submitButton" size={buttonSize} type="submit" onClick={handleSubmitData}>
           Save Changes
         </Button>
         <FormHelperText>{errorMessages.formError}</FormHelperText>

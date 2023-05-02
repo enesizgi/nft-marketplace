@@ -15,12 +15,30 @@ const ScButton = styled.button`
     width: 20px;
     height: 20px;
     fill: #fff;
+    transition: 0.2s;
   }
-
   :not(.switch) {
     &:hover {
       filter: brightness(110%);
       box-shadow: 0 0 3px #fff;
+    }
+  }
+
+  &.outline {
+    background: none;
+    border: 2px solid ${theme.blue};
+    color: ${theme.blue};
+    > svg {
+      fill: ${theme.blue};
+    }
+    &:hover {
+      box-shadow: none;
+      filter: none;
+      background: ${theme.blue};
+      color: #fff;
+      > svg {
+        fill: #fff;
+      }
     }
   }
 
@@ -44,7 +62,7 @@ const ScButton = styled.button`
   font-weight: 600;
   border: 0;
   border-radius: 10px;
-  padding: 5px;
+  padding: 5px 15px;
   cursor: pointer;
 `;
 

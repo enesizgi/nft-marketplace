@@ -69,7 +69,7 @@ const ProfileHeader = ({ id }) => {
     <ScProfileHeader>
       <div className="profile-photos">
         {isProfileOwner && (
-          <Button type="button" className="profile-names-edit" onClick={openEditModal}>
+          <Button type="button" className="profile-names-edit outline" onClick={openEditModal}>
             <EditIcon />
             Edit Profile
           </Button>

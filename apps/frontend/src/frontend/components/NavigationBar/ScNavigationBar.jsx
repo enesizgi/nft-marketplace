@@ -30,8 +30,10 @@ const ScNavigationBar = styled.nav`
     display: flex;
     align-items: center;
     text-align: center;
+    height: 64px;
 
-    @media screen and (max-width: 480px) {
+    @media screen and (max-width: 768px) {
+      height: 50px;
       font-size: 18px;
     }
 
@@ -42,15 +44,11 @@ const ScNavigationBar = styled.nav`
       padding: 0;
       object-fit: cover;
       transition: 0.2s;
-      height: 80px;
-      width: 80px;
+      height: 70px;
+      width: 70px;
       @media screen and (max-width: 768px) {
         height: 65px;
         width: 65px;
-      }
-      @media screen and (max-width: 480px) {
-        height: 60px;
-        width: 60px;
       }
       svg {
         margin: auto;
@@ -72,29 +70,19 @@ const ScNavigationBar = styled.nav`
     }
 
     &.accountBox {
-      height: 80px;
-      width: 80px;
       flex-shrink: 0;
       text-align: center;
-
-      @media screen and (max-width: 768px) {
-        height: 65px;
-        width: 65px;
-      }
-
-      @media screen and (max-width: 480px) {
-        height: 60px;
-        width: 60px;
-      }
+      height: 64px;
+      width: 64px;
     }
     &.networkSelector {
       margin-left: auto;
-      margin-right: 16px;
+      margin-right: 30px;
     }
   }
 
   .cartIcon {
-    margin-right: 16px;
+    margin-right: 30px;
     background: none;
     padding: 8px;
     border-radius: 8px;
@@ -103,9 +91,10 @@ const ScNavigationBar = styled.nav`
       background: ${theme.secondaryBlue};
     }
     & > svg {
+      margin: 0 auto;
       fill: ${theme.blue};
-      width: 40px;
-      height: 40px;
+      width: 90%;
+      height: 90%;
     }
   }
 `;

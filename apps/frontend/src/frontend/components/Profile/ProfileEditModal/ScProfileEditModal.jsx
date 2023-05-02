@@ -5,6 +5,9 @@ const ScProfileEditModal = styled(FormControl)`
   display: flex;
   flex-direction: column;
   padding: 16px;
+  @media screen and (max-width: 768px) {
+    height: 100%;
+  }
   input {
     height: 3rem;
     padding: 10px;
@@ -15,6 +18,7 @@ const ScProfileEditModal = styled(FormControl)`
     &:not([aria-invalid]) {
       margin-bottom: 20px;
     }
+    border-color: #969696;
   }
   label {
     @media screen and (max-width: 480px) {
@@ -43,7 +47,6 @@ const ScProfileEditModal = styled(FormControl)`
   .photoUpload-container {
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: space-between;
     margin: 20px;
     width: 50%;
@@ -60,40 +63,28 @@ const ScProfileEditModal = styled(FormControl)`
     justify-content: center;
   }
 
-  .profilePhoto {
-    display: inline;
-    width: 200px;
-    height: 200px;
-    border-radius: 100%;
-    @media screen and (max-width: 768px) {
-      width: 175px;
-      height: 175px;
-    }
-    @media screen and (max-width: 480px) {
-      width: 120px;
-      height: 120px;
-    }
+  .profilePhoto-container {
+    margin-bottom: 20px;
   }
   .upload-button-container {
     display: flex;
     flex-direction: column;
-  }
-  .coverPhoto {
-    height: 200px;
+    max-width: 250px;
     @media screen and (max-width: 768px) {
-      height: 175px;
+      max-width: 100%;
     }
-    @media screen and (max-width: 480px) {
-      height: 120px;
-    }
+  }
+  .coverPhoto-container {
+    margin-bottom: 20px;
   }
 
   .form-footer {
-    margin-top: 20px;
-    align-self: center;
+    width: 100%;
+    border-top: 1px solid #969696;
+    padding-top: 20px;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: flex-end;
+    align-self: flex-end;
     > div {
       font-weight: 600;
       font-size: 16px;

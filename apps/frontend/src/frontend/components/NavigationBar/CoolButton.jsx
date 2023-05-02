@@ -3,10 +3,17 @@ import styled from 'styled-components';
 import { theme } from '../../constants';
 
 const ScCoolButton = styled.div`
-  background-color: ${theme.secondaryBlue};
+  &:hover {
+    background: ${theme.secondaryBlue};
+  }
+  border: 2px solid ${theme.secondaryBlue};
   border-radius: 10px;
+  @media screen and (max-width: 480px) {
+    border: 0;
+  }
   height: 100%;
-
+  display: flex;
+  align-items: center;
   button {
     display: flex;
     align-items: center;
@@ -16,11 +23,7 @@ const ScCoolButton = styled.div`
     font-size: 16px;
     font-weight: 600;
     padding: 8px 8px;
-    transition: all 125ms ease-in 0s;
-
-    &:hover {
-      filter: brightness(120%);
-    }
+    transition: 0.2s;
   }
 `;
 

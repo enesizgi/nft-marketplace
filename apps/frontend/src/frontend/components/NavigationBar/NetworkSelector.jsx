@@ -5,8 +5,8 @@ import OnOutsideClick from 'react-outclick';
 import CoolButton from './CoolButton';
 import { ReactComponent as PolygonLogo } from '../../assets/polygon-logo.svg';
 import EthereumLogo from '../../assets/ethereum-logo.png';
-import HardhatLogo from '../../assets/hardhat-logo.png';
-import { CHAIN_PARAMS, defaultChainId, DEVICE_TYPES, NETWORK_LOGOS } from '../../constants';
+import { ReactComponent as LocalhostIcon } from '../../assets/localhost-icon.svg';
+import { CHAIN_PARAMS, defaultChainId, DEVICE_TYPES, NETWORK_LOGOS, theme } from '../../constants';
 import { getChainIdWithDefault, getDeviceType, getUserId } from '../../store/selectors';
 import Dropdown from '../Dropdown';
 import { setChainId } from '../../store/marketplaceSlice';
@@ -16,6 +16,11 @@ const ScNetworkSelector = styled.div`
   display: flex;
   align-items: center;
   position: relative;
+  height: 100%;
+  > div {
+    height: 100% !important;
+    width: 100% !important;
+  }
 
   .title-container {
     display: flex;
@@ -26,6 +31,9 @@ const ScNetworkSelector = styled.div`
     div {
       border-radius: 8px;
     }
+    button {
+      height: 100%;
+    }
     &-title {
       .network-name {
         margin-left: 8px;
@@ -35,11 +43,17 @@ const ScNetworkSelector = styled.div`
 
   svg,
   img {
-    width: 40px;
-    height: 40px;
+    width: 80%;
+    height: 80%;
+    fill: ${theme.blue};
+    > * {
+      fill ${theme.blue};
+    }
     margin-right: 12px;
     @media screen and (max-width: 480px) {
       margin-right: 0;
+      width: 100%;
+      height: 100%;
     }
   }
 
@@ -76,7 +90,7 @@ const NetworkSelector = () => {
     setDropdownOpened(false);
   };
 
-  const { type: logoType, src: Logo } = NETWORK_LOGOS[chainId] || {};
+  const { src: Logo } = NETWORK_LOGOS[chainId] || {};
   const isLocalhost = window.location.hostname === 'localhost';
 
   return (
@@ -84,8 +98,7 @@ const NetworkSelector = () => {
       <OnOutsideClick onOutsideClick={() => setDropdownOpened(false)}>
         <div className="title-container">
           <CoolButton className="title-container-title" onClick={() => setDropdownOpened(!isDropdownOpened)} isDropdownOpened={isDropdownOpened}>
-            {logoType === 'svg' && <Logo />}
-            {logoType && logoType !== 'svg' && <img src={Logo} alt="network logo" className="title-container-logo" />}
+            <Logo className="title-container-logo" />
             {deviceType !== DEVICE_TYPES.MOBILE && <div className="network-name">{CHAIN_PARAMS[chainId]?.chainName ?? 'Unknown'}</div>}
           </CoolButton>
         </div>
@@ -93,7 +106,7 @@ const NetworkSelector = () => {
           <Dropdown>
             {isLocalhost && (
               <button type="button" className="dropdown-content-item" onClick={handleNetworkChange('0x7a69')}>
-                <img src={HardhatLogo} alt="ethereum-logo" className="dropdown-content-item-icon" />
+                <LocalhostIcon className="dropdown-content-item-icon" />
                 <div className="dropdown-container-network-title">Localhost</div>
               </button>
             )}

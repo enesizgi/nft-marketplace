@@ -20,17 +20,21 @@ const ScProfileContent = styled.div`
       justify-content: center;
       align-items: center;
       font-size: 24px;
-      padding: 16px;
+      padding: 16px 20px;
       padding-bottom: 13px;
       transition: transform 0.3s ease;
       opacity: 0.7;
+      @media screen and (max-width: 768px) {
+        font-size: 20px;
+        padding: 12px 16px;
+      }
       @media screen and (max-width: 480px) {
-        font-size: 18px;
-        padding: 8px;
+        font-size: 16px;
+        padding: 8px 10px;
       }
       > svg {
         fill: #fff;
-        margin-right: 5px;
+        margin-right: 10px;
       }
     }
 
