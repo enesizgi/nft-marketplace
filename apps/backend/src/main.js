@@ -15,6 +15,7 @@ import priceRouter from './routes/priceRoute';
 import offerRouter from './routes/offerRoute';
 import searchRouter from './routes/searchRoute';
 import ipfsRouter from './routes/ipfsRoute';
+import shoppingListRouter from './routes/shoppingListRoute';
 import { apiBaseURL } from './constants';
 import { deleteOldOffers, fetchEthPrice, fetchMarketplaceEvents } from './utils';
 import Event from './models/event';
@@ -47,6 +48,7 @@ app.use(priceRouter);
 app.use(offerRouter);
 app.use(searchRouter);
 app.use(ipfsRouter);
+app.use(shoppingListRouter);
 
 ['/assets', '/assets/images', '/assets/nfts'].forEach(dir => {
   if (!fs.existsSync(`${dirname}${dir}`)) {

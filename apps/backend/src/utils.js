@@ -208,6 +208,47 @@ export const getLastStatusOfNft = async events => {
   await deleteOldDocuments();
 };
 
+export const getProvider = chainId => {
+  dotenv.config();
+  const isLocalhost = chainId === NETWORK_IDS.LOCALHOST;
+  return isLocalhost
+    ? new ethers.providers.JsonRpcProvider('http://127.0.0.1:8545')
+    : new ethers.providers.EtherscanProvider(Number(chainId), process.env.ETHERSCAN_API_KEY);
+};
+
+export const getNftContract = chainId => {
+  const provider = getProvider(chainId);
+  return new ethers.Contract(CONTRACTS[chainId].NFT.address, CONTRACTS[chainId].NFT.abi, provider);
+};
+
+export const getMarketplaceContract = chainId => {
+  const provider = getProvider(chainId);
+  return new ethers.Contract(CONTRACTS[chainId].MARKETPLACE.address, CONTRACTS[chainId].MARKETPLACE.abi, provider);
+};
+
+export const getIsItemInSale = async (chainId, tokenId) => {
+  const nftContract = getNftContract(chainId);
+  const itemStatus = await NftStatus.findOne({
+    nft: nftContract.address,
+    tokenId,
+    network: chainId
+  });
+  if (!itemStatus || !Object.keys(itemStatus).length) {
+    return false;
+  }
+  const { canceled, claimed, sold } = itemStatus;
+  return !claimed && !sold && !canceled;
+};
+
+export const canAddedToShoppingList = async (chainId, tokenId, walletId) => {
+  const nftContract = getNftContract(chainId);
+  const owner = await nftContract.ownerOf(tokenId);
+  if (owner.toLowerCase() === walletId) {
+    return false;
+  }
+  return getIsItemInSale(chainId, tokenId);
+};
+
 export const fetchMarketplaceEvents = async chainId => {
   let insertData = [];
   try {

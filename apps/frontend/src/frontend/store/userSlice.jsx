@@ -36,11 +36,26 @@ const userSlice = createSlice({
     setCart: (state, action) => {
       state.cart = action.payload;
     },
+    setShoppingLists: (state, action) => {
+      const { cart = [], favorites = [] } = action.payload;
+      state.cart = cart;
+      state.favorites = favorites;
+    },
     setUser: (state, action) => ({ ...initialState, ...action.payload }),
     resetUser: () => initialState
   }
 });
 
 export default userSlice.reducer;
-export const { setUserId, setUsername, setUserSlug, setUserCoverPhoto, setUserProfilePhoto, setUserFavorites, setCart, setUser, resetUser } =
-  userSlice.actions;
+export const {
+  setUserId,
+  setUsername,
+  setUserSlug,
+  setUserCoverPhoto,
+  setUserProfilePhoto,
+  setUserFavorites,
+  setCart,
+  setShoppingLists,
+  setUser,
+  resetUser
+} = userSlice.actions;

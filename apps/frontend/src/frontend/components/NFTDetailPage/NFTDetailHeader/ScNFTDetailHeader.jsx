@@ -62,6 +62,7 @@ const ScNFTDetailHeader = styled.div`
   }
   .nft-price {
     font-size: 24px;
+    margin-bottom: 20px;
   }
 `;
 

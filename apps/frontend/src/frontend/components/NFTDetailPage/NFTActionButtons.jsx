@@ -26,7 +26,6 @@ import { classNames, compare } from '../../utils';
 import API from '../../modules/api';
 
 const ScNFTActionButtons = styled.div`
-  margin: 10px 0;
   width: 100%;
   display: flex;
   align-items: center;

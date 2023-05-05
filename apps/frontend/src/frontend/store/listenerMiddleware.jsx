@@ -1,7 +1,7 @@
 import { createListenerMiddleware, isAnyOf } from '@reduxjs/toolkit';
 import { ethers } from 'ethers';
 import { CONTRACTS } from 'contracts';
-import { setCart, setUser, setUserFavorites } from './userSlice';
+import { setCart, setUser, setUserFavorites, setShoppingLists } from './userSlice';
 import API from '../modules/api';
 import { changeNetwork, generateSignatureData, serializeBigNumber } from '../utils';
 import { setChainId, setIsLoadingContracts } from './marketplaceSlice';
@@ -15,8 +15,8 @@ import { initProfile } from './actionCreators';
 /* eslint-disable */
 const listenerMiddleware = createListenerMiddleware();
 
-const userLoginFlow = async (id, listenerApi) => {
-  const user = await API.getUser(id);
+const userLoginFlow = async (id, chainId, listenerApi) => {
+  let user = await API.getUser(id);
 
   if (!user) {
     const { signature, message } = await generateSignatureData();
@@ -26,12 +26,13 @@ const userLoginFlow = async (id, listenerApi) => {
     const createdUser = await API.createUser(id, signature, message);
     if (!createdUser) {
       console.warn('User could not be created.');
-    } else {
-      listenerApi.dispatch(setUser({ ...createdUser, id: id.toLowerCase() }));
+      return;
     }
-  } else {
-    listenerApi.dispatch(setUser({ ...user, id: id.toLowerCase() }));
+    user = createdUser;
   }
+  const { cart, favorites } = await API.getShoppingLists(id, chainId);
+  console.log('api returned', { cart, favorites });
+  listenerApi.dispatch(setUser({ ...user, id: id.toLowerCase(), cart, favorites }));
 };
 
 const setAccounts = async () => {
@@ -60,17 +61,21 @@ const handleInitMarketplace = async (action, listenerApi) => {
 
   listenerApi.dispatch(setChainId(chainIdOfAccount));
 
-  await userLoginFlow(id, listenerApi);
+  await userLoginFlow(id, chainIdOfAccount, listenerApi);
 
   window.ethereum.on('chainChanged', chainId => {
     sessionStorage.setItem('chainId', chainId);
     listenerApi.dispatch(setChainId(chainId));
+    const userId = sessionStorage.getItem('account');
+    const { cart, favorites } = API.getShoppingLists(userId, chainId);
+    listenerApi.dispatch(setShoppingLists({ cart, favorites }));
   });
 
   window.ethereum.on('accountsChanged', async accounts => {
     const newAccountId = accounts[0];
     sessionStorage.setItem('account', accounts[0]);
-    await userLoginFlow(newAccountId, listenerApi);
+    const chainId = sessionChainId || (await setChainIdOfAccount());
+    await userLoginFlow(newAccountId, chainId, listenerApi);
     await handleInitMarketplace(action, listenerApi);
   });
 

@@ -121,21 +121,21 @@ class API {
 
   getETHUSDPrice = async () => this.getRequest({ endpoint: '/price/ethereum/usd' });
 
-  getUserFavorites = async id => this.getRequest({ endpoint: '/user/favorites', qs: { id } });
+  getShoppingLists = async (id, chainId) => this.getRequest({ endpoint: '/shopping', qs: { id, chainId } });
 
-  getUserCart = async id => this.getRequest({ endpoint: '/user/cart', qs: { id } });
-
-  setUserFavorites = async (id, favorites) =>
+  setUserFavorites = async (id, chainId, favorites) =>
     this.postRequest({
-      endpoint: '/user/favorites',
-      body: JSON.stringify({ favorites, id }),
+      endpoint: '/shopping/favorites',
+      qs: { id, chainId },
+      body: JSON.stringify({ favorites }),
       headers: { 'Content-Type': 'application/json' }
     });
 
-  setCart = async (id, cart) =>
+  setCart = async (id, chainId, cart) =>
     this.postRequest({
-      endpoint: '/user/cart',
-      body: JSON.stringify({ cart, id }),
+      endpoint: '/shopping/cart',
+      qs: { id, chainId },
+      body: JSON.stringify({ cart }),
       headers: { 'Content-Type': 'application/json' }
     });
 

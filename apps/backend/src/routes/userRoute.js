@@ -3,7 +3,6 @@ import multer from 'multer';
 import fs from 'fs';
 import User from '../models/user';
 import Image from '../models/image';
-import Nft from '../models/nft';
 import { apiBaseURL, apiProtocol } from '../constants';
 import { safeJSONParse, snakeToCamel, verifyMessage } from '../utils';
 
@@ -32,7 +31,7 @@ const fileFilter = (req, file, cb) => {
   return cb(null, true);
 };
 
-const userValidator = async (req, res, next) => {
+export const userValidator = async (req, res, next) => {
   try {
     const user = req.query.id && (await User.findOne({ walletId: req.query.id }).lean());
     if (!user) {
@@ -261,78 +260,6 @@ router.get('/user/name', async (req, res) => {
     if (user && Object.keys(user).length) {
       const { _id, walletId: id, ...rest } = user;
       return res.send({ id, ...rest });
-    }
-    return res.status(404).send();
-  } catch (err) {
-    console.log(err);
-    return res.status(500).send();
-  }
-});
-
-router.get('/user/cart', userValidator, async (req, res) => {
-  try {
-    const user = req.query.id && (await User.findOne({ walletId: req.query.id }).lean());
-    if (user && Object.keys(user.length)) {
-      const { id, cart = [] } = user;
-      return res.send({ id, cart });
-    }
-    return res.status(404).send();
-  } catch (err) {
-    console.log(err);
-    return res.status(500).send();
-  }
-});
-
-router.post('/user/cart', async (req, res) => {
-  try {
-    const { cart, id } = req.body;
-    if (cart.length) {
-      const cartItems = cart.map(tokenId => ({ tokenId }));
-      const foundNfts = await Nft.find({ $or: cartItems }).lean();
-      if (foundNfts.length < cartItems.length) {
-        // TODO: prevent duplicate cid's in nft table. This condition should've been ===
-        return res.status(404).send();
-      }
-    }
-    const result = await User.updateOne({ walletId: id }, { cart });
-    if (result.modifiedCount > 0) {
-      return res.send({ id, cart });
-    }
-    return res.status(404).send();
-  } catch (err) {
-    console.log(err);
-    return res.status(500).send();
-  }
-});
-
-router.get('/user/favorites', userValidator, async (req, res) => {
-  try {
-    const user = req.query.id && (await User.findOne({ walletId: req.query.id }).lean());
-    if (user && Object.keys(user.length)) {
-      const { id, favorites = [] } = user;
-      return res.send({ id, favorites });
-    }
-    return res.status(404).send();
-  } catch (err) {
-    console.log(err);
-    return res.status(500).send();
-  }
-});
-
-router.post('/user/favorites', async (req, res) => {
-  try {
-    const { favorites, id } = req.body;
-    if (favorites.length) {
-      const favoriteItems = favorites.map(tokenId => ({ tokenId }));
-      const foundNfts = await Nft.find({ $or: favoriteItems }).lean();
-      if (foundNfts.length < favoriteItems.length) {
-        // TODO: prevent duplicate cid's in nft table. This condition should've been ===
-        return res.status(404).send();
-      }
-    }
-    const result = await User.updateOne({ walletId: id }, { favorites });
-    if (result.modifiedCount > 0) {
-      return res.send({ id, favorites });
     }
     return res.status(404).send();
   } catch (err) {
