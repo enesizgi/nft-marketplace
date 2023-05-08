@@ -20,6 +20,7 @@ import {
 import { loadNFT, setActiveModal } from '../../store/uiSlice';
 import Button from '../Button';
 import { ReactComponent as CartIcon } from '../../assets/cart-icon.svg';
+import { ReactComponent as OfferIcon } from '../../assets/offer-icon.svg';
 import { MODAL_TYPES } from '../../constants';
 import { updateCart } from '../../store/actionCreators';
 import { classNames, compare } from '../../utils';
@@ -34,10 +35,7 @@ const ScNFTActionButtons = styled.div`
     margin-bottom: 20px;
     width: calc(50% - 40px);
     margin-right: 20px;
-    padding: 5px 30px;
-    &.buy-button {
-      margin-right: 0;
-    }
+    padding: 5px 20px;
     @media screen and (max-width: 600px) {
       width: 100%;
       margin-right: 0;
@@ -110,16 +108,17 @@ const NFTActionButtons = () => {
         <div className="buyer-actions">
           {isListed && (
             <>
-              <Button className={classNames({ cancel: isInCart })} onClick={handleUpdateCart}>
-                <CartIcon />
-                {isInCart ? 'Remove From ' : 'Add To '} Cart
-              </Button>
               <Button size={buttonSize} className="buy-button" colorScheme="linkedin" onClick={handleBuy}>
                 Buy Item
               </Button>
+              <Button className={classNames({ cancel: isInCart, outline: true })} onClick={handleUpdateCart}>
+                <CartIcon />
+                {isInCart ? 'Remove From ' : 'Add To '} Cart
+              </Button>
             </>
           )}
-          <Button size={buttonSize} colorScheme="linkedin" onClick={() => dispatch(setActiveModal({ type: MODAL_TYPES.OFFER, props: { tokenId } }))}>
+          <Button className="outline" onClick={() => dispatch(setActiveModal({ type: MODAL_TYPES.OFFER, props: { tokenId } }))}>
+            <OfferIcon />
             Make Offer
           </Button>
         </div>

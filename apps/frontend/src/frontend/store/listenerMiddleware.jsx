@@ -254,11 +254,12 @@ const handleUpdateCart = async (action, listenerApi) => {
   try {
     const {
       user: { id, cart },
-      ui: { currentPath }
+      ui: { currentPath },
+      marketplace: { chainId }
     } = listenerApi.getState();
     const isAddition = !cart.find(tokenId => tokenId === action.payload);
     const updatedCart = isAddition ? [...cart, action.payload] : cart.filter(tokenId => tokenId !== action.payload);
-    const result = await API.setCart(id, updatedCart);
+    const result = await API.setCart(id, chainId, updatedCart);
     listenerApi.dispatch(setCart(result?.cart));
     if (isAddition) {
       listenerApi.dispatch(
@@ -284,11 +285,12 @@ const handleUpdateFavorites = async (action, listenerApi) => {
   try {
     const {
       user: { id, favorites },
-      ui: { currentPath }
+      ui: { currentPath },
+      marketplace: { chainId }
     } = listenerApi.getState();
     const isAddition = !favorites.find(tokenId => tokenId === action.payload);
     const updatedFavorites = isAddition ? [...favorites, action.payload] : favorites.filter(tokenId => tokenId !== action.payload);
-    const result = await API.setUserFavorites(id, updatedFavorites);
+    const result = await API.setUserFavorites(id, chainId, updatedFavorites);
     listenerApi.dispatch(setUserFavorites(result?.favorites));
     if (isAddition) {
       listenerApi.dispatch(

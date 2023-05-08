@@ -242,8 +242,12 @@ export const getIsItemInSale = async (chainId, tokenId) => {
 
 export const canAddedToShoppingList = async (chainId, tokenId, walletId) => {
   const nftContract = getNftContract(chainId);
-  const owner = await nftContract.ownerOf(tokenId);
-  if (owner.toLowerCase() === walletId) {
+  try {
+    const owner = await nftContract.ownerOf(tokenId);
+    if (owner.toLowerCase() === walletId) {
+      return false;
+    }
+  } catch (e) {
     return false;
   }
   return getIsItemInSale(chainId, tokenId);

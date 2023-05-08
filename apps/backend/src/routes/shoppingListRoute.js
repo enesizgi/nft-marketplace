@@ -106,7 +106,6 @@ router.get('/shopping', userValidator, async (req, res) => {
     const { id: walletId, chainId } = req.query;
     const cart = await getShoppingCart(walletId, chainId);
     const favorites = await getFavorites(walletId, chainId);
-    console.log({ cart, favorites });
     return res.send({ id: walletId, favorites, cart });
   } catch (err) {
     console.log(err);

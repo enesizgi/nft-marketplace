@@ -28,6 +28,7 @@ const ScButton = styled.button`
     background: none;
     border: 2px solid ${theme.blue};
     color: ${theme.blue};
+    box-shadow: ${theme.blue} 0px 0px 5px;
     > svg {
       fill: ${theme.blue};
     }
@@ -51,6 +52,10 @@ const ScButton = styled.button`
     background: ${theme.background};
     border: 3px solid red;
     box-shadow: 0 0 5px red;
+    color: #fff;
+    > svg {
+      fill: #fff;
+    }
     &:hover {
       background: red;
       box-shadow: 0 0 0;
