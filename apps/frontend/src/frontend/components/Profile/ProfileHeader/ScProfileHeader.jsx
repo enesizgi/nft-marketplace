@@ -84,11 +84,6 @@ const ScProfileHeader = styled.div`
         bottom: -5px;
       }
       > svg {
-        display: inline;
-        fill: #fff;
-        width: 20%;
-        height: 90%;
-        margin-right: 5px;
         transform: translateY(-2px);
       }
     }

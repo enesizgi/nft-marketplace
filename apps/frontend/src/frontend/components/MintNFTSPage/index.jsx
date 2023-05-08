@@ -1,11 +1,16 @@
-import React, { useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { Button, FormLabel, Input, Switch } from '@chakra-ui/react';
+import React, { useCallback, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { FormLabel, Input, Switch } from '@chakra-ui/react';
 import { ethers } from 'ethers';
 import API from '../../modules/api';
 import { getChainId, getMarketplaceContract, getNFTContract, getUserId } from '../../store/selectors';
 import ScMintNFTSPage from './ScMintNFTSPage';
 import { classNames } from '../../utils';
+import { setToast } from '../../store/uiSlice';
+import LoadingSpinner from '../LoadingSpinner';
+import NFTMinted from './NFTMinted';
+import Button from '../Button';
 
 // TODO: add form control and image removal
 const MintNFTSPage = () => {
@@ -15,7 +20,14 @@ const MintNFTSPage = () => {
   const [description, setDescription] = useState('');
   const [file, setFile] = useState(null);
   const [willBeListed, setWillBeListed] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [randomReady, setRandomReady] = useState(true);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [tokenId, setTokenId] = useState('');
+
   const fileUploadRef = useRef();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const userId = useSelector(getUserId);
   const marketplaceContract = useSelector(getMarketplaceContract);
@@ -40,8 +52,9 @@ const MintNFTSPage = () => {
     const uri = `ipfs://${cid}`;
     // mint nft
     const response = await (await nftContract.mintNFT(uri)).wait();
-    const { tokenId } = response.events[0].args;
-    await API.setTokenId(cid, tokenId.toNumber(), nftContract.address, chainId);
+    const { tokenId: _tokenId } = response.events[0].args;
+    setTokenId(_tokenId);
+    await API.setTokenId(cid, _tokenId.toNumber(), nftContract.address, chainId);
     // get tokenId of new nft
     return cid;
   };
@@ -59,6 +72,8 @@ const MintNFTSPage = () => {
     await (await marketplaceContract.makeItem(nftContract.address, id, listingPrice)).wait();
   };
   const createNFT = async () => {
+    setIsLoading(true);
+    setIsSuccess(false);
     if (willBeListed && !price) return;
     if (!file || !name || !description) return;
     try {
@@ -70,16 +85,26 @@ const MintNFTSPage = () => {
       });
       const response = await API.uploadToIPFS(metadata, formData);
       if (willBeListed) {
-        mintThenList(response);
+        await mintThenList(response);
       } else {
-        mintNFT(response);
+        await mintNFT(response);
       }
+      setIsSuccess(true);
     } catch (error) {
+      dispatch(
+        setToast({
+          title: 'NFT cannot be created.',
+          duration: 5000,
+          status: 'error'
+        })
+      );
       console.warn('ipfs uri upload error: ', error);
     }
+    setIsLoading(false);
   };
 
   const getRandomNFT = async () => {
+    setRandomReady(false);
     const response = await API.getRandomNFT();
     const imageResponse = await fetch(response.image);
     const blob = await imageResponse.blob();
@@ -89,25 +114,49 @@ const MintNFTSPage = () => {
     setDescription('Randomly generated NFT by NFTAO');
     setImage(url);
     setFile(imageFile);
+    setRandomReady(true);
   };
+
+  const handleGoToDetails = () => {
+    navigate(`/nft/${nftContract.address}/${tokenId.toString()}`);
+  };
+
+  const NFTDropContent = useCallback(() => {
+    if (!randomReady) {
+      return <LoadingSpinner message="Generating a random NFT" />;
+    }
+    if (image) {
+      return <img src={image} alt="nft-input" className="nftImage" />;
+    }
+    return (
+      <>
+        <span className="drop-title">Upload Your NFT</span>
+        <Button className="uploadButton" onClick={handleOpenFileUpload}>
+          Choose a File
+        </Button>
+        <input type="file" id="images" onChange={uploadToIPFS} accept="image/*" style={{ display: 'none' }} ref={fileUploadRef} />
+      </>
+    );
+  }, [image, randomReady]);
+
+  if (isLoading) {
+    return (
+      <div style={{ width: '100%', height: 'calc(100% - 100px)' }}>
+        <LoadingSpinner message="Creating NFT" />
+      </div>
+    );
+  }
+  if (isSuccess) {
+    return <NFTMinted price={price} name={name} image={image} onGoToDetails={handleGoToDetails} />;
+  }
 
   return (
     <ScMintNFTSPage className="mintContainer">
       <label htmlFor="images" className={classNames({ 'drop-container': true, withImage: !!image })}>
-        {image ? (
-          <img src={image} alt="nft-input" className="nftImage" />
-        ) : (
-          <>
-            <span className="drop-title">Upload Your NFT</span>
-            <Button colorScheme="linkedin" className="uploadButton" onClick={handleOpenFileUpload}>
-              Choose a File
-            </Button>
-            <input type="file" id="images" onChange={uploadToIPFS} accept="image/*" style={{ display: 'none' }} ref={fileUploadRef} />
-          </>
-        )}
+        <NFTDropContent />
       </label>
       <div className="formContainer">
-        <Button size="lg" colorScheme="linkedin" onClick={getRandomNFT}>
+        <Button className={classNames({ 'random-button': true, outline: true })} onClick={getRandomNFT}>
           Give me a random NFT
         </Button>
         <FormLabel className="input-flat" htmlFor="name">
@@ -125,6 +174,10 @@ const MintNFTSPage = () => {
           placeholder="Description"
           className="input-control"
         />
+        <div className="listSwitch">
+          <FormLabel htmlFor="list">List Item In Marketplace</FormLabel>
+          <Switch onChange={() => setWillBeListed(!willBeListed)} isChecked={willBeListed} colorScheme="linkedin" id="list" size="lg" />
+        </div>
         {willBeListed && (
           <>
             <FormLabel htmlFor="price" className="input-flat">
@@ -133,11 +186,7 @@ const MintNFTSPage = () => {
             <Input id="price" type="number" onChange={e => setPrice(e.target.value)} placeholder="Price in ETH" className="input-control" />
           </>
         )}
-        <div className="listSwitch">
-          <FormLabel htmlFor="list">List Item In Marketplace</FormLabel>
-          <Switch onChange={() => setWillBeListed(!willBeListed)} isChecked={willBeListed} colorScheme="linkedin" id="list" size="lg" />
-        </div>
-        <Button size="lg" colorScheme="linkedin" onClick={createNFT}>
+        <Button className="mint-nft-button" onClick={createNFT}>
           Mint NFT
         </Button>
       </div>

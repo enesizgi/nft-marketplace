@@ -40,6 +40,12 @@ const ScMintNFTSPage = styled.div`
       height: unset;
     }
   }
+  .random-button {
+    margin-bottom: 20px;
+  }
+  .uploadButton {
+    margin: 0;
+  }
 
   .formContainer {
     max-width: 450px;
@@ -65,11 +71,15 @@ const ScMintNFTSPage = styled.div`
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    margin: 20px 0 40px;
+    margin-bottom: 20px;
     & > label {
       font-size: 18px;
       margin: 0;
     }
+  }
+  .mint-nft-button {
+    margin-top: 20px;
+    margin-bottom: 30px;
   }
 `;
 

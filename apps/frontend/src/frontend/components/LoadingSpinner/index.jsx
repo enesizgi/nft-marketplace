@@ -10,6 +10,7 @@ const ScLoadingSpinner = Styled.div`
     height: 100%;
     min-height: 100px;
     min-width: 100px;
+    margin: auto;
  
     .loading-spinner {
       border: 8px solid rgba(0, 137, 168, 0.3);

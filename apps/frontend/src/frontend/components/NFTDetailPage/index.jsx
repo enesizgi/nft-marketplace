@@ -25,7 +25,11 @@ const NFTDetailPage = () => {
   }, [owner]);
 
   if (isLoading) {
-    return <LoadingSpinner />;
+    return (
+      <div style={{ width: '100%', height: 'calc(100% - 100px)' }}>
+        <LoadingSpinner message="Loading NFT" />
+      </div>
+    );
   }
 
   return (

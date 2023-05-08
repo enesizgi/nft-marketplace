@@ -77,6 +77,9 @@ const ScNavigationBar = styled.nav`
     }
     &.networkSelector {
       margin-left: auto;
+      @media screen and (max-width: 480px) {
+        margin-left: 30px;
+      }
       margin-right: 30px;
     }
   }
