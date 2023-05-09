@@ -70,7 +70,7 @@ const ScProfileHeader = styled.div`
       position: absolute;
       bottom: 0;
       right: 2%;
-      padding: 2px 5px;
+      padding: 2px 10px;
       font-size: 18px;
       height: 50px;
       max-width: 50%;
