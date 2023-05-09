@@ -17,7 +17,7 @@ class API {
 
     this.baseRequest =
       type =>
-      ({ endpoint, qs = {}, headers, body, timeout }) => {
+      ({ endpoint, qs = {}, headers, body, timeout, responseType = 'json' }) => {
         const fetchMethod = timeout ? this.fetchWithTimeout(timeout) : fetch;
 
         return fetchMethod(`${this.baseURL}${endpoint}${this.createQs(qs)}`, {
@@ -25,7 +25,7 @@ class API {
           ...(headers && { headers }),
           ...(body && { body })
         })
-          .then(response => response.json())
+          .then(response => (responseType === 'raw' ? response : response.json()))
           .catch(error => {
             console.warn(`Request to ${endpoint} returned ${error}.`);
             return null;
@@ -52,7 +52,8 @@ class API {
 
   getFromIPFS = async (cid, timeout) => this.getRequest({ endpoint: '/ipfs', qs: { cid }, timeout });
 
-  uploadToIPFS = async (metadata, formData) => this.postRequest({ endpoint: '/ipfs/upload', qs: { metadata }, body: formData });
+  uploadToIPFS = async (metadata, formData, responseType = 'json') =>
+    this.postRequest({ endpoint: '/ipfs/upload', qs: { metadata }, body: formData, responseType });
 
   getUserSlug = async id => this.getRequest({ endpoint: '/user/slug', qs: { id } });
 

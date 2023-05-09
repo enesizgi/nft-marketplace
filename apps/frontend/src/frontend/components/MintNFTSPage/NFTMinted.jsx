@@ -80,7 +80,7 @@ const ScNFTMinted = styled.div`
   }
 `;
 
-const NFTMinted = ({ price, image, name, onGoToDetails }) => (
+const NFTMinted = ({ price, image, name, onGoToDetails, reload }) => (
   <ScNFTMinted>
     <CheckIcon className="check-icon" />
     <p className="success-message">NFT is created successfully</p>
@@ -95,6 +95,9 @@ const NFTMinted = ({ price, image, name, onGoToDetails }) => (
     </div>
     <Button type="button" className="goToDetail" onClick={onGoToDetails}>
       Go to details
+    </Button>
+    <Button type="button" className="goToDetail" onClick={reload}>
+      Mint another one
     </Button>
   </ScNFTMinted>
 );

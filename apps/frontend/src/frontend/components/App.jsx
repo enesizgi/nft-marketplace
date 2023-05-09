@@ -7,7 +7,6 @@ import { setDeviceType } from '../store/uiSlice';
 import { getCurrentPath, getDeviceType } from '../store/selectors';
 import { DEVICE_TYPES, theme } from '../constants';
 import HomePage from './Home';
-import MintNFTSPage from './MintNFTSPage';
 import ListNFTSPage from './ListNFTS';
 import PurchasesPage from './Purchases';
 import NavigationBar from './NavigationBar';
@@ -23,6 +22,7 @@ import Landing from './Landing';
 import { classNames } from '../utils';
 import ShoppingCart from './ShoppingCart';
 import Toaster from './Toaster';
+import NFTMintReloader from './NFTMintReloader';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -68,7 +68,7 @@ const App = () => {
               <Routes>
                 <Route exact path="/" element={<HomePage />} />
                 <Route path="/user/*" element={<Profile />} />
-                <Route path="/mint-nfts" element={<MintNFTSPage />} />
+                <Route path="/mint-nfts" element={<NFTMintReloader />} />
                 <Route path="/my-listed-nfts" element={<ListNFTSPage />} />
                 <Route path="/my-purchases" element={<PurchasesPage />} />
                 <Route path="/nft/*" element={<NFTDetailPage />} />
