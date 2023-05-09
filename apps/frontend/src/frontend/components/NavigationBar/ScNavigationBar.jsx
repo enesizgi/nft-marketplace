@@ -16,7 +16,7 @@ const ScNavigationBar = styled.nav`
   &.isHomepage {
     background: transparent;
   }
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(5px);
 
   @media screen and (max-width: 768px) {
     height: 80px;

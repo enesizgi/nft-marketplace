@@ -7,15 +7,16 @@ import { ReactComponent as NFTAOTextLogo } from '../assets/nftao-text.svg';
 const ScLanding = styled.div`
   position: relative;
   @media screen and (max-width: 480px) {
-    height: 270px;
+    height: 200px;
   }
-  max-height: 350px;
+  max-height: 300px;
   min-width: 100%;
+  overflow: hidden;
 
   .nftao-text-logo {
     max-height: 170px;
     position: absolute;
-    top: 50%;
+    top: calc(50% + 25px);
     left: 50%;
     transform: translate(-50%, -50%);
 
@@ -24,7 +25,7 @@ const ScLanding = styled.div`
     }
 
     @media screen and (max-width: 480px) {
-      height: 80px;
+      height: calc(50% - 40px);
       width: auto;
     }
 
