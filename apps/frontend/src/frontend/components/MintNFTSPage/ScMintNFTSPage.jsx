@@ -36,13 +36,32 @@ const ScMintNFTSPage = styled.div`
       max-width: 80%;
       max-height: 80%;
       padding: 0;
-      width: unset;
-      height: unset;
+    }
+    .nftImage {
+      max-height: 100%;
+      width: auto;
     }
   }
-  .random-button {
+  .randomButtons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
     margin-bottom: 20px;
+    justify-content: center;
+    > button {
+      margin: 0 20px;
+      > svg {
+        fill: ${theme.blue};
+        height: 40px;
+        width: 40px;
+        transition: 0.2s;
+        &:hover {
+          transform: scale(1.2);
+        }
+      }
+    }
   }
+
   .uploadButton {
     margin: 0;
   }

@@ -6,7 +6,7 @@ import Button from '../Button';
 
 const ScNFTMinted = styled.div`
   width: 70%;
-  @media screen and (max-width: 480px) {
+  @media screen and (max-width: 768px) {
     width: 90%;
   }
   margin: 30px auto;
@@ -69,13 +69,26 @@ const ScNFTMinted = styled.div`
       }
     }
   }
-  .goToDetail {
-    font-size: 24px;
-    padding: 10px 20px;
-    width: unset;
-    height: unset;
-    @media screen and (max-width: 768px) {
-      font-size: 18px;
+
+  .nftMinted-footer {
+    display: flex;
+    @media screen and (max-width: 480px) {
+      flex-direction: column;
+    }
+    button {
+      font-size: 24px;
+      padding: 10px 20px;
+      width: unset;
+      height: unset;
+      @media screen and (max-width: 768px) {
+        font-size: 18px;
+      }
+    }
+    .goToDetail {
+      margin-right: 20px;
+      @media screen and (max-width: 480px) {
+        margin: 0 0 20px;
+      }
     }
   }
 `;
@@ -93,12 +106,14 @@ const NFTMinted = ({ price, image, name, onGoToDetails, reload }) => (
         <p className="nftPrice">{price}</p>
       </div>
     </div>
-    <Button type="button" className="goToDetail" onClick={onGoToDetails}>
-      Go to details
-    </Button>
-    <Button type="button" className="goToDetail" onClick={reload}>
-      Mint another one
-    </Button>
+    <div className="nftMinted-footer">
+      <Button className="goToDetail" onClick={onGoToDetails}>
+        Go to details
+      </Button>
+      <Button className="mintAnother" onClick={reload}>
+        Mint another one
+      </Button>
+    </div>
   </ScNFTMinted>
 );
 

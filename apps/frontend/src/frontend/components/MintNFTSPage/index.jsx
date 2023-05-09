@@ -11,6 +11,7 @@ import { setToast } from '../../store/uiSlice';
 import LoadingSpinner from '../LoadingSpinner';
 import NFTMinted from './NFTMinted';
 import Button from '../Button';
+import { ReactComponent as ResetIcon } from '../../assets/reset-icon.svg';
 
 // TODO: add form control and image removal
 // UPDATE from Enes: We can remove images by using reset button but removing only image would be nice. (Not so important though)
@@ -26,6 +27,8 @@ const MintNFTSPage = ({ reload }) => {
   const [randomReady, setRandomReady] = useState(true);
   const [isSuccess, setIsSuccess] = useState(false);
   const [tokenId, setTokenId] = useState('');
+
+  const hasNFTInfo = image || name || description || price;
 
   const fileUploadRef = useRef();
   const dispatch = useDispatch();
@@ -221,9 +224,16 @@ const MintNFTSPage = ({ reload }) => {
         <NFTDropContent />
       </label>
       <div className="formContainer">
-        <Button className={classNames({ 'random-button': true, outline: true })} onClick={getRandomNFT}>
-          Give me a random NFT
-        </Button>
+        <div className="randomButtons">
+          <Button className={classNames({ 'random-button': true, outline: true })} onClick={getRandomNFT}>
+            Generate random NFT
+          </Button>
+          {hasNFTInfo && (
+            <button type="button" className="mint-nft-button" onClick={reload}>
+              <ResetIcon />
+            </button>
+          )}
+        </div>
         <FormLabel className="input-flat" htmlFor="name">
           Name
         </FormLabel>
@@ -253,9 +263,6 @@ const MintNFTSPage = ({ reload }) => {
         )}
         <Button className="mint-nft-button" onClick={createNFT}>
           Mint NFT
-        </Button>
-        <Button className="mint-nft-button" onClick={reload}>
-          Reset
         </Button>
       </div>
     </ScMintNFTSPage>
