@@ -86,6 +86,9 @@ const NFTActionButtons = () => {
         await (await marketplaceContract.cancelAuction(auctionId)).wait();
       }
       await API.syncEvents({ chainId });
+      if (isOnAuction) {
+        await API.deleteBidsOfNft({ tokenId });
+      }
     } catch (error) {
       console.log(error);
     }

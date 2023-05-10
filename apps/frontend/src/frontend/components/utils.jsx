@@ -49,3 +49,51 @@ export const getNFTMetadata = async tokenId => {
   const m = await API.getFromIPFS(cid);
   return m || {};
 };
+
+export const getPermitSignature = async (signer, token, spender, value, deadline) => {
+  const signerAddress = await signer.getAddress();
+  const [nonce, name, version, chainId] = await Promise.all([token.nonces(signerAddress), token.name(), '1', signer.getChainId()]);
+
+  return ethers.utils.splitSignature(
+    // eslint-disable-next-line no-underscore-dangle
+    await signer._signTypedData(
+      {
+        name,
+        version,
+        chainId,
+        verifyingContract: token.address
+      },
+      {
+        Permit: [
+          {
+            name: 'owner',
+            type: 'address'
+          },
+          {
+            name: 'spender',
+            type: 'address'
+          },
+          {
+            name: 'value',
+            type: 'uint256'
+          },
+          {
+            name: 'nonce',
+            type: 'uint256'
+          },
+          {
+            name: 'deadline',
+            type: 'uint256'
+          }
+        ]
+      },
+      {
+        owner: signerAddress,
+        spender,
+        value,
+        nonce,
+        deadline
+      }
+    )
+  );
+};

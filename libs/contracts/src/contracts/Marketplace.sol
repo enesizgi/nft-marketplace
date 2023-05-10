@@ -30,9 +30,7 @@ contract Marketplace is ReentrancyGuard {
         uint tokenId;
         uint price;
         uint timeToEnd;
-        address payable winner;
         address payable seller;
-        uint deposited;
         bool claimed;
         bool canceled;
     }
@@ -83,11 +81,11 @@ contract Marketplace is ReentrancyGuard {
         uint auctionId
     );
 
-    event BidPlaced(
-        uint auctionId,
-        address bidder,
-        uint amount
-    );
+//    event BidPlaced(
+//        uint auctionId,
+//        address bidder,
+//        uint amount
+//    );
 
     constructor(uint _feePercent) {
         feeAccount = payable(msg.sender);
@@ -158,8 +156,6 @@ contract Marketplace is ReentrancyGuard {
             _price,
             _timeToEnd,
             payable(msg.sender),
-            payable(msg.sender),
-            0,
             false,
             false
         );
@@ -173,39 +169,40 @@ contract Marketplace is ReentrancyGuard {
         );
     }
 
-    function makeOffer(uint _auctionId) external payable nonReentrant {
-        require(_auctionId > 0, "Auction id should be bigger than zero.");
-        AuctionItem storage auctionItem = auctionItems[_auctionId];
-        require(msg.value > auctionItem.price, "Price should be greater than current price.");
-        require(block.timestamp < auctionItem.timeToEnd, "Auction should not be ended.");
-        uint previousDeposit = auctionItem.deposited;
-        address payable previousWinner = auctionItem.winner;
-        auctionItem.price = msg.value;
-        auctionItem.winner = payable(msg.sender);
-        auctionItem.deposited = msg.value;
-        if (previousDeposit > 0) {
-            previousWinner.transfer(previousDeposit);
-        }
-        emit BidPlaced(
-            _auctionId,
-            msg.sender,
-            msg.value
-        );
-    }
+//    function makeOffer(uint _auctionId) external payable nonReentrant {
+//        require(_auctionId > 0, "Auction id should be bigger than zero.");
+//        AuctionItem storage auctionItem = auctionItems[_auctionId];
+//        require(msg.value > auctionItem.price, "Price should be greater than current price.");
+//        require(block.timestamp < auctionItem.timeToEnd, "Auction should not be ended.");
+//        uint previousDeposit = auctionItem.deposited;
+//        address payable previousWinner = auctionItem.winner;
+//        auctionItem.price = msg.value;
+//        auctionItem.winner = payable(msg.sender);
+//        auctionItem.deposited = msg.value;
+//        if (previousDeposit > 0) {
+//            previousWinner.transfer(previousDeposit);
+//        }
+//        emit BidPlaced(
+//            _auctionId,
+//            msg.sender,
+//            msg.value
+//        );
+//    }
 
 
-    function claimNFT(uint _auctionId) external nonReentrant {
+    function claimNFT(IERC20Permit erc20, uint256 _tokenId, uint _auctionId,
+            uint256 deadline, address bidder, uint256 amount, uint8 _v, bytes32 _r, bytes32 _s) external nonReentrant {
         require(_auctionId > 0, "Auction id should be bigger than zero");
         AuctionItem storage auctionItem = auctionItems[_auctionId];
         require(block.timestamp >= auctionItem.timeToEnd, "Auction should end first.");
-        require(auctionItem.winner == msg.sender || auctionItem.seller == msg.sender, "Only winner or seller can run this function.");
+        // require(auctionItem.winner == msg.sender || auctionItem.seller == msg.sender, "Only winner or seller can run this function.");
         require(!auctionItem.claimed, "NFT is already claimed.");
 
         // Transfer NFT to winner and pay seller
-        auctionItem.nft.transferFrom(address(this), auctionItem.winner, auctionItem.tokenId);
-        if (auctionItem.deposited > 0) {
-            auctionItem.seller.transfer(auctionItem.deposited);
-        }
+        erc20.permit(bidder, address(this), amount, deadline, _v, _r, _s);
+        erc20.transferFrom(bidder, auctionItem.seller, amount);
+        auctionItem.nft.transferFrom(address(this), bidder, _tokenId);
+
         // Mark auction item as claimed
         auctionItem.claimed = true;
 
@@ -215,7 +212,7 @@ contract Marketplace is ReentrancyGuard {
             auctionItem.tokenId,
             auctionItem.price,
             auctionItem.seller,
-            auctionItem.winner
+            bidder
         );
     }
 
@@ -240,9 +237,9 @@ contract Marketplace is ReentrancyGuard {
         require(!item.claimed, "Auction is already claimed.");
         require(block.timestamp < item.timeToEnd, "Auction should not be ended.");
 
-        if (item.deposited > 0) {
-            payable(item.winner).transfer(item.deposited);
-        }
+//        if (item.deposited > 0) {
+//            payable(item.winner).transfer(item.deposited);
+//        }
 
         item.canceled = true;
 
