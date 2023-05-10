@@ -15,10 +15,13 @@ const ScCartItem = styled.div`
   box-shadow: 0 0 6px #fff;
   cursor: pointer;
   overflow: hidden;
+  height: 150px;
+  @media screen and (max-width: 480px) {
+    height: 100px;
+  }
   ${({ isLoaded }) =>
     !isLoaded
       ? `
-    height: 150px;
     padding-left: 0;
   `
       : ''}
@@ -29,9 +32,11 @@ const ScCartItem = styled.div`
   .nftImage {
     padding: 10px 0;
     align-self: center;
-    width: 30%;
+    width: 20%;
     margin-right: 20px;
+    height: 100%;
     & > img {
+      height: 100%;
       object-fit: contain;
     }
   }

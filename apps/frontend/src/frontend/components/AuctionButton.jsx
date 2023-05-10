@@ -19,6 +19,7 @@ import API from '../modules/api';
 
 const ScAuctionButton = styled.div`
   margin-bottom: 20px;
+  margin-top: 20px;
   border: 3px dashed ${({ theme }) => theme.blue};
   border-radius: 16px;
   padding: 16px;

@@ -236,8 +236,8 @@ export const getIsItemInSale = async (chainId, tokenId) => {
   if (!itemStatus || !Object.keys(itemStatus).length) {
     return false;
   }
-  const { canceled, claimed, sold } = itemStatus;
-  return !claimed && !sold && !canceled;
+  const { canceled, claimed, sold, auctionId } = itemStatus;
+  return !claimed && !sold && !canceled && !auctionId;
 };
 
 export const canAddedToShoppingList = async (chainId, tokenId, walletId) => {
