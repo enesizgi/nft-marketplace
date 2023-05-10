@@ -1,10 +1,11 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { getDeviceType, getUserId } from '../../store/selectors';
+import { getDeviceType, getListedItems, getUserId } from '../../store/selectors';
 import ListNFTSPage from '../ListNFTS';
 import SearchBar from '../SearchBar';
 import { DEVICE_TYPES } from '../../constants';
+import NFTShowcase from '../NFTShowcase';
 
 const ScHomePage = styled.div`
   padding: 0 16px;
@@ -25,6 +26,7 @@ const ScHomePage = styled.div`
 const HomePage = () => {
   const userId = useSelector(getUserId);
   const deviceType = useSelector(getDeviceType);
+  const listedItems = useSelector(getListedItems);
 
   return (
     <ScHomePage>
@@ -33,7 +35,7 @@ const HomePage = () => {
           <SearchBar />
         </div>
       )}
-      <ListNFTSPage profileId={userId} selectedTab="Home" />
+      {listedItems ? <NFTShowcase NFTs={listedItems} selectedTab="Home" /> : <ListNFTSPage profileId={userId} selectedTab="Home" />}
     </ScHomePage>
   );
 };
