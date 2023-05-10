@@ -135,7 +135,6 @@ const AuctionButton = () => {
     } catch (e) {
       console.log(e);
     }
->>>>>>> c8c5a1f (feat(backend): erc20 optimization on auction)
   };
 
   const claimNFTHandler = async () => {
