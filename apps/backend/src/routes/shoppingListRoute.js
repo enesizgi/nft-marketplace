@@ -42,8 +42,8 @@ router.post('/shopping/cart', userValidator, async (req, res) => {
   try {
     const { id: walletId, chainId } = req.query;
     const { cart } = req.body;
-    const filteredCart = cart.filter(async tokenId => canAddedToShoppingList(chainId, tokenId, walletId));
-    const result = await ShoppingList.updateOne(
+    const filteredCart = cart.filter(async tokenId => canAddedToShoppingList(chainId, tokenId, walletId)) ?? [];
+    const result = await ShoppingList.findOneAndUpdate(
       {
         walletId,
         chainId,
@@ -52,16 +52,13 @@ router.post('/shopping/cart', userValidator, async (req, res) => {
       {
         items: filteredCart
       },
-      { upsert: true }
-    );
-    if (result.acknowledged && result.modifiedCount > 0) {
-      return res.send({ id: walletId, cart: filteredCart });
-    }
-    return res.status(500).send();
+      { upsert: true, returnOriginal: false }
+    ).lean();
+    return res.send({ id: walletId, cart: result.items });
   } catch (err) {
     console.log(err);
-    return res.status(500).send();
   }
+  return res.status(500).send();
 });
 
 router.get('/shopping/favorites', userValidator, async (req, res) => {
@@ -79,25 +76,22 @@ router.post('/shopping/favorites', userValidator, async (req, res) => {
   try {
     const { id: walletId, chainId } = req.query;
     const { favorites } = req.body;
-    const result = await ShoppingList.updateOne(
+    const result = await ShoppingList.findOneAndUpdate(
       {
         walletId,
         chainId,
         listType: SHOPPING_LIST_TYPES.FAVORITES
       },
       {
-        items: favorites
+        items: favorites ?? []
       },
-      { upsert: true }
-    );
-    if (result.acknowledged && result.modifiedCount > 0) {
-      return res.send({ id: walletId, favorites });
-    }
-    return res.status(500).send();
+      { upsert: true, returnOriginal: false }
+    ).lean();
+    return res.send({ id: walletId, favorites: result.items });
   } catch (err) {
     console.log(err);
-    return res.status(500).send();
   }
+  return res.status(500).send();
 });
 
 router.get('/shopping', userValidator, async (req, res) => {
