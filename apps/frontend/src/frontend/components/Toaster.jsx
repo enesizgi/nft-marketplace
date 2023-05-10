@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useToast } from '@chakra-ui/react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,7 +10,13 @@ const Toaster = () => {
   const toast = useToast();
   const dispatch = useDispatch();
 
-  setTimeout(() => dispatch(setToast('')), 2000);
+  useEffect(() => {
+    if (toastInfo) {
+      setTimeout(() => dispatch(setToast('')), 2000);
+    }
+  }, [toastInfo]);
+
+  console.log({ toastInfo });
 
   const action = toastInfo
     ? toast({

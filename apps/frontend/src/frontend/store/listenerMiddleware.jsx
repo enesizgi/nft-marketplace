@@ -11,6 +11,7 @@ import { NFT_ACTIVITY_TYPES } from '../constants';
 import { getMarketplaceContractFn, getNFTContractFn } from '../components/utils';
 import { setNFT } from './nftSlice';
 import { initProfile } from './actionCreators';
+import { setListedItems } from './listingSlice';
 
 /* eslint-disable */
 const listenerMiddleware = createListenerMiddleware();
@@ -281,6 +282,20 @@ const handleUpdateCart = async (action, listenerApi) => {
   }
 };
 
+const handleSearch = async (action, listenerApi) => {
+  const searchTerm = action.payload;
+  if (!searchTerm) {
+    listenerApi.dispatch(setListedItems({}));
+    return;
+  }
+  const response = await API.search({ searchTerm });
+  if (response) {
+    listenerApi.dispatch(setListedItems(response));
+  } else {
+    listenerApi.dispatch(setListedItems({}));
+  }
+};
+
 const handleUpdateFavorites = async (action, listenerApi) => {
   try {
     const {
@@ -335,6 +350,11 @@ listenerMiddleware.startListening({
 listenerMiddleware.startListening({
   type: 'UPDATE_CART',
   effect: handleUpdateCart
+});
+
+listenerMiddleware.startListening({
+  type: 'SET_SEARCH_TERM',
+  effect: handleSearch
 });
 
 listenerMiddleware.startListening({

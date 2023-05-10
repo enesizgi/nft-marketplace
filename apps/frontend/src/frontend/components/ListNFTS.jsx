@@ -32,6 +32,9 @@ const ScListNFTSPage = styled.div`
           filter: brightness(120%);
         }
       }
+      .nftCard-container {
+        padding: 0 16px;
+      }
     }
 
     nav.indicators {

@@ -37,6 +37,10 @@ const ScNavigationBar = styled.nav`
       font-size: 18px;
     }
 
+    &:not(.accountBox) {
+      margin-right: 30px;
+    }
+
     &.logo {
       overflow: hidden;
       border: 0;
@@ -69,6 +73,16 @@ const ScNavigationBar = styled.nav`
       }
     }
 
+    &.searchBar {
+      margin-left: auto;
+    }
+
+    &.networkSelector {
+      @media screen and (min-width: 481px) and (max-width: 768px) {
+        margin-left: auto;
+      }
+    }
+
     &.accountBox {
       flex-shrink: 0;
       text-align: center;
@@ -79,17 +93,9 @@ const ScNavigationBar = styled.nav`
         width: 50px;
       }
     }
-    &.networkSelector {
-      margin-left: auto;
-      @media screen and (max-width: 480px) {
-        margin-left: 30px;
-      }
-      margin-right: 30px;
-    }
   }
 
   .cartIcon {
-    margin-right: 30px;
     background: none;
     padding: 8px;
     border-radius: 8px;

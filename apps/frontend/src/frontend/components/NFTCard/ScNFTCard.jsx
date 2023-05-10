@@ -69,10 +69,15 @@ const ScNFTCard = styled.div`
       padding: 5px 10px;
       height: 50%;
       width: 100%;
-      margin-bottom: 5px;
+      margin: 5px 0;
       display: flex;
       flex-direction: row;
       justify-content: space-between;
+      > span,
+      p {
+        display: flex;
+        align-items: center;
+      }
       &-seller {
         border: 0;
         background: inherit;

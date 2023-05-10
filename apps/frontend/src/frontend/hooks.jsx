@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export const useClickOutsideAlert = (ref, callback, args = []) => {
   useEffect(() => {
@@ -57,4 +57,17 @@ export function useDebounce(value, delay) {
     [value, delay] // Only re-call effect if value or delay changes
   );
   return debouncedValue;
+}
+
+export function useEffectIgnoreFirst(fn, deps) {
+  const changed = useRef(false);
+
+  useEffect(() => {
+    if (!changed.current) {
+      changed.current = true;
+      return;
+    }
+    // eslint-disable-next-line consistent-return
+    return fn();
+  }, deps);
 }

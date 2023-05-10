@@ -11,6 +11,7 @@ import NetworkSelector from './NetworkSelector';
 import ScNavigationBar from './ScNavigationBar';
 import { ReactComponent as LogoSvg } from '../../assets/nftao-logo.svg';
 import { ReactComponent as CartIcon } from '../../assets/cart-icon.svg';
+import SearchBar from '../SearchBar';
 
 const NavigationBar = () => {
   const dispatch = useDispatch();
@@ -47,25 +48,11 @@ const NavigationBar = () => {
       >
         <LogoSvg />
       </Link>
-
-      {/* Meaningless until we have that pages...
-      !isDesktop && (
-        <button
-          type="button"
-          className={classNames({
-            navigationItem: true,
-            menu: true,
-            isDesktop,
-            isTablet,
-            isMobile
-          })}
-          onClick={toggleLeftPanel}
-        >
-          <MenuIcon className="navigation-item menu-icon" alt="menuIcon" />
-        </button>
-      ) */}
-      {/* TODO: consider overflow in navigation bar when search is implemented. */}
-      {/* <Search /> */}
+      {isDesktop && (
+        <div className="navigationItem searchBar">
+          <SearchBar />
+        </div>
+      )}
       <div className="navigationItem button networkSelector">
         <NetworkSelector />
       </div>
