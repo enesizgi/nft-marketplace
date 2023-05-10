@@ -37,7 +37,7 @@ const ScNavigationBar = styled.nav`
       font-size: 18px;
     }
 
-    &:not(.accountBox) {
+    &:not(.accountBox, .connect) {
       margin-right: 30px;
     }
 

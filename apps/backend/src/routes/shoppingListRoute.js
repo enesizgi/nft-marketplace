@@ -12,7 +12,10 @@ const getShoppingCart = async (walletId, chainId) => {
     return [];
   }
   const { items } = result;
-  const cartItems = items.filter(async tokenId => canAddedToShoppingList(chainId, tokenId, walletId));
+
+  const cartItems = [];
+  items.forEach(tokenId => canAddedToShoppingList(chainId, tokenId, walletId).then(res => res && cartItems.push[tokenId]));
+
   if (cartItems.length !== items.length) {
     await ShoppingList.updateOne({ walletId, chainId, listType: SHOPPING_LIST_TYPES.CART }, { items: cartItems });
   }
@@ -95,7 +98,6 @@ router.post('/shopping/favorites', userValidator, async (req, res) => {
 });
 
 router.get('/shopping', userValidator, async (req, res) => {
-  console.log('reaches');
   try {
     const { id: walletId, chainId } = req.query;
     const cart = await getShoppingCart(walletId, chainId);

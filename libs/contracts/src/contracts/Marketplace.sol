@@ -122,23 +122,36 @@ contract Marketplace is ReentrancyGuard {
         );
     }
 
-    function purchaseItem(uint _itemId) external payable nonReentrant {
-        uint _totalPrice = getTotalPrice(_itemId);
-        Item storage item = items[_itemId];
-        require(_itemId > 0 && _itemId <= itemCount, "item doesn't exist");
-        require(msg.value >= _totalPrice, "not enough ether to cover item price and market fee");
-        require(!item.sold && !item.canceled, "item already sold or canceled");
-        // pay seller and feeAccount
-        (bool successSeller, ) = item.seller.call{value: item.price}("");
-        require(successSeller, "failed to send Ether to seller");
-        (bool successFeeAccount, ) = feeAccount.call{value: _totalPrice - item.price}("");
+    function purchaseItem(uint[] calldata _itemIds) external payable nonReentrant {
+        uint purchasedItemCount = _itemIds.length;
+        uint totalItemPrice = 0;
+
+        for (uint i = 0; i < purchasedItemCount; i++) {
+            uint _itemId = _itemIds[i];
+            Item memory item = items[_itemId];
+            totalItemPrice += item.price;
+
+            require(_itemId > 0 && _itemId <= itemCount, "item doesn't exist");
+            require(!item.sold && !item.canceled, "item already sold or canceled");
+        }
+
+        require(totalItemPrice * (feePercent + 100) / 100 <= msg.value, "not enough ether to cover total item prices and market fees");
+
+        for (uint i = 0; i < purchasedItemCount; i++) {
+            uint itemId = _itemIds[i];
+            Item storage item = items[itemId];
+            (bool successSeller, ) = item.seller.call{value: item.price}("");
+            require(successSeller, "failed to send Ether to seller");
+            // update item to sold
+            item.sold = true;
+            // transfer nft to buyer
+            item.nft.safeTransferFrom(address(this), msg.sender, item.tokenId);
+            // emit Bought event
+            emit Bought(itemId, address(item.nft), item.tokenId, item.price, item.seller, msg.sender);
+        }
+
+        (bool successFeeAccount, ) = feeAccount.call{value: (totalItemPrice * feePercent) / 100}("");
         require(successFeeAccount, "failed to send Ether to feeAccount");
-        // update item to sold
-        item.sold = true;
-        // transfer nft to buyer
-        item.nft.safeTransferFrom(address(this), msg.sender, item.tokenId);
-        // emit Bought event
-        emit Bought(_itemId, address(item.nft), item.tokenId, item.price, item.seller, msg.sender);
     }
 
     function getTotalPrice(uint _itemId) view public returns(uint){

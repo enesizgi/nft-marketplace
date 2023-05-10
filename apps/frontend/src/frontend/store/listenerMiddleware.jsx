@@ -265,7 +265,6 @@ const handleUpdateCart = async (action, listenerApi) => {
     if (isAddition) {
       listenerApi.dispatch(
         setToast({
-          id: new Date().getTime(),
           title: 'Item added to your cart.',
           status: 'success'
         })
@@ -273,7 +272,6 @@ const handleUpdateCart = async (action, listenerApi) => {
     } else if (currentPath !== '/cart') {
       listenerApi.dispatch(
         setToast({
-          id: new Date().getTime(),
           title: 'Item removed from your cart.',
           status: 'error'
         })
@@ -312,7 +310,6 @@ const handleUpdateFavorites = async (action, listenerApi) => {
     if (isAddition) {
       listenerApi.dispatch(
         setToast({
-          id: new Date().getTime(),
           title: 'Item added to your favorites.',
           status: 'success'
         })
@@ -320,7 +317,6 @@ const handleUpdateFavorites = async (action, listenerApi) => {
     } else if (currentPath !== '/cart') {
       listenerApi.dispatch(
         setToast({
-          id: new Date().getTime(),
           title: 'Item removed from your favorites.',
           status: 'error'
         })

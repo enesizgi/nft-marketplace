@@ -1,8 +1,10 @@
 import express from 'express';
 import Nft from '../models/nft';
+import NftStatus from '../models/nft_status';
 import { apiBaseURL, apiProtocol } from '../constants';
 import Metadata from '../models/metadata';
 import RandomNft from '../models/randomNft';
+import { getMarketplaceContract } from '../utils';
 
 const router = express.Router();
 
@@ -28,11 +30,31 @@ router.get('/nft', async (req, res) => {
 
     if (metadata.length === 0) return res.status(404).send();
 
+    const marketplaceContract = getMarketplaceContract(req.query.network);
+
+    const nftStatus = await NftStatus.find({
+      tokenId: { $in: tokenIds }
+    }).lean();
+
+    const storeInfo = await nftStatus.reduce(async (_prev, nft) => {
+      const prev = await _prev;
+      if (nft.itemId) {
+        const price = await marketplaceContract.getTotalPrice(nft.itemId);
+        return { ...prev, [nft.tokenId]: { price, itemId: nft.itemId } };
+      }
+      return prev;
+    }, {});
+
     return res.json(
       nfts.map(nft => {
         const pathList = JSON.parse(nft.path) || [];
         const realPath = pathList.join('/');
-        return { ...nft, path: `${apiProtocol}://${apiBaseURL}/${realPath}`, metadata: metadata.find(m => m.cid === nft.cid) };
+        return {
+          ...nft,
+          path: `${apiProtocol}://${apiBaseURL}/${realPath}`,
+          metadata: metadata.find(m => m.cid === nft.cid),
+          ...(storeInfo && { ...storeInfo[nft.tokenId] })
+        };
       })
     );
   } catch (err) {
