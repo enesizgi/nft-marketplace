@@ -1,6 +1,5 @@
 import { createListenerMiddleware, isAnyOf } from '@reduxjs/toolkit';
 import { ethers } from 'ethers';
-import { CONTRACTS } from 'contracts';
 import { setCart, setUser, setUserFavorites, setShoppingLists } from './userSlice';
 import API from '../modules/api';
 import { changeNetwork, generateSignatureData, serializeBigNumber } from '../utils';
@@ -142,16 +141,16 @@ const handleInitNFTState = async (action, listenerApi) => {
     type: 'Listing',
     limit: 1
   });
-  let bidEvents = [];
-  if (nftStatusAuction.length > 0) {
-    bidEvents = await API.getEvents({
-      network: chainId,
-      marketplaceContract: CONTRACTS[chainId].MARKETPLACE.address,
-      type: 'BidPlaced',
-      auctionId: nftStatusAuction[0].auctionId
-    });
-    bidEvents = bidEvents.sort((a, b) => ethers.BigNumber.from(b.amount) - ethers.BigNumber.from(a.amount));
-  }
+  // let bidEvents = [];
+  // if (nftStatusAuction.length > 0) {
+  //   bidEvents = await API.getEvents({
+  //     network: chainId,
+  //     marketplaceContract: CONTRACTS[chainId].MARKETPLACE.address,
+  //     type: 'BidPlaced',
+  //     auctionId: nftStatusAuction[0].auctionId
+  //   });
+  //   bidEvents = bidEvents.sort((a, b) => ethers.BigNumber.from(b.amount) - ethers.BigNumber.from(a.amount));
+  // }
   const isSameToken = tokenId === currentTokenId?.toString();
   const metadata = currentMetadata && isSameToken ? currentMetadata : await API.getFromIPFS(cid);
 
@@ -217,15 +216,32 @@ const handleInitNFTState = async (action, listenerApi) => {
     })
     .filter(item => item);
 
+  const nftBids = await API.getBids(tokenId);
+  const bids = nftBids
+    ?.map(e => {
+      if (!e.bidder || e.bidder === ethers.constants.AddressZero) {
+        return;
+      }
+      return {
+        bidder: e.bidder.toLowerCase(),
+        amount: serializeBigNumber(ethers.BigNumber.from(e.amount.toString())),
+        deadline: serializeBigNumber(ethers.BigNumber.from(e.deadline.toString())),
+        v: e.v,
+        r: e.r,
+        s: e.s,
+        createdAt: e.doc_created_at
+      };
+    })
+    .filter(item => item)
+    .sort((a, b) => ethers.BigNumber.from(b.amount) - ethers.BigNumber.from(a.amount));
+
   const isListed = nftStatusListing.length > 0 && !nftStatusListing[0].sold && !nftStatusListing[0].canceled;
   const isOnAuction = nftStatusAuction.length > 0 && !nftStatusAuction[0].claimed && !nftStatusAuction[0].canceled;
 
   let seller = isListed ? nftStatusListing[0].seller.toLowerCase() : '';
   seller = isOnAuction ? nftStatusAuction[0].seller.toLowerCase() : seller;
 
-  listenerApi.dispatch(
-    setNFT({ ...finalItem, transactions: nftTransactionData, offers: offers, bids: bidEvents, owner, seller, isListed, isOnAuction })
-  );
+  listenerApi.dispatch(setNFT({ ...finalItem, transactions: nftTransactionData, offers: offers, bids: bids, owner, seller, isListed, isOnAuction }));
   listenerApi.dispatch(setLoading(false));
 };
 

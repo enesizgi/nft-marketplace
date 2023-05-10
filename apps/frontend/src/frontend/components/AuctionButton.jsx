@@ -8,14 +8,17 @@ import {
   getAuctionId,
   getChainId,
   getMarketplaceContract,
+  getNFTBids,
   getNFTSeller,
   getPriceOfNFT,
   getTimeToEnd,
+  getTokenId,
   getUserId,
-  getWinner
+  getwETHContract
 } from '../store/selectors';
 import { loadNFT } from '../store/uiSlice';
 import API from '../modules/api';
+import { getPermitSignature } from './utils';
 
 const ScAuctionButton = styled.div`
   margin-bottom: 20px;
@@ -87,10 +90,12 @@ const ScAuctionButton = styled.div`
 const AuctionButton = () => {
   const dispatch = useDispatch();
   const marketplaceContract = useSelector(getMarketplaceContract);
+  const wEthContract = useSelector(getwETHContract);
   const userId = useSelector(getUserId);
   const auctionId = useSelector(getAuctionId);
-  const price = useSelector(getPriceOfNFT);
-  const winner = useSelector(getWinner);
+  const tokenId = useSelector(getTokenId);
+  const basePrice = useSelector(getPriceOfNFT);
+  const bids = useSelector(getNFTBids);
   const seller = useSelector(getNFTSeller);
   const chainId = useSelector(getChainId);
 
@@ -99,12 +104,38 @@ const AuctionButton = () => {
 
   const navigate = useNavigate();
 
-  const makeBidHandler = async () => {
-    if (makeBid <= parseInt(ethers.utils.formatEther(price.toString()), 10)) return;
+  const winner = bids.length > 0 ? bids[0].bidder : seller;
+  const price = bids.length > 0 ? bids[0].amount : basePrice;
+
+  const handleMakeBid = async () => {
+    if (makeBid <= parseInt(ethers.utils.formatEther(price.toString()), 10)) {
+      console.log('Not enough price to make bid');
+      return;
+    }
     const bidPrice = ethers.utils.parseEther(makeBid.toString());
-    await (await marketplaceContract.makeOffer(auctionId, { value: bidPrice })).wait();
-    await API.syncEvents({ chainId });
-    dispatch(loadNFT());
+
+    const wETHbalance = await wEthContract.balanceOf(userId);
+
+    if (wETHbalance.lt(bidPrice)) {
+      console.log('Not enough wETH');
+      return;
+    }
+
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const deadline = new Date(timeToEnd).getTime() + 5; // timetoend check
+
+    try {
+      const { v, r, s } = await getPermitSignature(signer, wEthContract, marketplaceContract.address, bidPrice, deadline);
+      const vStr = ethers.utils.hexlify(v);
+      const rStr = ethers.utils.hexlify(r);
+      const sStr = ethers.utils.hexlify(s);
+      await API.createBid({ bidder: userId, amount: bidPrice, tokenId, deadline, v: vStr, r: rStr, s: sStr });
+      dispatch(loadNFT());
+    } catch (e) {
+      console.log(e);
+    }
+>>>>>>> c8c5a1f (feat(backend): erc20 optimization on auction)
   };
 
   const claimNFTHandler = async () => {
@@ -128,7 +159,7 @@ const AuctionButton = () => {
       {auctionId && !isAuctionOver && (
         <>
           <p className="item">{`Sale ends at ${auctionEndTime}`}</p>
-          <p className="item price">{ethers.utils.formatEther(price.toString())} ETH</p>
+          <p className="item price">{ethers.utils.formatEther(price)} ETH</p>
         </>
       )}
       {auctionId && isAuctionOver && (
@@ -152,7 +183,7 @@ const AuctionButton = () => {
             <Input type="number" id="bid-price" className="bid-price" placeholder="Price in ETH" onChange={e => setMakeBid(e.target.value)} />
           </p>
           <p className="item">
-            <Button className="nftActionButton" onClick={makeBidHandler}>
+            <Button className="nftActionButton" onClick={handleMakeBid}>
               Make Bid
             </Button>
           </p>

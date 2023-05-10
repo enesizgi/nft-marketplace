@@ -29,7 +29,7 @@ const BidActivity = () => {
 
   const getFormattedEther = amount => {
     try {
-      return ethers.utils.formatEther(amount.toString());
+      return ethers.utils.formatEther(amount);
     } catch (e) {
       console.log(e);
       return 0;
@@ -64,7 +64,7 @@ const BidActivity = () => {
           <AddressDisplay address={bid.bidder} isShortAddress />
         </ScContractAddress>
       </td>
-      <td className="nft-activity-content-item">{createAgoDateString(new Date(bid.doc_created_at), now)}</td>
+      <td className="nft-activity-content-item">{createAgoDateString(new Date(bid.createdAt), now)}</td>
     </tr>
   ));
 
