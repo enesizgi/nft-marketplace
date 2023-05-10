@@ -147,15 +147,20 @@ const MintNFTSPage = ({ reload }) => {
 
   const getRandomNFT = async () => {
     setRandomReady(false);
-    const response = await API.getRandomNFT();
-    const imageResponse = await fetch(response.image);
-    const blob = await imageResponse.blob();
-    const url = URL.createObjectURL(blob);
-    const imageFile = new File([blob], 'image.jpg', { type: 'image/jpeg' });
-    if (!name) setName('NFTAO');
-    if (!description) setDescription('Randomly generated NFT by NFTAO');
-    setImage(url);
-    setFile(imageFile);
+    try {
+      const response = await API.getRandomNFT();
+      const imageResponse = await fetch(response.image);
+      const blob = await imageResponse.blob();
+      const url = URL.createObjectURL(blob);
+      const imageFile = new File([blob], 'image.jpg', { type: 'image/jpeg' });
+      if (!name) setName('NFTAO');
+      if (!description) setDescription('Randomly generated NFT by NFTAO');
+      setImage(url);
+      setFile(imageFile);
+    } catch (e) {
+      console.error(e);
+      dispatchToast('Please try again.');
+    }
     setRandomReady(true);
   };
 
