@@ -18,7 +18,7 @@ import {
 } from '../store/selectors';
 import { loadNFT, setToast } from '../store/uiSlice';
 import API from '../modules/api';
-import { getPermitSignature } from './utils';
+import { checkUserRejectedHandler, dispatchToastHandler, waitConfirmHandler, waitTransactionHandler, getPermitSignature } from './utils';
 
 const ScAuctionButton = styled.div`
   margin-bottom: 20px;
@@ -107,9 +107,13 @@ const AuctionButton = () => {
   const winner = bids.length > 0 ? bids[0].bidder : seller;
   const price = bids.length > 0 ? ethers.BigNumber.from(bids[0].amount).toString() : basePrice;
 
+  const dispatchToast = dispatchToastHandler(dispatch);
+  const checkForUserRejectedError = checkUserRejectedHandler(dispatchToast);
+  const waitForTransaction = waitTransactionHandler(null, dispatchToast);
+
   const handleMakeBid = async () => {
     if (makeBid <= parseInt(ethers.utils.formatEther(price.toString()), 10)) {
-      console.log('Not enough price to make bid');
+      dispatchToast('Not enough price to make bid', 'error', 2000);
       return;
     }
     const bidPrice = ethers.utils.parseEther(makeBid.toString());
@@ -117,13 +121,7 @@ const AuctionButton = () => {
     const wETHbalance = await wEthContract.balanceOf(userId);
 
     if (wETHbalance.lt(bidPrice)) {
-      dispatch(
-        setToast({
-          title: 'Not enough wETH',
-          duration: 2000,
-          status: 'error'
-        })
-      );
+      dispatchToast('Not enough wETH', 'error', 2000);
       return;
     }
 
@@ -137,15 +135,21 @@ const AuctionButton = () => {
       const rStr = ethers.utils.hexlify(r);
       const sStr = ethers.utils.hexlify(s);
       await API.createBid({ bidder: userId, amount: bidPrice, tokenId, deadline, v: vStr, r: rStr, s: sStr });
-      dispatch(loadNFT());
     } catch (e) {
       console.log(e);
     }
+    dispatch(loadNFT());
   };
 
   const claimNFTHandler = async () => {
-    await (await marketplaceContract.claimNFT(auctionId)).wait();
-    await API.syncEvents({ chainId });
+    try {
+      const waitForConfirm = waitConfirmHandler(async () => marketplaceContract.claimNFT(auctionId), checkForUserRejectedError);
+      const transaction = await waitForConfirm();
+      if (transaction != null) await waitForTransaction(transaction);
+      await API.syncEvents({ chainId });
+    } catch (e) {
+      console.error(e);
+    }
     dispatch(loadNFT());
   };
   const now = Math.floor(new Date().getTime() / 1000);

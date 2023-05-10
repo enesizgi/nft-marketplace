@@ -25,6 +25,7 @@ import { MODAL_TYPES } from '../../constants';
 import { updateCart } from '../../store/actionCreators';
 import { classNames, compare } from '../../utils';
 import API from '../../modules/api';
+import { checkUserRejectedHandler, dispatchToastHandler, waitConfirmHandler, waitTransactionHandler } from '../utils';
 
 const ScNFTActionButtons = styled.div`
   width: 100%;
@@ -66,8 +67,17 @@ const NFTActionButtons = () => {
 
   const isOwner = seller ? compare(seller, userId) : compare(owner, userId);
 
+  const dispatchToast = dispatchToastHandler(dispatch);
+  const checkForUserRejectedError = checkUserRejectedHandler(dispatchToast);
+  const waitForTransaction = waitTransactionHandler(null, dispatchToast);
+
   const handleBuy = async () => {
-    await (await marketplaceContract.purchaseItem(itemId, { value: ethers.utils.parseEther(formattedPrice) })).wait();
+    const waitForConfirm = waitConfirmHandler(
+      async () => marketplaceContract.purchaseItem(itemId, { value: ethers.utils.parseEther(formattedPrice) }),
+      checkForUserRejectedError
+    );
+    const transaction = await waitForConfirm();
+    if (transaction != null) await waitForTransaction(transaction);
     await API.syncEvents({ chainId });
     dispatch(loadNFT());
   };
@@ -81,9 +91,13 @@ const NFTActionButtons = () => {
   const handleCancel = async () => {
     try {
       if (isListed) {
-        await (await marketplaceContract.cancelOffered(itemId)).wait();
+        const waitForConfirm = waitConfirmHandler(async () => marketplaceContract.cancelOffered(itemId), checkForUserRejectedError);
+        const transaction = await waitForConfirm();
+        if (transaction != null) await waitForTransaction(transaction);
       } else if (isOnAuction) {
-        await (await marketplaceContract.cancelAuction(auctionId)).wait();
+        const waitForConfirm = waitConfirmHandler(async () => marketplaceContract.cancelAuction(auctionId), checkForUserRejectedError);
+        const transaction = await waitForConfirm();
+        if (transaction != null) await waitForTransaction(transaction);
       }
       await API.syncEvents({ chainId });
       if (isOnAuction) {

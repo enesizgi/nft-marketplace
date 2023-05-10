@@ -35,7 +35,7 @@ export const waitConfirmHandler = (handler, checkForUserRejectedError, setLoadin
 
 export const waitTransactionHandler = (setLoadingMessage, dispatchToast) => async transaction => {
   try {
-    setLoadingMessage('Waiting for block confirmation...');
+    if (setLoadingMessage) setLoadingMessage('Waiting for block confirmation...');
     const receipt = await transaction.wait();
     dispatchToast('Transaction completed.', 'success');
     return receipt;

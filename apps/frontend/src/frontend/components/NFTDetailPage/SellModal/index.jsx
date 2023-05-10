@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ethers } from 'ethers';
 import { getChainId, getMarketplaceContract, getNFTContract, getUserId } from '../../../store/selectors';
-import { getNFTMetadata } from '../../utils';
+import { checkUserRejectedHandler, dispatchToastHandler, getNFTMetadata, waitConfirmHandler, waitTransactionHandler } from '../../utils';
 import { NFT_LISTING_TYPES } from '../../../constants';
 import Button from '../../Button';
 import { loadNFT, setActiveModal, setLoading } from '../../../store/uiSlice';
@@ -25,6 +25,10 @@ const SellModal = ({ tokenId }) => {
 
   const dispatch = useDispatch();
 
+  const dispatchToast = dispatchToastHandler(dispatch);
+  const checkForUserRejectedError = checkUserRejectedHandler(dispatchToast);
+  const waitForTransaction = waitTransactionHandler(null, dispatchToast);
+
   useEffect(() => {
     const runAsync = async () => {
       const metadata = await getNFTMetadata(userId, chainId, tokenId);
@@ -37,20 +41,41 @@ const SellModal = ({ tokenId }) => {
     dispatch(setLoading({ isLoading: true, message: 'The item is getting prepared for sale...' }));
     const isApproved = await nftContract.isApprovedForAll(userId, marketplaceContract.address);
     if (!isApproved) {
-      await (await nftContract.setApprovalForAll(marketplaceContract.address, true)).wait();
+      const waitForConfirm = waitConfirmHandler(
+        async () => nftContract.setApprovalForAll(marketplaceContract.address, true),
+        checkForUserRejectedError
+      );
+      const transaction = await waitForConfirm();
+      if (transaction != null) {
+        await waitForTransaction(transaction);
+        const receipt = await waitForTransaction(transaction);
+        if (receipt == null) {
+          dispatch(setLoading(false));
+          dispatch(loadNFT());
+          return null;
+        }
+      }
     }
     // add nft to marketplace
     const listingPrice = ethers.utils.parseEther(sellPrice.toString());
     try {
-      await (await marketplaceContract.makeItem(nftContract.address, tokenId, listingPrice)).wait();
+      const waitForConfirm = waitConfirmHandler(
+        async () => marketplaceContract.makeItem(nftContract.address, tokenId, listingPrice),
+        checkForUserRejectedError
+      );
+      const transaction = await waitForConfirm();
       await API.syncEvents({ chainId });
-      dispatch(setLoading(false));
-      dispatch(setActiveModal(''));
-      dispatch(loadNFT());
+      if (transaction != null) {
+        await waitForTransaction(transaction);
+        dispatch(setActiveModal(''));
+      }
     } catch (e) {
-      setError('Transaction denied!');
-      dispatch(setLoading(false));
+      console.error(e);
+      return null;
     }
+    dispatch(loadNFT());
+    dispatch(setLoading(false));
+    return true;
   };
 
   const handleStartAuction = async () => {
@@ -62,19 +87,38 @@ const SellModal = ({ tokenId }) => {
     // approve marketplace to spend nft
     const isApproved = await nftContract.isApprovedForAll(userId, marketplaceContract.address);
     if (!isApproved) {
-      await (await nftContract.setApprovalForAll(marketplaceContract.address, true)).wait();
+      const waitForConfirm = waitConfirmHandler(
+        async () => nftContract.setApprovalForAll(marketplaceContract.address, true),
+        checkForUserRejectedError
+      );
+      const transaction = await waitForConfirm();
+      if (transaction != null) {
+        await waitForTransaction(transaction);
+        const receipt = await waitForTransaction(transaction);
+        if (receipt == null) {
+          dispatch(setLoading(false));
+          dispatch(loadNFT());
+          await API.syncEvents({ chainId });
+          dispatch(setActiveModal(''));
+          return;
+        }
+      }
     }
 
     try {
-      await (await marketplaceContract.startAuction(nftContract.address, tokenId, minimumBidPrice, untilDate)).wait();
+      const waitForConfirm = waitConfirmHandler(
+        async () => marketplaceContract.startAuction(nftContract.address, tokenId, minimumBidPrice, untilDate),
+        checkForUserRejectedError
+      );
+      const transaction = await waitForConfirm();
+      if (transaction != null) await waitForTransaction(transaction);
       await API.syncEvents({ chainId });
-      dispatch(setLoading(false));
-      dispatch(setActiveModal(''));
-      dispatch(loadNFT());
     } catch (e) {
-      setError('Transaction denied!');
-      dispatch(setLoading(false));
+      console.error(e);
     }
+    dispatch(loadNFT());
+    dispatch(setLoading(false));
+    dispatch(setActiveModal(''));
   };
 
   const handleSellButtonClick = () => {
