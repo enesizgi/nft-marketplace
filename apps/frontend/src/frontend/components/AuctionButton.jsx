@@ -103,7 +103,6 @@ const AuctionButton = () => {
     if (makeBid <= parseInt(ethers.utils.formatEther(price.toString()), 10)) return;
     const bidPrice = ethers.utils.parseEther(makeBid.toString());
     await (await marketplaceContract.makeOffer(auctionId, { value: bidPrice })).wait();
-    await (await marketplaceContract.makeOffer(auctionId, { value: bidPrice })).wait();
     await API.syncEvents({ chainId });
     dispatch(loadNFT());
   };
