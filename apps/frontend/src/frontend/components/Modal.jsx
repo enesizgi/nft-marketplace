@@ -31,6 +31,9 @@ const ScModal = styled.div`
     padding: 60px 30px 27px;
     overflow: hidden;
     background: ${theme.background};
+    &.isLoading {
+      background: none;
+    }
     border-radius: 10px;
     position: relative;
     max-height: 90%;
@@ -107,13 +110,16 @@ const Modal = ({ children, onClose, fullPage, loadingInfo = {} }) => {
       <div
         className={classNames({
           modalContent: true,
-          fullPage
+          fullPage,
+          isLoading
         })}
         ref={modalRef}
       >
-        <button type="button" onClick={onClose} className="modal-close">
-          <CloseIcon />
-        </button>
+        {!isLoading && (
+          <button type="button" onClick={onClose} className="modal-close">
+            <CloseIcon />
+          </button>
+        )}
         {isLoading ? <LoadingSpinner message={message} /> : children}
       </div>
     </ScModal>,

@@ -22,6 +22,7 @@ const ScProfileEditModal = styled(FormControl)`
     border-color: #969696;
   }
   label {
+    white-space: nowrap;
     @media screen and (max-width: 480px) {
       align-self: flex-start;
     }

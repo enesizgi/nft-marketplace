@@ -157,13 +157,11 @@ const ProfileEditModal = ({ profile }) => {
             'no-photo': !currentProfile.profilePhoto
           })}
         >
+          <FormLabel htmlFor="profilePhoto">Profile Photo</FormLabel>
           {currentProfile.profilePhoto && (
-            <>
-              <FormLabel htmlFor="profilePhoto">Profile Photo</FormLabel>
-              <div className="profilePhoto-container">
-                <img className="profilePhoto" alt="profilePhoto" id="profilePhoto" src={currentProfile.profilePhoto} />
-              </div>
-            </>
+            <div className="profilePhoto-container">
+              <img className="profilePhoto" alt="profilePhoto" id="profilePhoto" src={currentProfile.profilePhoto} />
+            </div>
           )}
           <div className="upload-button-container">
             <Button size={buttonSize} className="outline" onClick={handleOpenProfilePhotoUpload}>
@@ -179,13 +177,11 @@ const ProfileEditModal = ({ profile }) => {
             'no-photo': !currentProfile.coverPhoto
           })}
         >
+          <FormLabel htmlFor="coverPhoto">Cover Photo</FormLabel>
           {currentProfile.coverPhoto && (
-            <>
-              <FormLabel htmlFor="coverPhoto">Cover Photo</FormLabel>
-              <div className="coverPhoto-container">
-                <img className="coverPhoto" alt="coverPhoto" id="coverPhoto" src={currentProfile.coverPhoto} />
-              </div>
-            </>
+            <div className="coverPhoto-container">
+              <img className="coverPhoto" alt="coverPhoto" id="coverPhoto" src={currentProfile.coverPhoto} />
+            </div>
           )}
           <div className="upload-button-container">
             <Button size={buttonSize} className="outline" onClick={handeOpenCoverPhotoUpload}>
