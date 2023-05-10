@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import { createSelector } from 'reselect';
-import { getMarketplaceContractFn, getNFTContractFn, getwETHContractFn } from '../components/utils';
+import { getMarketplaceContractFn, getNFTContractFn, getProviderOrSignerFn, getwETHContractFn } from '../components/utils';
 import { defaultChainId, DEVICE_TYPES } from '../constants';
 
 export const getUser = state => state.user;
@@ -30,6 +30,8 @@ export const getMarketplaceContract = createSelector(getUserId, getChainId, getM
 export const getNFTContract = createSelector(getUserId, getChainId, getNFTContractFn);
 
 export const getwETHContract = createSelector(getUserId, getChainId, getwETHContractFn);
+
+export const getProviderOrSigner = createSelector(getUserId, getChainId, getProviderOrSignerFn);
 
 export const getIsLoadingContracts = createSelector(getMarketplace, ({ isLoadingContracts }) => isLoadingContracts);
 

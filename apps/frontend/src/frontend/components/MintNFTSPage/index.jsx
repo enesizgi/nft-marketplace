@@ -7,11 +7,11 @@ import API from '../../modules/api';
 import { getChainId, getMarketplaceContract, getNFTContract, getUserId } from '../../store/selectors';
 import ScMintNFTSPage from './ScMintNFTSPage';
 import { classNames } from '../../utils';
-import { setToast } from '../../store/uiSlice';
 import LoadingSpinner from '../LoadingSpinner';
 import NFTMinted from './NFTMinted';
 import Button from '../Button';
 import { ReactComponent as ResetIcon } from '../../assets/reset-icon.svg';
+import { checkUserRejectedHandler, dispatchToastHandler, waitConfirmHandler, waitTransactionHandler } from '../utils';
 
 // TODO: add form control and image removal
 // UPDATE from Enes: We can remove images by using reset button but removing only image would be nice. (Not so important though)
@@ -52,50 +52,26 @@ const MintNFTSPage = ({ reload }) => {
     }
   };
 
-  const dispatchError = (errorMessage, duration = 5000) =>
-    dispatch(
-      setToast({
-        title: errorMessage,
-        duration,
-        status: 'error'
-      })
-    );
-
-  const checkForUserRejectedError = (error, message = 'User rejected transaction.') => {
-    if (error.toString().includes('code=ACTION_REJECTED')) dispatchError(message);
-  };
-
-  const waitForTransaction = async transaction => {
-    try {
-      setLoadingMessage('Waiting for block confirmation...');
-      return await transaction.wait();
-    } catch (e) {
-      console.error(e);
-      dispatchError('Error happened while confirming transaction.');
-      return null;
-    }
-  };
+  const dispatchToast = dispatchToastHandler(dispatch);
+  const checkForUserRejectedError = checkUserRejectedHandler(dispatchToast);
+  const waitForTransaction = waitTransactionHandler(setLoadingMessage, dispatchToast);
 
   const mintNFT = async result => {
     const { cid } = result;
     const uri = `ipfs://${cid}`;
     // mint nft
-    let transaction;
-    try {
-      setLoadingMessage('Waiting for user confirmation...');
-      transaction = await nftContract.mintNFT(uri);
-    } catch (e) {
-      checkForUserRejectedError(e, 'User rejected mint transaction.');
-      console.error(e);
-      return null;
+    const waitForConfirm = waitConfirmHandler(async () => nftContract.mintNFT(uri), checkForUserRejectedError, setLoadingMessage);
+    const transaction = await waitForConfirm();
+    if (transaction != null) {
+      const response = await waitForTransaction(transaction);
+      if (response == null) return null;
+      const { tokenId: _tokenId } = response.events[0].args;
+      setTokenId(_tokenId);
+      await API.setTokenId(cid, _tokenId.toNumber(), nftContract.address, chainId);
+      // get tokenId of new nft
+      return _tokenId;
     }
-    const response = await waitForTransaction(transaction);
-    if (response == null) return null;
-    const { tokenId: _tokenId } = response.events[0].args;
-    setTokenId(_tokenId);
-    await API.setTokenId(cid, _tokenId.toNumber(), nftContract.address, chainId);
-    // get tokenId of new nft
-    return _tokenId;
+    return null;
   };
 
   const mintThenList = async result => {
@@ -105,46 +81,45 @@ const MintNFTSPage = ({ reload }) => {
     // approve marketplace to spend nft
     const isApproved = await nftContract.isApprovedForAll(userId, marketplaceContract.address);
     if (!isApproved) {
-      let transaction;
-      try {
-        setLoadingMessage('Waiting for user confirmation...');
-        transaction = await nftContract.setApprovalForAll(marketplaceContract.address, true);
-      } catch (e) {
-        console.error(e);
-        checkForUserRejectedError(e, 'User rejected approval transaction.');
-        return null;
+      const waitForConfirm = waitConfirmHandler(
+        async () => nftContract.setApprovalForAll(marketplaceContract.address, true),
+        checkForUserRejectedError,
+        setLoadingMessage
+      );
+      const transaction = await waitForConfirm();
+      if (transaction != null) {
+        const response = await waitForTransaction(transaction);
+        if (response == null) return null;
       }
-      const response = await waitForTransaction(transaction);
-      if (response == null) return null;
     }
     // add nft to marketplace
     const listingPrice = ethers.utils.parseEther(price.toString());
-    let transaction;
-    try {
-      setLoadingMessage('Waiting for user confirmation...');
-      transaction = await marketplaceContract.makeItem(nftContract.address, id, listingPrice);
-    } catch (e) {
-      console.error(e);
-      checkForUserRejectedError(e, 'User rejected listing transaction.');
-      return null;
+    const waitForConfirm = waitConfirmHandler(
+      async () => marketplaceContract.makeItem(nftContract.address, id, listingPrice),
+      checkForUserRejectedError,
+      setLoadingMessage
+    );
+    const transaction = await waitForConfirm();
+    if (transaction != null) {
+      return waitForTransaction(transaction);
     }
-    return waitForTransaction(transaction);
+    return null;
   };
   const createNFT = async () => {
     if (willBeListed) {
       if (!price) {
-        dispatchError('Price cannot be empty.');
+        dispatchToast('Price cannot be empty.');
         return;
       }
       try {
         ethers.utils.parseEther(price.toString());
       } catch (e) {
-        dispatchError('Invalid price');
+        dispatchToast('Invalid price');
         return;
       }
     }
-    if (!name || !description) dispatchError('Name or description cannot be empty');
-    if (!file) dispatchError('Upload a file or generate a random nft.');
+    if (!name || !description) dispatchToast('Name or description cannot be empty');
+    if (!file) dispatchToast('Upload a file or generate a random nft.');
     if (!name || !description || !file) return;
     setLoadingMessage('Creating NFT');
     setIsLoading(true);
@@ -163,7 +138,7 @@ const MintNFTSPage = ({ reload }) => {
         if (willBeListed) success = await mintThenList(response);
         else success = await mintNFT(response);
         if (success != null) setIsSuccess(true);
-      } else dispatchError('Server error. Try again later.');
+      } else dispatchToast('Server error. Try again later.');
     } catch (error) {
       console.error(error);
     }
