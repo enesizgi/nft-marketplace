@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ethers } from 'ethers';
-import { getMarketplaceContract, getUserId, getwETHContract } from '../../../store/selectors';
+import { getChainIdWithDefault, getMarketplaceContract, getUserId, getwETHContract } from '../../../store/selectors';
 import { getNFTMetadata } from '../../utils';
 import Button from '../../Button';
 import { loadNFT, setActiveModal, setLoading } from '../../../store/uiSlice';
@@ -11,6 +11,7 @@ import ScOfferModal from './ScOfferModal';
 const OfferModal = ({ tokenId }) => {
   const [nftMetadata, setNFTMetadata] = useState({});
   const userId = useSelector(getUserId);
+  const currentChainId = useSelector(getChainIdWithDefault);
   const marketplaceContract = useSelector(getMarketplaceContract);
   const wEthContract = useSelector(getwETHContract);
 
@@ -22,7 +23,7 @@ const OfferModal = ({ tokenId }) => {
 
   useEffect(() => {
     const runAsync = async () => {
-      const metadata = await getNFTMetadata(tokenId);
+      const metadata = await getNFTMetadata(userId, currentChainId, tokenId);
       setNFTMetadata(metadata);
     };
     runAsync();

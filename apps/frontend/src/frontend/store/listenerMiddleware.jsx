@@ -1,9 +1,9 @@
 import { createListenerMiddleware, isAnyOf } from '@reduxjs/toolkit';
 import { ethers } from 'ethers';
 import { CONTRACTS } from 'contracts';
-import { setCart, setUser, setUserFavorites, setShoppingLists, resetUser } from './userSlice';
+import { resetUser, setCart, setShoppingLists, setUser, setUserFavorites } from './userSlice';
 import API from '../modules/api';
-import { changeNetwork, serializeBigNumber, signatureGenerator } from '../utils';
+import { serializeBigNumber, signatureGenerator } from '../utils';
 import { setChainId, setIsLoadingContracts } from './marketplaceSlice';
 import { setProfile } from './profileSlice';
 import { loadNFT, setCurrentPath, setLoading, setToast } from './uiSlice';
@@ -36,36 +36,35 @@ const userLoginFlow = async (id, chainId, listenerApi) => {
 
 const setAccounts = async () => {
   const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-  sessionStorage.setItem('account', accounts[0]);
   return accounts[0];
 };
 
-const setChainIdOfAccount = async () => {
-  const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-  sessionStorage.setItem('chainId', chainId);
-  return chainId;
+const getChainIdOfAccount = async () => {
+  return await window.ethereum.request({ method: 'eth_chainId' });
 };
 
 const handleInitMarketplace = async (action, listenerApi) => {
-  const sessionAccount = sessionStorage.getItem('account');
-  const sessionChainId = sessionStorage.getItem('chainId');
-  const metamaskChainId = await window.ethereum.request({ method: 'eth_chainId' });
-  if (sessionChainId && sessionChainId !== metamaskChainId) {
-    const success = await changeNetwork(sessionChainId);
-    if (!success) return;
+  if (!window.ethereum) {
+    listenerApi.dispatch(
+      setToast({
+        id: Math.random(),
+        title: 'You should install Metamask.',
+        status: 'error'
+      })
+    );
+    return;
   }
-
-  const id = sessionAccount || (await setAccounts());
-  const chainIdOfAccount = sessionChainId || (await setChainIdOfAccount());
+  const chainIdOfAccount = await getChainIdOfAccount();
+  const id = await setAccounts();
+  await userLoginFlow(id, chainIdOfAccount, listenerApi);
 
   listenerApi.dispatch(setChainId(chainIdOfAccount));
 
   await userLoginFlow(id, chainIdOfAccount, listenerApi);
 
-  window.ethereum.on('chainChanged', chainId => {
-    sessionStorage.setItem('chainId', chainId);
+  window.ethereum.on('chainChanged', async chainId => {
     listenerApi.dispatch(setChainId(chainId));
-    const userId = sessionStorage.getItem('account');
+    const userId = await setAccounts();
     const { cart, favorites } = API.getShoppingLists(userId, chainId);
     listenerApi.dispatch(setShoppingLists({ cart, favorites }));
   });
@@ -75,9 +74,7 @@ const handleInitMarketplace = async (action, listenerApi) => {
     const newAccountId = accounts[0];
     localStorage.removeItem('signature');
     localStorage.removeItem('signedMessage');
-    sessionStorage.setItem('account', accounts[0]);
-    const chainId = sessionChainId || (await setChainIdOfAccount());
-    if (chainId) sessionStorage.setItem('chainId', chainId);
+    const chainId = await getChainIdOfAccount();
     await userLoginFlow(newAccountId, chainId, listenerApi);
     await handleInitMarketplace(action, listenerApi);
   });

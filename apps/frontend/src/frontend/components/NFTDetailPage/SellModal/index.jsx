@@ -27,7 +27,7 @@ const SellModal = ({ tokenId }) => {
 
   useEffect(() => {
     const runAsync = async () => {
-      const metadata = await getNFTMetadata(tokenId);
+      const metadata = await getNFTMetadata(userId, chainId, tokenId);
       setNFTMetadata(metadata);
     };
     runAsync();
