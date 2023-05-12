@@ -168,8 +168,10 @@ router.post(
         return res.status(500).send();
       }
 
-      const result = await User.updateOne({ walletId: req.query.id }, { name, slug });
-      if (result.acknowledged && result.modifiedCount > 0) {
+      const result = await User.findOneAndUpdate({ walletId: req.query.id }, { name, slug }).lean();
+      if (result) {
+        // eslint-disable-next-line camelcase
+        const { _id, __v, doc_created_at, doc_updated_at, ...returnedData } = result;
         const images = await Image.find({ user_id: req.query.id }).lean();
 
         const profilePhotoPath = images.find(image => image.type === 'profile_photo')?.image_path;
@@ -179,9 +181,8 @@ router.post(
         const absoluteCoverPhotoPath = coverPhotoPath ? `${apiProtocol}://${apiBaseURL}/${coverPhotoPath}` : '';
 
         return res.status(200).send({
-          id: req.query.id,
-          slug,
-          name,
+          ...returnedData,
+          id: returnedData.walletId,
           profilePhoto: absoluteProfilePhotoPath,
           coverPhoto: absoluteCoverPhotoPath
         });
