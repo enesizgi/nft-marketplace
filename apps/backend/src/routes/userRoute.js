@@ -149,41 +149,45 @@ router.post(
     { name: 'coverPhoto', maxCount: 1 }
   ]),
   async (req, res) => {
-    const coverPhoto = req.files?.coverPhoto?.at(0) ?? null;
-    const profilePhoto = req.files?.profilePhoto?.at(0) ?? null;
-    const { name, slug: _slug } = req.query;
-    const slug = safeJSONParse(_slug);
-
     try {
-      if (profilePhoto) {
-        const profileRelativePath = profilePhoto.path.replace(/\.\.\//g, '');
-        await uploadPhoto(req, req.query.id, profileRelativePath, imageType.ProfilePhoto);
+      const coverPhoto = req.files?.coverPhoto?.at(0) ?? null;
+      const profilePhoto = req.files?.profilePhoto?.at(0) ?? null;
+      const { name, slug: _slug } = req.query;
+      const slug = safeJSONParse(_slug);
+
+      try {
+        if (profilePhoto) {
+          const profileRelativePath = profilePhoto.path.replace(/\.\.\//g, '');
+          await uploadPhoto(req, req.query.id, profileRelativePath, imageType.ProfilePhoto);
+        }
+        if (coverPhoto) {
+          const coverRelativePath = coverPhoto.path.replace(/\.\.\//g, '');
+          await uploadPhoto(req, req.query.id, coverRelativePath, imageType.CoverPhoto);
+        }
+      } catch (err) {
+        return res.status(500).send();
       }
-      if (coverPhoto) {
-        const coverRelativePath = coverPhoto.path.replace(/\.\.\//g, '');
-        await uploadPhoto(req, req.query.id, coverRelativePath, imageType.CoverPhoto);
+
+      const result = await User.updateOne({ walletId: req.query.id }, { name, slug });
+      if (result.acknowledged && result.modifiedCount > 0) {
+        const images = await Image.find({ user_id: req.query.id }).lean();
+
+        const profilePhotoPath = images.find(image => image.type === 'profile_photo')?.image_path;
+        const absoluteProfilePhotoPath = profilePhotoPath ? `${apiProtocol}://${apiBaseURL}/${profilePhotoPath}` : '';
+
+        const coverPhotoPath = images.find(image => image.type === 'cover_photo')?.image_path;
+        const absoluteCoverPhotoPath = coverPhotoPath ? `${apiProtocol}://${apiBaseURL}/${coverPhotoPath}` : '';
+
+        return res.status(200).send({
+          id: req.query.id,
+          slug,
+          name,
+          profilePhoto: absoluteProfilePhotoPath,
+          coverPhoto: absoluteCoverPhotoPath
+        });
       }
     } catch (err) {
-      return res.status(500).send();
-    }
-
-    const result = await User.updateOne({ walletId: req.query.id }, { name, slug });
-    if (result.acknowledged && result.modifiedCount > 0) {
-      const images = await Image.find({ user_id: req.query.id }).lean();
-
-      const profilePhotoPath = images.find(image => image.type === 'profile_photo')?.image_path;
-      const absoluteProfilePhotoPath = profilePhotoPath ? `${apiProtocol}://${apiBaseURL}/${profilePhotoPath}` : '';
-
-      const coverPhotoPath = images.find(image => image.type === 'cover_photo')?.image_path;
-      const absoluteCoverPhotoPath = coverPhotoPath ? `${apiProtocol}://${apiBaseURL}/${coverPhotoPath}` : '';
-
-      return res.status(200).send({
-        id: req.query.id,
-        slug,
-        name,
-        profilePhoto: absoluteProfilePhotoPath,
-        coverPhoto: absoluteCoverPhotoPath
-      });
+      console.error(err);
     }
     return res.status(500).send();
   }
@@ -191,14 +195,14 @@ router.post(
 
 // TODO: Set up user controller and reuse code for profile and cover upload
 router.post('/user/upload-profile-photo', userValidator, verifyMessage, upload.single('profile-photo'), async (req, res) => {
-  if (req.fileValidationError) {
-    return res.status(412).end(req.fileValidationError);
-  }
-  if (!req.file) {
-    return res.status(412).send('No file received');
-  }
-
   try {
+    if (req.fileValidationError) {
+      return res.status(412).end(req.fileValidationError);
+    }
+    if (!req.file) {
+      return res.status(412).send('No file received');
+    }
+
     const relativePath = req.file.path.replace(/\.\.\//g, '');
     const absolutePath = await uploadPhoto(req, req.query.id, relativePath, imageType.ProfilePhoto);
     return res.status(201).send({ url: absolutePath });
@@ -209,14 +213,14 @@ router.post('/user/upload-profile-photo', userValidator, verifyMessage, upload.s
 });
 
 router.post('/user/upload-cover-photo', userValidator, verifyMessage, upload.single('cover-photo'), async (req, res) => {
-  if (req.fileValidationError) {
-    return res.status(412).end(req.fileValidationError);
-  }
-  if (!req.file) {
-    return res.status(412).send('No file received');
-  }
-
   try {
+    if (req.fileValidationError) {
+      return res.status(412).end(req.fileValidationError);
+    }
+    if (!req.file) {
+      return res.status(412).send('No file received');
+    }
+
     const relativePath = req.file.path.replace(/\.\.\//g, '');
     const absolutePath = await uploadPhoto(req, req.query.id, relativePath, imageType.CoverPhoto);
     return res.status(201).send({ url: absolutePath });

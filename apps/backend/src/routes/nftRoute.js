@@ -7,10 +7,10 @@ import RandomNft from '../models/randomNft';
 const router = express.Router();
 
 router.get('/nft', async (req, res) => {
-  if (!req.query.cid && !req.query.tokenId) {
-    return res.status(400).send();
-  }
   try {
+    if (!req.query.cid && !req.query.tokenId) {
+      return res.status(400).send();
+    }
     const tokenIds = JSON.parse(req.query.tokenId);
 
     if (tokenIds.length === 0 || !req.query.nftContract || !req.query.network) return res.status(400).send();
@@ -42,14 +42,13 @@ router.get('/nft', async (req, res) => {
 });
 
 router.post('/nft/tokenId', async (req, res) => {
-  const { cid } = req.query;
-  const { tokenId, nftContract, network } = req.body;
-
-  if (!tokenId || !cid || !nftContract || !network) {
-    return res.status(400).send();
-  }
-
   try {
+    const { cid } = req.query;
+    const { tokenId, nftContract, network } = req.body;
+
+    if (!tokenId || !cid || !nftContract || !network) {
+      return res.status(400).send();
+    }
     await Nft.updateMany({ cid }, { tokenId, nftContract, network });
     return res.status(200).send({ cid, tokenId, nftContract, network });
   } catch (e) {

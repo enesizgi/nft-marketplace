@@ -95,7 +95,6 @@ router.post('/shopping/favorites', userValidator, async (req, res) => {
 });
 
 router.get('/shopping', userValidator, async (req, res) => {
-  console.log('reaches');
   try {
     const { id: walletId, chainId } = req.query;
     const cart = await getShoppingCart(walletId, chainId);
