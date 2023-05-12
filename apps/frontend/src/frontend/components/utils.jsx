@@ -9,6 +9,7 @@ export const dispatchToastHandler =
   (message, status = 'error', duration = 5000) =>
     dispatch(
       setToast({
+        id: Math.random(),
         title: message,
         duration,
         status
