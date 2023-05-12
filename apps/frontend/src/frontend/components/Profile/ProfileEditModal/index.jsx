@@ -10,7 +10,7 @@ import { setUser } from '../../../store/userSlice';
 import LoadingSpinner from '../../LoadingSpinner';
 import ScProfileEditModal from './ScProfileEditModal';
 import Button from '../../Button';
-import { classNames, generateSignatureData, getSignedMessage, updateSignedMessage } from '../../../utils';
+import { classNames, signatureGenerator } from '../../../utils';
 
 const ProfileEditModal = ({ profile }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -23,7 +23,6 @@ const ProfileEditModal = ({ profile }) => {
   const coverPhotoUploadRef = useRef();
   const dispatch = useDispatch();
   const buttonSize = useSelector(getButtonSize);
-  const signedMessage = getSignedMessage();
 
   useEffect(() => {
     setIsChanged(!isEqual(profile, currentProfile));
@@ -98,8 +97,7 @@ const ProfileEditModal = ({ profile }) => {
 
   const handleSubmitData = async () => {
     setIsLoading(true);
-    const { signature, message } = await generateSignatureData(signedMessage);
-    updateSignedMessage(signedMessage, signature, message);
+    const { signature, message } = await signatureGenerator.generateSignatureData();
     const formData = new FormData();
     formData.append('coverPhoto', uploadedCoverPhoto);
     formData.append('profilePhoto', uploadedProfilePhoto);

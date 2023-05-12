@@ -1,7 +1,7 @@
 import express from 'express';
 import ShoppingList from '../models/shopping_list';
 import { SHOPPING_LIST_TYPES } from '../constants';
-import { canAddedToShoppingList } from '../utils';
+import { canAddedToShoppingList, verifyMessage } from '../utils';
 import { userValidator } from './userRoute';
 
 const router = express.Router();
@@ -27,7 +27,7 @@ const getFavorites = async (walletId, chainId) => {
   return result.items;
 };
 
-router.get('/shopping/cart', userValidator, async (req, res) => {
+router.get('/shopping/cart', userValidator, verifyMessage, async (req, res) => {
   try {
     const { id: walletId, chainId } = req.query;
     const cart = await getShoppingCart(walletId, chainId);
@@ -38,7 +38,7 @@ router.get('/shopping/cart', userValidator, async (req, res) => {
   }
 });
 
-router.post('/shopping/cart', userValidator, async (req, res) => {
+router.post('/shopping/cart', userValidator, verifyMessage, async (req, res) => {
   try {
     const { id: walletId, chainId } = req.query;
     const { cart } = req.body;
@@ -61,7 +61,7 @@ router.post('/shopping/cart', userValidator, async (req, res) => {
   return res.status(500).send();
 });
 
-router.get('/shopping/favorites', userValidator, async (req, res) => {
+router.get('/shopping/favorites', userValidator, verifyMessage, async (req, res) => {
   try {
     const { id: walletId, chainId } = req.query;
     const favorites = await getFavorites(walletId, chainId);
@@ -72,7 +72,7 @@ router.get('/shopping/favorites', userValidator, async (req, res) => {
   }
 });
 
-router.post('/shopping/favorites', userValidator, async (req, res) => {
+router.post('/shopping/favorites', userValidator, verifyMessage, async (req, res) => {
   try {
     const { id: walletId, chainId } = req.query;
     const { favorites } = req.body;
@@ -94,7 +94,7 @@ router.post('/shopping/favorites', userValidator, async (req, res) => {
   return res.status(500).send();
 });
 
-router.get('/shopping', userValidator, async (req, res) => {
+router.get('/shopping', userValidator, verifyMessage, async (req, res) => {
   try {
     const { id: walletId, chainId } = req.query;
     const cart = await getShoppingCart(walletId, chainId);
