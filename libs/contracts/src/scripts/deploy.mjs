@@ -66,8 +66,8 @@ const main = async () => {
   if (network === 'localhost' && successfulDeploymentCount === contracts.length) {
     await mongoose.connect(process.env.MONGO_URI, {});
     await Nft.deleteMany({ network: '0x7a69' });
-    await ShoppingList.deleteMany({ chainId: '0x7a69' })
-    await User.updateMany({}, [{$unset: 'cart'}, {$unset: 'favorites'}])
+    await ShoppingList.deleteMany({ chainId: '0x7a69' });
+    await User.updateMany({}, [{ $unset: 'cart' }, { $unset: 'favorites' }]);
   }
 };
 
