@@ -5,12 +5,13 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "./IERC20Permit.sol";
 import "hardhat/console.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract Marketplace is ReentrancyGuard {
+contract Marketplace is ReentrancyGuard, Ownable {
 
     // Variables
-    address payable public immutable feeAccount; // the account that receives fees
-    uint public immutable feePercent; // the fee percentage on sales
+    address payable public feeAccount; // the account that receives fees
+    uint public feePercent; // the fee percentage on sales
     uint public itemCount;
     uint public auctionItemCount;
 
@@ -88,7 +89,17 @@ contract Marketplace is ReentrancyGuard {
 //    );
 
     constructor(uint _feePercent) {
+        require(_feePercent >= 0 && _feePercent <= 100, "feePercent must be between 0 and 100");
         feeAccount = payable(msg.sender);
+        feePercent = _feePercent;
+    }
+
+    function changeFeeAccount(address payable _feeAccount) external onlyOwner {
+        feeAccount = _feeAccount;
+    }
+
+    function changeFeePercent(uint _feePercent) external onlyOwner {
+        require(_feePercent >= 0 && _feePercent <= 100, "feePercent must be between 0 and 100");
         feePercent = _feePercent;
     }
 
@@ -97,7 +108,9 @@ contract Marketplace is ReentrancyGuard {
     function makeItem(IERC721 _nft, uint _tokenId, uint _price) external nonReentrant {
         require(_price > 0, "Price must be greater than zero");
         // increment itemCount
-        itemCount ++;
+        unchecked {
+            itemCount ++;
+        }
         // transfer nft
         _nft.transferFrom(msg.sender, address(this), _tokenId);
         // add new item to items mapping
@@ -140,7 +153,7 @@ contract Marketplace is ReentrancyGuard {
     }
 
     function purchaseItem_multiple(uint[] calldata _itemIds) external payable nonReentrant {
-        for (uint i = 0; i < _itemIds.length; i++) {
+        for (uint i = 0; i < _itemIds.length;) {
             uint itemId = _itemIds[i];
             Item storage item = items[itemId];
             (bool successSeller, ) = item.seller.call{value: item.price}("");
@@ -151,6 +164,9 @@ contract Marketplace is ReentrancyGuard {
             item.nft.safeTransferFrom(address(this), msg.sender, item.tokenId);
             // emit Bought event
             emit Bought(itemId, address(item.nft), item.tokenId, item.price, item.seller, msg.sender);
+            unchecked {
+                i++;
+            }
         }
 
         (bool successFeeAccount, ) = feeAccount.call{value: getFee(msg.value)}("");
@@ -167,7 +183,9 @@ contract Marketplace is ReentrancyGuard {
 
     function startAuction(IERC721 _nft, uint _tokenId, uint _price, uint _timeToEnd) external nonReentrant {
         require(_price > 0, "price should be greater than zero");
-        auctionItemCount ++;
+        unchecked {
+            auctionItemCount ++;
+        }
         // transfer nft
         _nft.transferFrom(msg.sender, address(this), _tokenId);
         // add new item to items mapping
