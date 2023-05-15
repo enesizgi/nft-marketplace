@@ -112,7 +112,7 @@ const CartItem = ({ onRemoveFromList, nftInfo }) => {
           </div>
           <div className="nftInfo">
             <h2 className="nftInfo-name">{nftInfo?.metadata?.name}</h2>
-            <p className="nftInfo-price">{ethers.utils.formatEther(nftInfo?.price)} ETH</p>
+            {nftInfo?.price && <p className="nftInfo-price">{ethers.utils.formatEther(nftInfo.price)} ETH</p>}
           </div>
           <button type="button" className="trash" onClick={onRemoveFromList}>
             <TrashIcon />

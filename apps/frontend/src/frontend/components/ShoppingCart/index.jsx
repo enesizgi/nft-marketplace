@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { SHOPPING_TYPES } from '../../constants';
 import Switch from '../Switch';
-import { getCart, getChainId, getMarketplaceContract, getNFTContract, getUserFavorites } from '../../store/selectors';
+import { getCart, getChainId, getMarketplaceContract, getNFTContract, getUserFavorites, getUserId } from '../../store/selectors';
 import CartItem from './CartItem';
 import Button from '../Button';
 import { updateCart, updateFavorites } from '../../store/actionCreators';
@@ -89,6 +89,7 @@ const ScShoppingCart = styled.div`
 const ShoppingCart = () => {
   const nftContract = useSelector(getNFTContract);
   const chainId = useSelector(getChainId);
+  const userId = useSelector(getUserId);
   const userFavorites = useSelector(getUserFavorites);
   const cart = useSelector(getCart);
   const marketplaceContract = useSelector(getMarketplaceContract);
@@ -98,6 +99,7 @@ const ShoppingCart = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    if (!userId) return;
     if (userFavorites.length > 0 || cart.length > 0) {
       (async () => {
         const response = await API.getNft({
@@ -105,13 +107,13 @@ const ShoppingCart = () => {
           nftContract: nftContract.address,
           network: chainId
         });
-        setFavoritesInfo(response.filter(nft => userFavorites.includes(nft.tokenId)));
-        setCartInfo(response.filter(nft => cart.includes(nft.tokenId)));
+        setFavoritesInfo(response ? response.filter(nft => userFavorites.includes(nft.tokenId)) : []);
+        setCartInfo(response ? response.filter(nft => cart.includes(nft.tokenId)) : []);
       })();
     }
     if (cart.length === 0) setCartInfo([]);
     if (userFavorites.length === 0) setFavoritesInfo([]);
-  }, [userFavorites, chainId, nftContract, cart]);
+  }, [userFavorites, chainId, nftContract, cart, userId]);
 
   const formattedPrice = useMemo(
     () =>
