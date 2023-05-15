@@ -5,14 +5,14 @@
   "projectType": "library",
   "targets": {
     "build": {
-      "executor": "@nrwl/vite:build",
+      "executor": "@nx/vite:build",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/libs/contracts"
       }
     },
     "test": {
-      "executor": "@nrwl/vite:test",
+      "executor": "@nx/vite:test",
       "outputs": ["coverage/libs/contracts"],
       "options": {
         "passWithNoTests": true,
