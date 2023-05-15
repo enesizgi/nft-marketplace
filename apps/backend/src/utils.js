@@ -6,6 +6,33 @@ import Price from './models/price';
 import NftStatus from './models/nft_status';
 import Offer from './models/offer';
 
+class EtherScanLimiter {
+  constructor() {
+    this.apiLimit = 5;
+    this.apiCalls = 0;
+
+    setInterval(() => {
+      this.apiCalls = 0;
+    }, 1000);
+  }
+
+  wait = async details => {
+    if (details?.chainId === NETWORK_IDS.LOCALHOST) return;
+    const cost = details?.cost ?? 1;
+    await new Promise(resolve => {
+      const interval = setInterval(() => {
+        if (this.apiLimit - this.apiCalls >= cost) {
+          clearInterval(interval);
+          resolve();
+        }
+      }, 100);
+    });
+    this.apiCalls += cost;
+  };
+}
+
+export const etherscanLimiter = new EtherScanLimiter();
+
 export const snakeToCamel = s => s.replace(/(_\w)/g, k => k[1].toUpperCase());
 
 export const verifyMessage = async (req, res, next) => {
@@ -227,9 +254,8 @@ export const getMarketplaceContract = chainId => {
 };
 
 export const getIsItemInSale = async (chainId, tokenId) => {
-  const nftContract = getNftContract(chainId);
   const itemStatus = await NftStatus.findOne({
-    nft: nftContract.address,
+    nft: CONTRACTS[chainId].NFT.address,
     tokenId,
     network: chainId
   });
@@ -243,6 +269,7 @@ export const getIsItemInSale = async (chainId, tokenId) => {
 export const canAddedToShoppingList = async (chainId, tokenId, walletId) => {
   const nftContract = getNftContract(chainId);
   try {
+    await etherscanLimiter.wait({ chainId });
     const owner = await nftContract.ownerOf(tokenId);
     if (owner.toLowerCase() === walletId.toLowerCase()) {
       return false;
@@ -332,6 +359,7 @@ export const finishAuctions = async chainId => {
   for await (const auction of endedAuctions) {
     const bid = auction.bids[0];
     // TODO @Enes: Check if bidder has enough balance. Send to highest bidder with balance.
+    await etherscanLimiter.wait({ chainId });
     const receipt = await (
       await marketplaceContract.claimNFT(
         CONTRACTS[chainId].wETH.address,
@@ -367,6 +395,8 @@ export const fetchMarketplaceEvents = async chainId => {
     ]);
     fromBlock = fromBlock.at(0) ? fromBlock.at(0).blockNumber + 1 : 0;
     fromBlockTransfer = fromBlockTransfer.at(0) ? fromBlockTransfer.at(0).blockNumber + 1 : 0;
+    console.log('fetchMarketplaceEvents');
+    await etherscanLimiter.wait({ cost: 2 });
     const [events, nftEvents] = await Promise.all([
       marketplaceContract.queryFilter('*', fromBlock),
       nftContract.queryFilter('Transfer', fromBlockTransfer)

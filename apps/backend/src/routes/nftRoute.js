@@ -4,7 +4,7 @@ import NftStatus from '../models/nft_status';
 import { apiBaseURL, apiProtocol } from '../constants';
 import Metadata from '../models/metadata';
 import RandomNft from '../models/randomNft';
-import { getMarketplaceContract } from '../utils';
+import { etherscanLimiter, getMarketplaceContract } from '../utils';
 
 const router = express.Router();
 
@@ -39,8 +39,10 @@ router.get('/nft', async (req, res) => {
     const storeInfo = await nftStatus.reduce(async (_prev, nft) => {
       const prev = await _prev;
       if (nft.itemId) {
+        await etherscanLimiter.wait({ chainId: req.query.network });
         const price = await marketplaceContract.getTotalPrice(nft.itemId);
-        return { ...prev, [nft.tokenId]: { price, itemId: nft.itemId } };
+        prev[nft.tokenId] = { price, itemId: nft.itemId };
+        return prev;
       }
       return prev;
     }, {});
