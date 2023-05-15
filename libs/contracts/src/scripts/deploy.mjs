@@ -5,6 +5,10 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import * as dotenv from 'dotenv';
+import * as mongoose from 'mongoose';
+import Nft from '../models/nft.mjs';
+import ShoppingList from '../models/shopping_list.mjs';
+import User from '../models/user.mjs';
 
 dotenv.config();
 
@@ -31,14 +35,22 @@ const main = async () => {
   console.log('Deploying contracts with the account:', deployer.address);
   console.log('Account balance:', (await deployer.getBalance()).toString());
 
-  // eslint-disable-next-line no-restricted-syntax
-  for await (const contractData of [
+  const contracts = [
     { name: 'Marketplace', args: [1] },
     { name: 'NFT', args: [] },
     { name: 'wETH', args: [] }
-  ]) {
-    const contract = await hre.ethers.getContractFactory(contractData.name);
-    const contractInstance = await contract.deploy(...contractData.args);
+  ];
+  let successfulDeploymentCount = 0;
+  // eslint-disable-next-line no-restricted-syntax
+  for await (const contractData of contracts) {
+    let contractInstance;
+    try {
+      const contract = await hre.ethers.getContractFactory(contractData.name);
+      contractInstance = await contract.deploy(...contractData.args);
+      successfulDeploymentCount += 1;
+    } catch (e) {
+      console.error(e);
+    }
     if (process.env.ETHERNAL_EMAIL && process.env.ETHERNAL_PASSWORD) {
       try {
         await hre.ethernal.push({
@@ -50,6 +62,12 @@ const main = async () => {
       }
     }
     saveFrontendFiles(contractInstance, contractData.name);
+  }
+  if (network === 'localhost' && successfulDeploymentCount === contracts.length) {
+    await mongoose.connect(process.env.MONGO_URI, {});
+    await Nft.deleteMany({ network: '0x7a69' });
+    await ShoppingList.deleteMany({ chainId: '0x7a69' });
+    await User.updateMany({}, [{ $unset: 'cart' }, { $unset: 'favorites' }]);
   }
 };
 

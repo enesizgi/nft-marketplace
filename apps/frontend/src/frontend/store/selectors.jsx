@@ -41,9 +41,9 @@ export const getUserProfilePhoto = createSelector(getUser, ({ profilePhoto }) =>
 
 export const getUserCoverPhoto = createSelector(getUser, ({ coverPhoto }) => coverPhoto);
 
-export const getUserFavorites = createSelector(getUser, ({ favorites }) => favorites);
+export const getUserFavorites = createSelector(getUser, ({ favorites }) => favorites ?? []);
 
-export const getCart = createSelector(getUser, ({ cart }) => cart);
+export const getCart = createSelector(getUser, ({ cart }) => cart ?? []);
 
 export const getIsInCart = id => createSelector(getCart, cart => !!cart.find(_id => _id === id));
 

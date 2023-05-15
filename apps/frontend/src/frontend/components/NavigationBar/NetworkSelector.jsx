@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import OnOutsideClick from 'react-outclick';
@@ -6,7 +6,7 @@ import CoolButton from './CoolButton';
 import { ReactComponent as PolygonLogo } from '../../assets/polygon-logo.svg';
 import EthereumLogo from '../../assets/ethereum-logo.png';
 import { ReactComponent as LocalhostIcon } from '../../assets/localhost-icon.svg';
-import { CHAIN_PARAMS, defaultChainId, DEVICE_TYPES, NETWORK_LOGOS, theme } from '../../constants';
+import { CHAIN_PARAMS, DEVICE_TYPES, NETWORK_LOGOS, theme } from '../../constants';
 import { getChainIdWithDefault, getDeviceType, getUserId } from '../../store/selectors';
 import Dropdown from '../Dropdown';
 import { setChainId } from '../../store/marketplaceSlice';
@@ -72,17 +72,10 @@ const NetworkSelector = () => {
   const deviceType = useSelector(getDeviceType);
   const userId = useSelector(getUserId);
 
-  useEffect(() => {
-    if (!sessionStorage.getItem('chainId')) {
-      sessionStorage.setItem('chainId', defaultChainId);
-    }
-  }, []);
-
   // TODO @Enes: Reload homepage after changing network
   // TODO @Enes: Add localhost to networks
   const handleNetworkChange = networkId => async () => {
     if (!userId) {
-      sessionStorage.setItem('chainId', networkId);
       dispatch(setChainId(networkId));
     } else if (window.ethereum) {
       await changeNetwork(networkId);

@@ -1,7 +1,7 @@
 import express from 'express';
 import ShoppingList from '../models/shopping_list';
 import { SHOPPING_LIST_TYPES } from '../constants';
-import { canAddedToShoppingList } from '../utils';
+import { canAddedToShoppingList, verifyMessage } from '../utils';
 import { userValidator } from './userRoute';
 
 const router = express.Router();
@@ -12,7 +12,10 @@ const getShoppingCart = async (walletId, chainId) => {
     return [];
   }
   const { items } = result;
-  const cartItems = items.filter(async tokenId => canAddedToShoppingList(chainId, tokenId, walletId));
+
+  const cartItems = [];
+  items.forEach(tokenId => canAddedToShoppingList(chainId, tokenId, walletId).then(res => res && cartItems.push[tokenId]));
+
   if (cartItems.length !== items.length) {
     await ShoppingList.updateOne({ walletId, chainId, listType: SHOPPING_LIST_TYPES.CART }, { items: cartItems });
   }
@@ -27,7 +30,7 @@ const getFavorites = async (walletId, chainId) => {
   return result.items;
 };
 
-router.get('/shopping/cart', userValidator, async (req, res) => {
+router.get('/shopping/cart', userValidator, verifyMessage, async (req, res) => {
   try {
     const { id: walletId, chainId } = req.query;
     const cart = await getShoppingCart(walletId, chainId);
@@ -38,12 +41,12 @@ router.get('/shopping/cart', userValidator, async (req, res) => {
   }
 });
 
-router.post('/shopping/cart', userValidator, async (req, res) => {
+router.post('/shopping/cart', userValidator, verifyMessage, async (req, res) => {
   try {
     const { id: walletId, chainId } = req.query;
     const { cart } = req.body;
-    const filteredCart = cart.filter(async tokenId => canAddedToShoppingList(chainId, tokenId, walletId));
-    const result = await ShoppingList.updateOne(
+    const filteredCart = cart.filter(async tokenId => canAddedToShoppingList(chainId, tokenId, walletId)) ?? [];
+    const result = await ShoppingList.findOneAndUpdate(
       {
         walletId,
         chainId,
@@ -52,19 +55,16 @@ router.post('/shopping/cart', userValidator, async (req, res) => {
       {
         items: filteredCart
       },
-      { upsert: true }
-    );
-    if (result.acknowledged && result.modifiedCount > 0) {
-      return res.send({ id: walletId, cart: filteredCart });
-    }
-    return res.status(500).send();
+      { upsert: true, returnOriginal: false }
+    ).lean();
+    return res.send({ id: walletId, cart: result.items });
   } catch (err) {
     console.log(err);
-    return res.status(500).send();
   }
+  return res.status(500).send();
 });
 
-router.get('/shopping/favorites', userValidator, async (req, res) => {
+router.get('/shopping/favorites', userValidator, verifyMessage, async (req, res) => {
   try {
     const { id: walletId, chainId } = req.query;
     const favorites = await getFavorites(walletId, chainId);
@@ -75,33 +75,29 @@ router.get('/shopping/favorites', userValidator, async (req, res) => {
   }
 });
 
-router.post('/shopping/favorites', userValidator, async (req, res) => {
+router.post('/shopping/favorites', userValidator, verifyMessage, async (req, res) => {
   try {
     const { id: walletId, chainId } = req.query;
     const { favorites } = req.body;
-    const result = await ShoppingList.updateOne(
+    const result = await ShoppingList.findOneAndUpdate(
       {
         walletId,
         chainId,
         listType: SHOPPING_LIST_TYPES.FAVORITES
       },
       {
-        items: favorites
+        items: favorites ?? []
       },
-      { upsert: true }
-    );
-    if (result.acknowledged && result.modifiedCount > 0) {
-      return res.send({ id: walletId, favorites });
-    }
-    return res.status(500).send();
+      { upsert: true, returnOriginal: false }
+    ).lean();
+    return res.send({ id: walletId, favorites: result.items });
   } catch (err) {
     console.log(err);
-    return res.status(500).send();
   }
+  return res.status(500).send();
 });
 
-router.get('/shopping', userValidator, async (req, res) => {
-  console.log('reaches');
+router.get('/shopping', userValidator, verifyMessage, async (req, res) => {
   try {
     const { id: walletId, chainId } = req.query;
     const cart = await getShoppingCart(walletId, chainId);

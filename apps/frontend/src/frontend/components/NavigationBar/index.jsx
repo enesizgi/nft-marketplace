@@ -68,7 +68,7 @@ const NavigationBar = () => {
         </>
       )}
       {(isLoadingContracts || !userId) && (
-        <div className="navigationItem button">
+        <div className="navigationItem button connect">
           <CoolButton onClick={handleInitMarketplace}>Connect</CoolButton>
         </div>
       )}

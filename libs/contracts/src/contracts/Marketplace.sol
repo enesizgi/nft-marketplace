@@ -139,6 +139,28 @@ contract Marketplace is ReentrancyGuard {
         emit Bought(_itemId, address(item.nft), item.tokenId, item.price, item.seller, msg.sender);
     }
 
+    function purchaseItem_multiple(uint[] calldata _itemIds) external payable nonReentrant {
+        for (uint i = 0; i < _itemIds.length; i++) {
+            uint itemId = _itemIds[i];
+            Item storage item = items[itemId];
+            (bool successSeller, ) = item.seller.call{value: item.price}("");
+            require(successSeller, "failed to send Ether to seller");
+            // update item to sold
+            item.sold = true;
+            // transfer nft to buyer
+            item.nft.safeTransferFrom(address(this), msg.sender, item.tokenId);
+            // emit Bought event
+            emit Bought(itemId, address(item.nft), item.tokenId, item.price, item.seller, msg.sender);
+        }
+
+        (bool successFeeAccount, ) = feeAccount.call{value: getFee(msg.value)}("");
+        require(successFeeAccount, "failed to send Ether to feeAccount");
+    }
+
+    function getFee(uint _price) view internal returns(uint){
+        return _price - (_price*100)/(100 + feePercent);
+    }
+
     function getTotalPrice(uint _itemId) view public returns(uint){
         return((items[_itemId].price*(100 + feePercent))/100);
     }

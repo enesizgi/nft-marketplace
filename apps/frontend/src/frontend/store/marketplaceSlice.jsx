@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { defaultChainId } from '../constants';
 
 const initialState = {
-  chainId: sessionStorage.getItem('chainId') || defaultChainId,
+  chainId: defaultChainId,
   isLoadingContracts: true,
   ethPriceUSD: 1
 };

@@ -5,7 +5,7 @@
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nrwl/vite:build",
+      "executor": "@nx/vite:build",
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
@@ -21,7 +21,7 @@
       }
     },
     "serve": {
-      "executor": "@nrwl/vite:dev-server",
+      "executor": "@nx/vite:dev-server",
       "defaultConfiguration": "development",
       "options": {
         "buildTarget": "frontend:build"
@@ -38,7 +38,7 @@
       }
     },
     "preview": {
-      "executor": "@nrwl/vite:preview-server",
+      "executor": "@nx/vite:preview-server",
       "defaultConfiguration": "development",
       "options": {
         "buildTarget": "frontend:build"
@@ -53,7 +53,7 @@
       }
     },
     "test": {
-      "executor": "@nrwl/vite:test",
+      "executor": "@nx/vite:test",
       "outputs": ["coverage/apps/frontend"],
       "options": {
         "passWithNoTests": true,

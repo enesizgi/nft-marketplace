@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { ethers } from 'ethers';
 import styled from 'styled-components';
 import { ReactComponent as TrashIcon } from '../../assets/trash-icon.svg';
 import { getMarketplaceContract } from '../../store/selectors';
@@ -41,8 +42,11 @@ const ScCartItem = styled.div`
     }
   }
   .nftInfo {
-    padding: 10px 0;
+    padding: 20px 0;
     width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     &-name {
       font-size: 24px;
       font-weight: 600;
@@ -51,8 +55,9 @@ const ScCartItem = styled.div`
         font-size: 18px;
       }
     }
-    &-description {
-      font-size: 16px;
+    &-price {
+      font-size: 18px;
+      font-weight: 600;
       @media screen and (max-width: 480px) {
         font-size: 12px;
       }
@@ -107,7 +112,7 @@ const CartItem = ({ onRemoveFromList, nftInfo }) => {
           </div>
           <div className="nftInfo">
             <h2 className="nftInfo-name">{nftInfo?.metadata?.name}</h2>
-            <p className="nftInfo-description">{nftInfo?.metadata?.description}</p>
+            {nftInfo?.price && <p className="nftInfo-price">{ethers.utils.formatEther(nftInfo.price)} ETH</p>}
           </div>
           <button type="button" className="trash" onClick={onRemoveFromList}>
             <TrashIcon />
