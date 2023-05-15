@@ -40,7 +40,7 @@ const uiSlice = createSlice({
     },
     setToast: (state, action) => {
       const isReset = !action.payload;
-      state.toast = isReset ? action.payload : { ...action.payload, id: new Date().getTime() };
+      state.toast = isReset ? action.payload : { ...action.payload, id: Math.random() };
     },
     loadNFT: () => {}
   }

@@ -67,7 +67,7 @@ const NFTActionButtons = () => {
   const isOwner = seller ? compare(seller, userId) : compare(owner, userId);
 
   const handleBuy = async () => {
-    await (await marketplaceContract.purchaseItem([itemId], { value: ethers.utils.parseEther(formattedPrice) })).wait();
+    await (await marketplaceContract.purchaseItem(itemId, { value: ethers.utils.parseEther(formattedPrice) })).wait();
     await API.syncEvents({ chainId });
     dispatch(loadNFT());
   };

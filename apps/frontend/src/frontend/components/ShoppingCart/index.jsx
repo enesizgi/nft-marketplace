@@ -115,20 +115,18 @@ const ShoppingCart = () => {
     if (userFavorites.length === 0) setFavoritesInfo([]);
   }, [userFavorites, chainId, nftContract, cart, userId]);
 
-  const formattedPrice = useMemo(
+  const totalPrice = useMemo(
     () =>
-      ethers.utils
-        .formatEther(
-          cartInfo.reduce((prev, item) => {
-            if (item.price) {
-              return prev.add(item.price);
-            }
-            return prev;
-          }, ethers.BigNumber.from('0'))
-        )
-        .toString(),
+      cartInfo.reduce((prev, item) => {
+        if (item.price) {
+          return prev.add(item.price);
+        }
+        return prev;
+      }, ethers.BigNumber.from('0')),
     [cartInfo]
   );
+
+  const formattedPrice = useMemo(() => ethers.utils.formatEther(totalPrice).toString(), [totalPrice]);
 
   const [selectedTab, setSelectedTab] = useState(SHOPPING_TYPES.CART);
   const listedItems = selectedTab === SHOPPING_TYPES.CART ? cartInfo : favoritesInfo;
@@ -146,7 +144,7 @@ const ShoppingCart = () => {
     setIsLoading(true);
     try {
       const listedItemIds = listedItems.map(item => item.itemId);
-      await (await marketplaceContract.purchaseItem(listedItemIds, { value: ethers.utils.parseEther(formattedPrice) })).wait();
+      await (await marketplaceContract.purchaseItem_multiple(listedItemIds, { value: totalPrice })).wait();
       dispatch(setCart([])); // TODO: purchase success screen should be added
     } catch (e) {
       dispatch(
