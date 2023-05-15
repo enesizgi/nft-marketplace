@@ -16,7 +16,7 @@ import {
   getUserId,
   getwETHContract
 } from '../store/selectors';
-import { loadNFT, setToast } from '../store/uiSlice';
+import { loadNFT } from '../store/uiSlice';
 import API from '../modules/api';
 import { checkUserRejectedHandler, dispatchToastHandler, waitConfirmHandler, waitTransactionHandler, getPermitSignature } from './utils';
 
@@ -137,6 +137,7 @@ const AuctionButton = () => {
       await API.createBid({ bidder: userId, amount: bidPrice, tokenId, deadline, v: vStr, r: rStr, s: sStr });
     } catch (e) {
       console.log(e);
+      checkForUserRejectedError(e);
     }
     dispatch(loadNFT());
   };
