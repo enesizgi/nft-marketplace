@@ -18,7 +18,7 @@ import ipfsRouter from './routes/ipfsRoute';
 import bidRouter from './routes/bidRoute';
 import shoppingListRouter from './routes/shoppingListRoute';
 import { apiBaseURL } from './constants';
-import { deleteOldOffers, fetchEthPrice, fetchMarketplaceEvents } from './utils';
+import { deleteOldOffers, fetchEthPrice, fetchMarketplaceEvents, finishAuctions } from './utils';
 import Event from './models/event';
 import NftStatus from './models/nft_status';
 import { importRandomNfts } from './scripts';
@@ -69,7 +69,11 @@ app.use('/assets', express.static(path.join(dirname, '/assets')));
       if (process.env.NODE_ENV === 'production') {
         const chainIds = Object.keys(CONTRACTS).filter(chainId => chainId !== NETWORK_IDS.LOCALHOST);
         await Promise.all(chainIds.map(chainId => fetchMarketplaceEvents(chainId)));
-      } else await fetchMarketplaceEvents(NETWORK_IDS.LOCALHOST);
+        await Promise.all(chainIds.map(chainId => finishAuctions(chainId)));
+      } else {
+        await fetchMarketplaceEvents(NETWORK_IDS.LOCALHOST);
+        await finishAuctions(NETWORK_IDS.LOCALHOST);
+      }
     } catch (err) {
       console.log(err);
     }

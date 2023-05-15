@@ -223,6 +223,7 @@ contract Marketplace is ReentrancyGuard {
         // Transfer NFT to winner and pay seller
         erc20.permit(bidder, address(this), amount, deadline, _v, _r, _s);
         erc20.transferFrom(bidder, auctionItem.seller, amount);
+        // TODO @Enes: Get fee from bidder.
         auctionItem.nft.transferFrom(address(this), bidder, _tokenId);
 
         // Mark auction item as claimed
@@ -232,7 +233,7 @@ contract Marketplace is ReentrancyGuard {
             _auctionId,
             address(auctionItem.nft),
             auctionItem.tokenId,
-            auctionItem.price,
+            amount,
             auctionItem.seller,
             bidder
         );

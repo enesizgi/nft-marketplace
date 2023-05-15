@@ -253,6 +253,104 @@ export const canAddedToShoppingList = async (chainId, tokenId, walletId) => {
   return getIsItemInSale(chainId, tokenId);
 };
 
+export const finishAuctions = async chainId => {
+  dotenv.config();
+  const endedAuctions = await NftStatus.aggregate([
+    {
+      $match: {
+        type: 'Auction',
+        network: chainId,
+        claimed: false,
+        canceled: false,
+        timeToEnd: { $lte: new Date() }
+      }
+    },
+    {
+      $lookup: {
+        from: 'bids',
+        let: {
+          id: '$tokenId'
+          // TODO: Add chain and nftContract address.
+          // chain: '$network',
+          // nft: '$nftContract'
+        },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  {
+                    $eq: ['$tokenId', '$$id']
+                  }
+                  // {
+                  //   $eq: ['$network', '$$chain']
+                  // },
+                  // {
+                  //   $eq: ['$nftContract', '$$nft']
+                  // }
+                ]
+              }
+            }
+          }
+        ],
+        as: 'bids'
+      }
+    },
+    {
+      $match: {
+        'bids.0': {
+          $exists: true
+        }
+      }
+    },
+    {
+      $set: {
+        bids: {
+          $sortArray: {
+            input: '$bids',
+            sortBy: {
+              amount: -1
+            }
+          }
+        }
+      }
+    },
+    {
+      $limit: 5
+    }
+  ]);
+  console.log('endedAuctions', endedAuctions);
+  const isLocalhost = chainId === NETWORK_IDS.LOCALHOST;
+  const provider = isLocalhost
+    ? new ethers.providers.JsonRpcProvider('http://127.0.0.1:8545')
+    : new ethers.providers.EtherscanProvider(Number(chainId), process.env.ETHERSCAN_API_KEY);
+  const wallet = isLocalhost
+    ? new ethers.Wallet('0x8166f546bab6da521a8369cab06c5d2b9e46670292d85c875ee9ec20e84ffb61', provider)
+    : new ethers.Wallet(process.env.DEPLOYER_PRIVATE_KEY, provider);
+  const marketplaceContract = new ethers.Contract(CONTRACTS[chainId].MARKETPLACE.address, CONTRACTS[chainId].MARKETPLACE.abi, wallet);
+  // eslint-disable-next-line no-restricted-syntax
+  for await (const auction of endedAuctions) {
+    const bid = auction.bids[0];
+    // TODO @Enes: Check if bidder has enough balance. Send to highest bidder with balance.
+    const receipt = await (
+      await marketplaceContract.claimNFT(
+        CONTRACTS[chainId].wETH.address,
+        auction.tokenId,
+        auction.auctionId,
+        bid.deadline,
+        bid.bidder,
+        ethers.BigNumber.from(bid.amount.toString()),
+        bid.v,
+        bid.r,
+        bid.s
+      )
+    ).wait();
+    if (receipt) {
+      // TODO: Delete bids from db or use different nonces for all bids.
+    }
+  }
+};
+
 export const fetchMarketplaceEvents = async chainId => {
   let insertData = [];
   try {
@@ -326,6 +424,7 @@ export const fetchMarketplaceEvents = async chainId => {
         network: chainId
       };
     });
+    console.log(insertData);
     await Promise.all([Event.insertMany([...insertData, ...nftInsertData]), insertData.length > 0 && getLastStatusOfNft(insertData)]);
   } catch (err) {
     console.log(err);

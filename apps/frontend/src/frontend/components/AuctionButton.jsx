@@ -16,7 +16,7 @@ import {
   getUserId,
   getwETHContract
 } from '../store/selectors';
-import { loadNFT } from '../store/uiSlice';
+import { loadNFT, setToast } from '../store/uiSlice';
 import API from '../modules/api';
 import { getPermitSignature } from './utils';
 
@@ -105,7 +105,7 @@ const AuctionButton = () => {
   const navigate = useNavigate();
 
   const winner = bids.length > 0 ? bids[0].bidder : seller;
-  const price = bids.length > 0 ? bids[0].amount : basePrice;
+  const price = bids.length > 0 ? ethers.BigNumber.from(bids[0].amount).toString() : basePrice;
 
   const handleMakeBid = async () => {
     if (makeBid <= parseInt(ethers.utils.formatEther(price.toString()), 10)) {
@@ -117,13 +117,19 @@ const AuctionButton = () => {
     const wETHbalance = await wEthContract.balanceOf(userId);
 
     if (wETHbalance.lt(bidPrice)) {
-      console.log('Not enough wETH');
+      dispatch(
+        setToast({
+          title: 'Not enough wETH',
+          duration: 2000,
+          status: 'error'
+        })
+      );
       return;
     }
 
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
-    const deadline = new Date(timeToEnd).getTime() + 5; // timetoend check
+    const deadline = new Date(timeToEnd).getTime() + 60 * 60 * 24; // timetoend check
 
     try {
       const { v, r, s } = await getPermitSignature(signer, wEthContract, marketplaceContract.address, bidPrice, deadline);
@@ -158,7 +164,7 @@ const AuctionButton = () => {
       {auctionId && !isAuctionOver && (
         <>
           <p className="item">{`Sale ends at ${auctionEndTime}`}</p>
-          <p className="item price">{ethers.utils.formatEther(price)} ETH</p>
+          <p className="item price">{ethers.utils.formatEther(price.toString())} ETH</p>
         </>
       )}
       {auctionId && isAuctionOver && (

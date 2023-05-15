@@ -228,7 +228,7 @@ const handleInitNFTState = async (action, listenerApi) => {
         v: e.v,
         r: e.r,
         s: e.s,
-        createdAt: e.doc_created_at
+        createdAt: e.doc_updated_at
       };
     })
     .filter(item => item)
@@ -240,8 +240,12 @@ const handleInitNFTState = async (action, listenerApi) => {
   let seller = isListed ? nftStatusListing[0].seller.toLowerCase() : '';
   seller = isOnAuction ? nftStatusAuction[0].seller.toLowerCase() : seller;
 
-  listenerApi.dispatch(setNFT({ ...finalItem, transactions: nftTransactionData, offers: offers, bids: bids, owner, seller, isListed, isOnAuction }));
-  listenerApi.dispatch(setLoading(false));
+  if (listenerApi.getState().marketplace.chainId === chainId) {
+    listenerApi.dispatch(
+      setNFT({ ...finalItem, transactions: nftTransactionData, offers: offers, bids: bids, owner, seller, isListed, isOnAuction })
+    );
+    listenerApi.dispatch(setLoading(false));
+  }
 };
 
 const handlePathChanges = async (action, listenerApi) => {

@@ -18,15 +18,25 @@ router.get('/bids', async (req, res) => {
 });
 router.post('/bids/create', async (req, res) => {
   try {
-    await Bid.create({
-      bidder: req.query.bidder,
-      amount: req.query.amount,
-      tokenId: req.query.tokenId,
-      deadline: req.query.deadline,
-      v: req.query.v,
-      r: req.query.r,
-      s: req.query.s
-    });
+    await Bid.findOneAndUpdate(
+      {
+        bidder: req.query.bidder,
+        tokenId: req.query.tokenId
+        // network: req.query.network,
+        // chainId: req.query.chainId,
+        // nftContractAddress: req.query.nftContractAddress,
+      },
+      {
+        amount: req.query.amount,
+        deadline: req.query.deadline,
+        v: req.query.v,
+        r: req.query.r,
+        s: req.query.s
+      },
+      {
+        upsert: true
+      }
+    );
     return res.status(201).send();
   } catch (err) {
     console.log(err);
