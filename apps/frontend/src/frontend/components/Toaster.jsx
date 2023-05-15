@@ -14,10 +14,11 @@ const Toaster = () => {
   useEffect(() => {
     if (toastInfo) {
       setToasts(prev => [...prev, toastInfo.id]);
+      const duration = toastInfo.duration ?? 2000;
       setTimeout(() => {
         dispatch(setToast(''));
-        toasts.filter(tid => tid !== toastInfo.id);
-      }, 2000);
+        setToasts(prev => prev.filter(tid => tid !== toastInfo.id));
+      }, duration);
     }
   }, [toastInfo?.id]);
 
@@ -27,7 +28,7 @@ const Toaster = () => {
           title: toastInfo.title,
           description: toastInfo.description,
           status: toastInfo.status,
-          duration: 2000,
+          duration: toastInfo.duration ?? 2000,
           position: 'top-right',
           isClosable: true
         })

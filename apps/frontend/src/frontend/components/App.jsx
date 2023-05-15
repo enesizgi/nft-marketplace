@@ -48,7 +48,7 @@ const App = () => {
   }, [width]);
 
   useEffect(() => {
-    if (sessionStorage.getItem('account')) {
+    if (window.ethereum) {
       dispatch(initMarketplace());
     }
   }, []);

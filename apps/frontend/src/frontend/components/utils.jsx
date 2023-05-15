@@ -9,6 +9,7 @@ export const dispatchToastHandler =
   (message, status = 'error', duration = 5000) =>
     dispatch(
       setToast({
+        id: Math.random(),
         title: message,
         duration,
         status
@@ -53,7 +54,7 @@ export const getProviderOrSignerFn = (userId, chainId) => {
   return new ethers.providers.JsonRpcProvider(CHAIN_PARAMS[chainId || defaultChainId].rpcUrls[0]);
 };
 
-export const getMarketplaceContractFn = (userId = window.sessionStorage.getItem('account'), chainId = window.sessionStorage.getItem('chainId')) => {
+export const getMarketplaceContractFn = (userId, chainId) => {
   let marketplaceContract;
   if (chainId && CONTRACTS[chainId]) marketplaceContract = CONTRACTS[chainId].MARKETPLACE;
   else marketplaceContract = CONTRACTS[defaultChainId].MARKETPLACE;
@@ -61,7 +62,7 @@ export const getMarketplaceContractFn = (userId = window.sessionStorage.getItem(
   return new ethers.Contract(marketplaceContract.address, marketplaceContract.abi, providerOrSigner);
 };
 
-export const getNFTContractFn = (userId = window.sessionStorage.getItem('account'), chainId = window.sessionStorage.getItem('chainId')) => {
+export const getNFTContractFn = (userId, chainId) => {
   let nftContract;
   if (chainId && CONTRACTS[chainId]) nftContract = CONTRACTS[chainId].NFT;
   else nftContract = CONTRACTS[defaultChainId].NFT;
@@ -69,7 +70,7 @@ export const getNFTContractFn = (userId = window.sessionStorage.getItem('account
   return new ethers.Contract(nftContract.address, nftContract.abi, providerOrSigner);
 };
 
-export const getwETHContractFn = (userId = window.sessionStorage.getItem('account'), chainId = window.sessionStorage.getItem('chainId')) => {
+export const getwETHContractFn = (userId, chainId) => {
   let wETHContract;
   if (chainId && CONTRACTS[chainId]) wETHContract = CONTRACTS[chainId].wETH;
   else wETHContract = CONTRACTS[defaultChainId].wETH;
@@ -77,8 +78,8 @@ export const getwETHContractFn = (userId = window.sessionStorage.getItem('accoun
   return new ethers.Contract(wETHContract.address, wETHContract.abi, providerOrSigner);
 };
 
-export const getNFTMetadata = async tokenId => {
-  const nftContract = await getNFTContractFn();
+export const getNFTMetadata = async (userId, chainId, tokenId) => {
+  const nftContract = await getNFTContractFn(userId, chainId);
   const uri = await nftContract.tokenURI(tokenId);
   const cid = uri.split('ipfs://')[1];
   const m = await API.getFromIPFS(cid);

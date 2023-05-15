@@ -1,3 +1,5 @@
+import { signatureGenerator } from '../../utils';
+
 export const baseURL = window.location.href.includes('localhost') ? 'http://localhost:3001' : 'https://api.enesizgi.me';
 
 class API {
@@ -65,25 +67,31 @@ class API {
 
   getCoverPhoto = async id => this.getRequest({ endpoint: '/user/cover-photo', qs: { id } });
 
-  uploadProfilePhoto = async (id, signature, message, formData) =>
-    this.postRequest({
+  uploadProfilePhoto = async (id, formData) => {
+    const { signature, message } = await signatureGenerator.generateSignatureData();
+    return this.postRequest({
       endpoint: '/user/upload-profile-photo',
       qs: { id, signature, message },
       body: formData
     });
+  };
 
-  uploadCoverPhoto = async (id, signature, message, formData) =>
-    this.postRequest({
+  uploadCoverPhoto = async (id, formData) => {
+    const { signature, message } = await signatureGenerator.generateSignatureData();
+    return this.postRequest({
       endpoint: '/user/upload-cover-photo',
       qs: { id, signature, message },
       body: formData
     });
+  };
 
-  createUser = async (id, signature, message) =>
-    this.postRequest({
+  createUser = async id => {
+    const { signature, message } = await signatureGenerator.generateSignatureData();
+    return this.postRequest({
       endpoint: '/user/create',
       qs: { id, signature, message }
     });
+  };
 
   getUser = async id =>
     this.getRequest({
@@ -122,23 +130,30 @@ class API {
 
   getETHUSDPrice = async () => this.getRequest({ endpoint: '/price/ethereum/usd' });
 
-  getShoppingLists = async (id, chainId) => this.getRequest({ endpoint: '/shopping', qs: { id, chainId } });
+  getShoppingLists = async (id, chainId) => {
+    const { signature, message } = await signatureGenerator.generateSignatureData();
+    return this.getRequest({ endpoint: '/shopping', qs: { signature, message, id, chainId } });
+  };
 
-  setUserFavorites = async (id, chainId, favorites) =>
-    this.postRequest({
+  setUserFavorites = async (id, chainId, favorites) => {
+    const { signature, message } = await signatureGenerator.generateSignatureData();
+    return this.postRequest({
       endpoint: '/shopping/favorites',
-      qs: { id, chainId },
+      qs: { signature, message, id, chainId },
       body: JSON.stringify({ favorites }),
       headers: { 'Content-Type': 'application/json' }
     });
+  };
 
-  setCart = async (id, chainId, cart) =>
-    this.postRequest({
+  setCart = async (id, chainId, cart) => {
+    const { signature, message } = await signatureGenerator.generateSignatureData();
+    return this.postRequest({
       endpoint: '/shopping/cart',
-      qs: { id, chainId },
+      qs: { signature, message, id, chainId },
       body: JSON.stringify({ cart }),
       headers: { 'Content-Type': 'application/json' }
     });
+  };
 
   getNft = async ({ tokenId, nftContract, network, cid }) =>
     this.getRequest({

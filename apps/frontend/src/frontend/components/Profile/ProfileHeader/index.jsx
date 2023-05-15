@@ -7,7 +7,6 @@ import ScProfileHeader from './ScProfileHeader';
 import ImageUpload from '../../ImageUpload';
 import { ReactComponent as DefaultProfilePhoto } from '../../../assets/default-profile-photo.svg';
 import { ReactComponent as EditIcon } from '../../../assets/edit-icon.svg';
-import { generateSignatureData, getSignedMessage, updateSignedMessage } from '../../../utils';
 import { getIsProfileOwner, getProfile } from '../../../store/selectors';
 import { initProfile } from '../../../store/actionCreators';
 import Button from '../../Button';
@@ -19,18 +18,15 @@ const ProfileHeader = ({ id }) => {
   const isProfileOwner = useSelector(getIsProfileOwner);
   const profile = useSelector(getProfile);
   const { name: username, profilePhoto, coverPhoto } = profile;
-  const signedMessage = getSignedMessage();
 
   const handleCoverPhotoUpload = async e => {
     e.preventDefault();
-    const { signature, message } = await generateSignatureData(signedMessage);
-    updateSignedMessage(signedMessage, signature, message);
     const file = e.target.files[0];
     if (file) {
       try {
         const formData = new FormData();
         formData.append('cover-photo', file);
-        const response = await API.uploadCoverPhoto(id, signature, message, formData);
+        const response = await API.uploadCoverPhoto(id, formData);
         dispatch(setUserCoverPhoto(response.url));
         dispatch(initProfile(id));
         return response.url;
@@ -43,14 +39,12 @@ const ProfileHeader = ({ id }) => {
 
   const handleProfilePhotoUpload = async e => {
     e.preventDefault();
-    const { signature, message } = await generateSignatureData(signedMessage);
-    updateSignedMessage(signedMessage, signature, message);
     const file = e.target.files[0];
     if (file) {
       try {
         const formData = new FormData();
         formData.append('profile-photo', file);
-        const response = await API.uploadProfilePhoto(id, signature, message, formData);
+        const response = await API.uploadProfilePhoto(id, formData);
         dispatch(setUserProfilePhoto(response.url));
         dispatch(initProfile(id));
         return response.url;

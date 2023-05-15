@@ -61,8 +61,8 @@ const AccountBox = () => {
   const handleLogout = e => {
     e.stopPropagation();
     dispatch(resetUser());
-    sessionStorage.removeItem('account');
-    sessionStorage.removeItem('chainId');
+    localStorage.removeItem('signature');
+    localStorage.removeItem('signedMessage');
   };
 
   const handleDropdownClick = e => {

@@ -21,37 +21,65 @@ export const classNames = classes => {
   return str.trim();
 };
 
-export const updateSignedMessage = (signedMessage, signature, message) => {
-  if (signedMessage?.signature !== signature) {
-    localStorage.setItem('signature', signature);
-    localStorage.setItem('signedMessage', message);
-  }
-};
-
-export const getSignedMessage = () => {
+const getSignedMessage = () => {
   const signature = localStorage.getItem('signature');
   const message = localStorage.getItem('signedMessage');
   if (signature && message) return { signature, message };
   return null;
 };
 
-export const generateSignatureData = async (signedMessage = null, message = 'NFTAO') => {
-  if (signedMessage) {
-    const messageCreationDate = new Date(signedMessage.message.split(' ').pop());
-    const oneDayAgo = new Date();
-    oneDayAgo.setDate(oneDayAgo.getDate() - 1);
-    if (messageCreationDate > oneDayAgo) {
-      return signedMessage;
-    }
+class SignatureGenerator {
+  constructor() {
+    this.lock = false;
   }
-  const date = new Date().toISOString();
-  const messageWithDate = `${message} ${date}`;
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  await provider.send('eth_requestAccounts', []); // connects MetaMask
-  const signer = provider.getSigner();
-  const signature = await signer.signMessage(messageWithDate);
-  return { signature, message: messageWithDate };
-};
+
+  wait = async () => {
+    if (this.lock) {
+      await new Promise(resolve => {
+        const interval = setInterval(() => {
+          if (!this.lock) {
+            clearInterval(interval);
+            resolve();
+          }
+        }, 100);
+      });
+    }
+  };
+
+  generateSignatureData = async () => {
+    if (this.lock) await this.wait();
+    this.lock = true;
+    try {
+      const message = 'NFTAO';
+      const signedMessage = getSignedMessage();
+      if (signedMessage) {
+        const messageCreationDate = new Date(signedMessage.message.split(' ').pop());
+        const oneDayAgo = new Date();
+        oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+        if (messageCreationDate > oneDayAgo) {
+          this.lock = false;
+          return signedMessage;
+        }
+      }
+      const date = new Date().toISOString();
+      const messageWithDate = `${message} ${date}`;
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      await provider.send('eth_requestAccounts', []); // connects MetaMask
+      const signer = provider.getSigner();
+      const signature = await signer.signMessage(messageWithDate);
+      localStorage.setItem('signature', signature);
+      localStorage.setItem('signedMessage', messageWithDate);
+      this.lock = false;
+      return { signature, message: messageWithDate };
+    } catch (error) {
+      console.error(error);
+    }
+    this.lock = false;
+    return null;
+  };
+}
+
+export const signatureGenerator = new SignatureGenerator();
 
 export const serializeBigNumber = obj =>
   Object.entries(obj).reduce(
