@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import API from '../modules/api';
 import NFTShowcase from './NFTShowcase';
-import { getIsLoadingContracts, getMarketplaceContract, getNFTContract } from '../store/selectors';
+import { getMarketplaceContract, getNFTContract } from '../store/selectors';
 import NFTSlider from './NFTSlider';
 import { theme } from '../constants';
 
@@ -86,7 +86,6 @@ const ListNFTSPage = ({ profileId, selectedTab }) => {
   const [auctionItemsLoading, setAuctionItemsLoading] = useState(false);
   const marketplaceContract = useSelector(getMarketplaceContract);
   const nftContract = useSelector(getNFTContract);
-  const isLoadingContracts = useSelector(getIsLoadingContracts);
 
   useEffect(() => {
     (async () => {
@@ -111,7 +110,7 @@ const ListNFTSPage = ({ profileId, selectedTab }) => {
 
   useEffect(() => {
     (async () => {
-      if (isLoadingContracts) return;
+      if (!marketplaceContract?.address || !nftContract.address) return;
       setListedItemsLoading(true);
       const items = [];
       const mongoItems = await API.getNftStatus({
@@ -147,11 +146,11 @@ const ListNFTSPage = ({ profileId, selectedTab }) => {
       setMarketplaceItems(prev => [items, prev[1]]);
       setListedItemsLoading(false);
     })();
-  }, [isLoadingContracts, listedCurrentPage, marketplaceContract, nftContract, profileId, selectedTab]);
+  }, [listedCurrentPage, marketplaceContract, nftContract, profileId, selectedTab]);
 
   useEffect(() => {
     (async () => {
-      if (isLoadingContracts) return;
+      if (!marketplaceContract?.address || !nftContract.address) return;
       setAuctionItemsLoading(true);
       const items = [];
       const mongoItems = await API.getNftStatus({
@@ -184,7 +183,7 @@ const ListNFTSPage = ({ profileId, selectedTab }) => {
       setMarketplaceItems(prev => [prev[0], items]);
       setAuctionItemsLoading(false);
     })();
-  }, [isLoadingContracts, auctionCurrentPage, marketplaceContract, nftContract, profileId, selectedTab]);
+  }, [auctionCurrentPage, marketplaceContract, nftContract, profileId, selectedTab]);
 
   if (selectedTab === 'Home') {
     if (listedItemCount === 0 && auctionItemCount === 0) {

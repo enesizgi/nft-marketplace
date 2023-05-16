@@ -4,7 +4,6 @@ import { defaultChainId } from '../constants';
 
 const initialState = {
   chainId: defaultChainId,
-  isLoadingContracts: true,
   ethPriceUSD: 1
 };
 
@@ -20,9 +19,6 @@ const marketplaceSlice = createSlice({
     setChainId: (state, action) => {
       state.chainId = action.payload;
     },
-    setIsLoadingContracts: (state, action) => {
-      state.isLoadingContracts = action.payload;
-    },
     setETHPriceUSD: (state, action) => {
       state.ethPriceUSD = action.payload;
     }
@@ -30,4 +26,4 @@ const marketplaceSlice = createSlice({
 });
 
 export default marketplaceSlice.reducer;
-export const { setMarketplace, setChainId, setIsLoadingContracts, setETHPriceUSD } = marketplaceSlice.actions;
+export const { setMarketplace, setChainId, setETHPriceUSD } = marketplaceSlice.actions;

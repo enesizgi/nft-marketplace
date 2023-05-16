@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import { resetUser, setCart, setShoppingLists, setUser, setUserFavorites } from './userSlice';
 import API from '../modules/api';
 import { serializeBigNumber, signatureGenerator } from '../utils';
-import { setChainId, setIsLoadingContracts } from './marketplaceSlice';
+import { setChainId } from './marketplaceSlice';
 import { setProfile } from './profileSlice';
 import { loadNFT, setCurrentPath, setLoading, setToast } from './uiSlice';
 import { NFT_ACTIVITY_TYPES } from '../constants';
@@ -97,8 +97,6 @@ const handleInitMarketplace = async (action, listenerApi) => {
       listenerApi.dispatch(loadNFT());
     }
   });
-
-  listenerApi.dispatch(setIsLoadingContracts(false));
 };
 
 const handleInitProfile = async (action, listenerApi) => {

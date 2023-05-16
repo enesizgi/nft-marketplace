@@ -33,8 +33,6 @@ export const getwETHContract = createSelector(getUserId, getChainId, getwETHCont
 
 export const getProviderOrSigner = createSelector(getUserId, getChainId, getProviderOrSignerFn);
 
-export const getIsLoadingContracts = createSelector(getMarketplace, ({ isLoadingContracts }) => isLoadingContracts);
-
 export const getETHPriceUSD = createSelector(getMarketplace, ({ ethPriceUSD }) => ethPriceUSD);
 
 export const getUserProfilePhoto = createSelector(getUser, ({ profilePhoto }) => profilePhoto);

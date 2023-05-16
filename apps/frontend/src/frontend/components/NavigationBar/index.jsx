@@ -5,7 +5,7 @@ import AccountBox from './AccountBox';
 import { DEVICE_TYPES } from '../../constants';
 import { classNames } from '../../utils';
 import { initMarketplace } from '../../store/actionCreators';
-import { getCurrentPath, getDeviceType, getIsLoadingContracts, getUserId } from '../../store/selectors';
+import { getCurrentPath, getDeviceType, getUserId } from '../../store/selectors';
 import CoolButton from './CoolButton';
 import NetworkSelector from './NetworkSelector';
 import ScNavigationBar from './ScNavigationBar';
@@ -17,7 +17,6 @@ const NavigationBar = () => {
   const dispatch = useDispatch();
   const userId = useSelector(getUserId);
   const deviceType = useSelector(getDeviceType);
-  const isLoadingContracts = useSelector(getIsLoadingContracts);
   const currentPath = useSelector(getCurrentPath);
   const navigationBarRef = useRef();
 
@@ -67,7 +66,7 @@ const NavigationBar = () => {
           </div>
         </>
       )}
-      {(isLoadingContracts || !userId) && (
+      {!userId && (
         <div className="navigationItem button connect">
           <CoolButton onClick={handleInitMarketplace}>Connect</CoolButton>
         </div>
