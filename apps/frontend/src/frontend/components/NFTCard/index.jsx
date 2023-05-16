@@ -38,7 +38,7 @@ const NFTCard = ({ item, selectedTab, loading }) => {
   const handleHoverCard = () => {
     switch (selectedTab) {
       case 'Listed':
-        if (!compare(profileId, userId) && item.auctionId === undefined) {
+        if (userId && !compare(profileId, userId) && item.auctionId === undefined) {
           setShowBuyButton(true);
         }
         break;
@@ -49,7 +49,7 @@ const NFTCard = ({ item, selectedTab, loading }) => {
         if (compare(profileId, userId)) setShowSellButton(true);
         break;
       case 'Home':
-        if (!compare(item.seller, userId) && item.auctionId === undefined) setShowBuyButton(true);
+        if (userId && !compare(item.seller, userId) && item.auctionId === undefined) setShowBuyButton(true);
         break;
       default:
         break;
