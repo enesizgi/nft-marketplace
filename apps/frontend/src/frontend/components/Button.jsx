@@ -69,10 +69,11 @@ const ScButton = styled.button`
   border-radius: 10px;
   padding: 5px 15px;
   cursor: pointer;
+  ${({ disabled }) => disabled && `pointer-events: none;`}
 `;
 
-const Button = ({ className, onClick, children }) => (
-  <ScButton type="button" className={className} onClick={onClick}>
+const Button = ({ className, onClick, children, disabled }) => (
+  <ScButton type="button" className={className} onClick={onClick} disabled={disabled}>
     {children}
   </ScButton>
 );

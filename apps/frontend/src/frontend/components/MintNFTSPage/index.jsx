@@ -148,8 +148,14 @@ const MintNFTSPage = ({ reload }) => {
   const getRandomNFT = async () => {
     setRandomReady(false);
     try {
-      const response = await API.getRandomNFT();
-      const imageResponse = await fetch(response.image);
+      const response = await API.getRandomNFT({ throwError: true, timeout: 4000 });
+      const imageResponse = await API.getRequest({
+        absoluteURL: true,
+        endpoint: response.image,
+        throwError: true,
+        timeout: 4000,
+        responseType: 'raw'
+      });
       const blob = await imageResponse.blob();
       const url = URL.createObjectURL(blob);
       const imageFile = new File([blob], 'image.jpg', { type: 'image/jpeg' });
@@ -158,8 +164,11 @@ const MintNFTSPage = ({ reload }) => {
       setImage(url);
       setFile(imageFile);
     } catch (e) {
+      if (e.message.startsWith('AbortError')) {
+        console.log('Aborted');
+        dispatchToast('Generating a random NFT is taking longer than expected. You can retry by clicking the button again.');
+      } else dispatchToast('Please try again.');
       console.error(e);
-      dispatchToast('Please try again.');
     }
     setRandomReady(true);
   };
@@ -205,7 +214,7 @@ const MintNFTSPage = ({ reload }) => {
       </label>
       <div className="formContainer">
         <div className="randomButtons">
-          <Button className={classNames({ 'random-button': true, outline: true })} onClick={getRandomNFT}>
+          <Button className={classNames({ 'random-button': true, outline: true })} disabled={!randomReady} onClick={getRandomNFT}>
             Generate random NFT
           </Button>
           {hasNFTInfo && (

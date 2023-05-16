@@ -19,16 +19,18 @@ class API {
 
     this.baseRequest =
       type =>
-      ({ endpoint, qs = {}, headers, body, timeout, responseType = 'json' }) => {
+      ({ endpoint, qs = {}, headers, body, timeout, responseType = 'json', throwError = false, absoluteURL = false }) => {
         const fetchMethod = timeout ? this.fetchWithTimeout(timeout) : fetch;
 
-        return fetchMethod(`${this.baseURL}${endpoint}${this.createQs(qs)}`, {
+        const url = absoluteURL ? endpoint : `${this.baseURL}${endpoint}`;
+        return fetchMethod(`${url}${this.createQs(qs)}`, {
           method: type,
           ...(headers && { headers }),
           ...(body && { body })
         })
           .then(response => (responseType === 'raw' ? response : response.json()))
           .catch(error => {
+            if (throwError) throw new Error(error);
             console.warn(`Request to ${endpoint} returned ${error}.`);
             return null;
           });
@@ -179,7 +181,7 @@ class API {
 
   search = async qs => this.getRequest({ endpoint: '/search', qs });
 
-  getRandomNFT = async () => this.getRequest({ endpoint: '/nft/random' });
+  getRandomNFT = async ({ timeout, responseType, throwError }) => this.getRequest({ endpoint: '/nft/random', timeout, responseType, throwError });
 }
 
 export default new API();
