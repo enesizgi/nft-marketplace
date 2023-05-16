@@ -4,7 +4,7 @@ import NftStatus from '../models/nft_status';
 import { apiBaseURL, apiProtocol } from '../constants';
 import Metadata from '../models/metadata';
 import RandomNft from '../models/randomNft';
-import { etherscanLimiter, getMarketplaceContract } from '../utils';
+import { etherscanLimiter, getMarketplaceContract, getNftContract } from '../utils';
 
 const router = express.Router();
 
@@ -18,17 +18,47 @@ router.get('/nft', async (req, res) => {
     if (tokenIds.length === 0 || !req.query.nftContract || !req.query.network) return res.status(400).send();
     const nfts = await Nft.find({
       ...(req.query.cid && { cid: Number(req.query.cid) }),
-      ...(req.query.tokenId && { tokenId: { $in: tokenIds } }),
+      tokenId: { $in: tokenIds },
       nftContract: req.query.nftContract,
-      network: req.query.network,
-      path: { $not: /json/i }
+      network: req.query.network
     }).lean();
+
+    const nftContract = getNftContract(req.query.network);
+
+    nfts.push(
+      ...(await Promise.all(
+        tokenIds
+          .map(async tokenId => {
+            if (nfts.find(nft => nft.tokenId === tokenId)) return null;
+            try {
+              await etherscanLimiter.wait({ chainId: req.query.network });
+              const tokenURI = await nftContract.tokenURI(tokenId);
+              if (tokenURI.startsWith('ipfs://')) {
+                const cid = tokenURI.split('//')[1];
+                const response = await fetch(`https://${cid}.ipfs.w3s.link`);
+                const metadata = await response.json();
+                return {
+                  cid,
+                  tokenId,
+                  nftContract: req.query.nftContract,
+                  network: req.query.network,
+                  isIPFS: true,
+                  ...metadata,
+                  ...(metadata.image ? { url: metadata.image } : {})
+                };
+              }
+            } catch (err) {
+              console.log(err);
+            }
+            return null;
+          })
+          .filter(i => i)
+      ))
+    );
 
     if (nfts.length === 0) return res.status(404).send();
 
     const metadata = await Metadata.find({ cid: { $in: nfts.map(n => n.cid) } }).lean();
-
-    if (metadata.length === 0) return res.status(404).send();
 
     const marketplaceContract = getMarketplaceContract(req.query.network);
 
@@ -48,16 +78,12 @@ router.get('/nft', async (req, res) => {
     }, {});
 
     return res.json(
-      nfts.map(nft => {
-        const pathList = JSON.parse(nft.path) || [];
-        const realPath = pathList.join('/');
-        return {
-          ...nft,
-          path: `${apiProtocol}://${apiBaseURL}/${realPath}`,
-          metadata: metadata.find(m => m.cid === nft.cid),
-          ...(storeInfo && { ...storeInfo[nft.tokenId] })
-        };
-      })
+      nfts.map(nft => ({
+        ...nft,
+        path: nft.image || nft.url || `${apiProtocol}://${apiBaseURL}/${nft.imagePath.join('/')}`,
+        metadata: nft.metadata || metadata.find(m => m.cid === nft.cid),
+        ...(storeInfo && { ...storeInfo[nft.tokenId] })
+      }))
     );
   } catch (err) {
     console.log(err);
