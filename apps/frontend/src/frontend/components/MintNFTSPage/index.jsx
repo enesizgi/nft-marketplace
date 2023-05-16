@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { FormLabel, Input, Switch } from '@chakra-ui/react';
 import { ethers } from 'ethers';
+import { NETWORK_NAMES } from 'contracts';
 import API from '../../modules/api';
 import { getChainId, getMarketplaceContract, getNFTContract, getUserId } from '../../store/selectors';
 import ScMintNFTSPage from './ScMintNFTSPage';
@@ -173,7 +174,12 @@ const MintNFTSPage = ({ reload }) => {
   };
 
   const handleGoToDetails = () => {
-    navigate(`/nft/${nftContract.address}/${tokenId.toString()}`);
+    const network = NETWORK_NAMES[chainId];
+    if (!network) {
+      console.error('Network not found');
+      return;
+    }
+    navigate(`/nft/${network}/${nftContract.address}/${tokenId.toString()}`);
   };
 
   const NFTDropContent = useCallback(() => {

@@ -1,12 +1,13 @@
 import { createListenerMiddleware, isAnyOf } from '@reduxjs/toolkit';
 import { ethers } from 'ethers';
+import { CONTRACTS, NETWORK_IDS } from 'contracts';
 import { resetUser, setCart, setShoppingLists, setUser, setUserFavorites } from './userSlice';
 import API from '../modules/api';
-import { serializeBigNumber, signatureGenerator } from '../utils';
+import { changeNetwork, serializeBigNumber, signatureGenerator } from '../utils';
 import { setChainId } from './marketplaceSlice';
 import { setProfile } from './profileSlice';
 import { loadNFT, setCurrentPath, setLoading, setToast } from './uiSlice';
-import { NFT_ACTIVITY_TYPES } from '../constants';
+import { defaultChainId, NFT_ACTIVITY_TYPES } from '../constants';
 import { getMarketplaceContractFn, getNFTContractFn } from '../components/utils';
 import { setNFT } from './nftSlice';
 import { initProfile } from './actionCreators';
@@ -30,10 +31,12 @@ const userLoginFlow = async (id, chainId, listenerApi) => {
     }
   }
   const shoppingLists = await API.getShoppingLists(id, chainId);
-  listenerApi.dispatch(setUser({ ...user, id: id.toLowerCase(), cart: shoppingLists?.cart ?? [], favorites: shoppingLists?.favorites ?? [] }));
+  user = { ...user, id: id.toLowerCase(), cart: shoppingLists?.cart ?? [], favorites: shoppingLists?.favorites ?? [] };
+  listenerApi.dispatch(setUser(user));
+  return user;
 };
 
-const setAccounts = async () => {
+const getAccounts = async () => {
   const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
   return accounts[0];
 };
@@ -54,16 +57,28 @@ const handleInitMarketplace = async (action, listenerApi) => {
     return;
   }
   const chainIdOfAccount = await getChainIdOfAccount();
-  const id = await setAccounts();
-  await userLoginFlow(id, chainIdOfAccount, listenerApi);
+  if (chainIdOfAccount) listenerApi.dispatch(setChainId(chainIdOfAccount));
+  const id = await getAccounts();
 
-  listenerApi.dispatch(setChainId(chainIdOfAccount));
+  const user = await userLoginFlow(id, chainIdOfAccount, listenerApi);
 
-  await userLoginFlow(id, chainIdOfAccount, listenerApi);
+  if (chainIdOfAccount && !CONTRACTS[chainIdOfAccount]) {
+    const result = await changeNetwork(defaultChainId);
+    if (result) listenerApi.dispatch(setChainId(defaultChainId));
+    if (!result) {
+      listenerApi.dispatch(
+        setToast({
+          id: Math.random(),
+          title: 'You should change your network from navigation bar.',
+          status: 'error'
+        })
+      );
+    }
+  }
 
   window.ethereum.on('chainChanged', async chainId => {
     listenerApi.dispatch(setChainId(chainId));
-    const userId = await setAccounts();
+    const userId = await getAccounts();
     const { cart, favorites } = API.getShoppingLists(userId, chainId);
     listenerApi.dispatch(setShoppingLists({ cart, favorites }));
   });
@@ -78,8 +93,8 @@ const handleInitMarketplace = async (action, listenerApi) => {
     await handleInitMarketplace(action, listenerApi);
   });
 
+  const userId = user?.id ?? listenerApi.getState().user.id;
   const {
-    user: { id: userId },
     marketplace: { chainId }
   } = listenerApi.getState();
 
@@ -110,11 +125,9 @@ const handleInitNFTState = async (action, listenerApi) => {
   listenerApi.dispatch(setLoading(true));
   const {
     user: { id: userId },
-    marketplace: { chainId },
     nft: { metadata: currentMetadata, tokenId: currentTokenId }
   } = listenerApi.getState();
-  const tokenId = action.payload;
-
+  const { tokenId, chainId } = action.payload;
   const marketplaceContract = await getMarketplaceContractFn(userId, chainId);
   const nftContract = await getNFTContractFn(userId, chainId);
   const _nftOwner = await nftContract.ownerOf(tokenId);
@@ -238,22 +251,34 @@ const handleInitNFTState = async (action, listenerApi) => {
   let seller = isListed ? nftStatusListing[0].seller.toLowerCase() : '';
   seller = isOnAuction ? nftStatusAuction[0].seller.toLowerCase() : seller;
 
-  if (listenerApi.getState().marketplace.chainId === chainId) {
+  if (listenerApi.getState().marketplace.chainId === chainId && listenerApi.getState().user.id === userId) {
     listenerApi.dispatch(
-      setNFT({ ...finalItem, transactions: nftTransactionData, offers: offers, bids: bids, owner, seller, isListed, isOnAuction })
+      setNFT({
+        ...finalItem,
+        transactions: nftTransactionData,
+        offers: offers,
+        bids: bids,
+        owner,
+        seller,
+        isListed,
+        isOnAuction,
+        lastUpdate: Date.now()
+      })
     );
     listenerApi.dispatch(setLoading(false));
   }
 };
 
 const handlePathChanges = async (action, listenerApi) => {
-  const pathName = window.location.pathname;
-  const isInNFTPage = pathName.startsWith('/nft/');
-  const isInProfilePage = pathName.startsWith('/user/');
+  const isInNFTPage = window.location.pathname.startsWith('/nft/');
+  const isInProfilePage = window.location.pathname.startsWith('/user/');
+  const pathName = window.location.pathname.split('/');
+  // TODO @Enes: Get chain id from the url. This way we can support multiple chains by only knowing url.
 
   if (isInNFTPage) {
-    const tokenId = pathName.split('/')[3];
-    await handleInitNFTState({ payload: tokenId }, listenerApi);
+    const tokenId = pathName[4];
+    const chainId = NETWORK_IDS[pathName[2].toUpperCase()];
+    if (chainId) await handleInitNFTState({ payload: { tokenId, chainId } }, listenerApi);
   } else {
     // If we are not in NFT page, clear the state.
     // Also, don't clear the state if it is already cleared.
@@ -263,7 +288,7 @@ const handlePathChanges = async (action, listenerApi) => {
   }
   if (isInProfilePage) {
     // Initialize profile again even for the same id to see the updates.
-    const pathId = pathName.split('/')[2];
+    const pathId = pathName[2];
     listenerApi.dispatch(initProfile(pathId));
   }
 };

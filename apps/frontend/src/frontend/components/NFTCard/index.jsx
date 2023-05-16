@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { useDispatch, useSelector } from 'react-redux';
+import { NETWORK_NAMES } from 'contracts';
 import ScNFTCard from './ScNFTCard';
-import { getIsInCart, getIsInFavorites, getNFTContract, getUserId } from '../../store/selectors';
+import { getChainId, getIsInCart, getIsInFavorites, getNFTContract, getUserId } from '../../store/selectors';
 import AddressDisplay from '../AddressDisplay';
 import { ReactComponent as ImagePlaceholder } from '../../assets/image-placeholder.svg';
 import { ReactComponent as CartIcon } from '../../assets/cart-icon.svg';
@@ -19,6 +20,7 @@ const NFTCard = ({ item, selectedTab, loading }) => {
   const nftContract = useSelector(getNFTContract);
   const isInCart = useSelector(getIsInCart(tokenId));
   const isInFavorites = useSelector(getIsInFavorites(tokenId));
+  const chainId = useSelector(getChainId);
 
   const [showSellButton, setShowSellButton] = useState(false);
   const [showBuyButton, setShowBuyButton] = useState(false);
@@ -60,7 +62,12 @@ const NFTCard = ({ item, selectedTab, loading }) => {
   };
   // TODO @Bugra: add onclick event for detail page
   const handleGoToDetailPage = () => {
-    navigate(`/nft/${nftContract.address}/${tokenId}`, { state: { item } });
+    const network = NETWORK_NAMES[chainId];
+    if (!network) {
+      console.error('Network not found');
+      return;
+    }
+    navigate(`/nft/${network}/${nftContract.address}/${tokenId}`, { state: { item } });
   };
 
   const handleAddToCart = e => {

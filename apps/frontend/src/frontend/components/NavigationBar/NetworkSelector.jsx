@@ -78,7 +78,9 @@ const NetworkSelector = () => {
     if (!userId) {
       dispatch(setChainId(networkId));
     } else if (window.ethereum) {
-      await changeNetwork(networkId);
+      const result = await changeNetwork(networkId);
+      // Network change is critical, so we reload the page.
+      if (result) window.location.reload();
     }
     setDropdownOpened(false);
   };

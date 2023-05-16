@@ -16,10 +16,10 @@ import * as wETHAddressSepolia from '../contractsData/sepolia/wETH-address.json'
 import * as wETHAbiSepolia from '../contractsData/sepolia/wETH.json';
 
 export const NETWORK_NAMES = {
-  SEPOLIA: 'Sepolia',
-  GOERLI: 'Goerli',
-  POLYGON: 'Polygon',
-  LOCALHOST: 'Localhost'
+  '0xaa36a7': 'sepolia',
+  '0x5': 'goerli',
+  '0x89': 'polygon',
+  '0x7a69': 'localhost'
 };
 
 export const NETWORK_IDS = {

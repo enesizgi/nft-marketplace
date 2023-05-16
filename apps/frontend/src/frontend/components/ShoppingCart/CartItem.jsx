@@ -3,8 +3,9 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
 import styled from 'styled-components';
+import { NETWORK_NAMES } from 'contracts';
 import { ReactComponent as TrashIcon } from '../../assets/trash-icon.svg';
-import { getMarketplaceContract } from '../../store/selectors';
+import { getChainId, getMarketplaceContract } from '../../store/selectors';
 import Shimmer from '../Shimmer';
 
 const ScCartItem = styled.div`
@@ -97,10 +98,16 @@ const ScCartItem = styled.div`
 
 const CartItem = ({ onRemoveFromList, nftInfo }) => {
   const marketplaceContract = useSelector(getMarketplaceContract);
+  const chainId = useSelector(getChainId);
   const navigate = useNavigate();
 
   const handleGoToNFTDetailPage = () => {
-    navigate(`/nft/${marketplaceContract.address}/${nftInfo.tokenId}`);
+    const network = NETWORK_NAMES[chainId];
+    if (!network) {
+      console.error('Network not found');
+      return;
+    }
+    navigate(`/nft/${network}/${marketplaceContract.address}/${nftInfo.tokenId}`);
   };
 
   return (
