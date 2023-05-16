@@ -395,7 +395,7 @@ export const fetchMarketplaceEvents = async chainId => {
     ]);
     fromBlock = fromBlock.at(0) ? fromBlock.at(0).blockNumber + 1 : 0;
     fromBlockTransfer = fromBlockTransfer.at(0) ? fromBlockTransfer.at(0).blockNumber + 1 : 0;
-    await etherscanLimiter.wait({ cost: 2 });
+    await etherscanLimiter.wait({ chainId, cost: 2 });
     const [events, nftEvents] = await Promise.all([
       marketplaceContract.queryFilter('*', fromBlock),
       nftContract.queryFilter('Transfer', fromBlockTransfer)

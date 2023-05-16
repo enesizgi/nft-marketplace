@@ -3,7 +3,8 @@ import * as mongoose from 'mongoose';
 const NftSchema = new mongoose.Schema(
   {
     cid: String,
-    path: String,
+    imagePath: Array,
+    metadataPath: Array,
     tokenId: Number,
     nftContract: String,
     network: String
@@ -14,6 +15,6 @@ const NftSchema = new mongoose.Schema(
   }
 );
 
-NftSchema.index({ cid: 1, path: 1 }, { unique: true });
+NftSchema.index({ cid: 1 }, { unique: true });
 
 export default mongoose.model('Nft', NftSchema, 'nfts');
