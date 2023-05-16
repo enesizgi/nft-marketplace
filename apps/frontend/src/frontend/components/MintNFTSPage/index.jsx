@@ -165,7 +165,6 @@ const MintNFTSPage = ({ reload }) => {
       setFile(imageFile);
     } catch (e) {
       if (e.message.startsWith('AbortError')) {
-        console.log('Aborted');
         dispatchToast('Generating a random NFT is taking longer than expected. You can retry by clicking the button again.');
       } else dispatchToast('Please try again.');
       console.error(e);

@@ -222,6 +222,7 @@ export const getLastStatusOfNft = async events => {
           });
           return acc;
         case 'BidPlaced':
+        case 'OwnershipTransferred':
           return acc;
         default:
           console.warn(`Unknown event type: ${event.type}`);
@@ -346,7 +347,6 @@ export const finishAuctions = async chainId => {
       $limit: 5
     }
   ]);
-  console.log('endedAuctions', endedAuctions);
   const isLocalhost = chainId === NETWORK_IDS.LOCALHOST;
   const provider = isLocalhost
     ? new ethers.providers.JsonRpcProvider('http://127.0.0.1:8545')
@@ -395,7 +395,6 @@ export const fetchMarketplaceEvents = async chainId => {
     ]);
     fromBlock = fromBlock.at(0) ? fromBlock.at(0).blockNumber + 1 : 0;
     fromBlockTransfer = fromBlockTransfer.at(0) ? fromBlockTransfer.at(0).blockNumber + 1 : 0;
-    console.log('fetchMarketplaceEvents');
     await etherscanLimiter.wait({ cost: 2 });
     const [events, nftEvents] = await Promise.all([
       marketplaceContract.queryFilter('*', fromBlock),
@@ -454,7 +453,6 @@ export const fetchMarketplaceEvents = async chainId => {
         network: chainId
       };
     });
-    console.log(insertData);
     await Promise.all([Event.insertMany([...insertData, ...nftInsertData]), insertData.length > 0 && getLastStatusOfNft(insertData)]);
   } catch (err) {
     console.log(err);
