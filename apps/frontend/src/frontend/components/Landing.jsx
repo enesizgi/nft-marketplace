@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { theme } from '../constants';
 import LandingGif from '../assets/landing.gif';
+import LandingWebp from '../assets/landing.webp';
+import LandingAvif from '../assets/landing.avif';
 import { ReactComponent as NFTAOTextLogo } from '../assets/nftao-text.svg';
 
 const ScLanding = styled.div`
@@ -46,11 +48,47 @@ const ScLanding = styled.div`
   }
 `;
 
-const Landing = () => (
-  <ScLanding>
-    <img alt="landing-gif" src={LandingGif} className="landing-gif" />
-    <NFTAOTextLogo className="nftao-text-logo" />
-  </ScLanding>
-);
+const Landing = () => {
+  const [imageSrc, setImageSrc] = useState(null);
+  useEffect(() => {
+    const isSupported = src =>
+      new Promise((resolve, reject) => {
+        // reject(new Error('Failed to load image'));
+        try {
+          const img = new Image();
+          img.onload = () => resolve(src);
+          img.onerror = () => reject(new Error('Failed to load image'));
+          img.src = src;
+        } catch (e) {
+          reject(e);
+        }
+      });
+
+    const load = async images => {
+      try {
+        const src = await isSupported(LandingAvif);
+        setImageSrc(src);
+      } catch (e) {
+        if (images.length > 0) {
+          images.shift();
+          load(images);
+        } else {
+          console.log('Failed to load image');
+        }
+      }
+    };
+
+    load([LandingAvif, LandingWebp, LandingGif]);
+  }, []);
+
+  return (
+    <ScLanding>
+      <img alt="landing-gif" src={imageSrc} className="landing-gif" />
+      {/* <img alt="landing-gif" src={LandingAvif} className="landing-gif" /> */}
+      {/* <img alt="landing-gif" src={LandingWebp} className="landing-gif" /> */}
+      <NFTAOTextLogo className="nftao-text-logo" />
+    </ScLanding>
+  );
+};
 
 export default Landing;
