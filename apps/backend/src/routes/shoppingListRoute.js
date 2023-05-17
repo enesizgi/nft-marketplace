@@ -13,13 +13,8 @@ const getShoppingCart = async (walletId, chainId) => {
   }
   const { items } = result;
 
-  const cartItems = [];
-  items.forEach(tokenId => canAddedToShoppingList(chainId, tokenId, walletId).then(res => res && cartItems.push[tokenId]));
-
-  if (cartItems.length !== items.length) {
-    await ShoppingList.updateOne({ walletId, chainId, listType: SHOPPING_LIST_TYPES.CART }, { items: cartItems });
-  }
-  return cartItems;
+  const cartItems = await Promise.all(items.map(async tokenId => ((await canAddedToShoppingList(chainId, tokenId, walletId)) ? tokenId : null)));
+  return cartItems.filter(i => i !== null);
 };
 
 const getFavorites = async (walletId, chainId) => {

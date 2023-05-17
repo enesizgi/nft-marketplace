@@ -13,7 +13,7 @@ router.get('/nft', async (req, res) => {
     if (!req.query.cid && !req.query.tokenId) {
       return res.status(400).send();
     }
-    const tokenIds = JSON.parse(req.query.tokenId);
+    const tokenIds = JSON.parse(req.query.tokenId).filter((value, index, array) => array.indexOf(value) === index);
 
     if (tokenIds.length === 0 || !req.query.nftContract || !req.query.network) return res.status(400).send();
     const nfts = await Nft.find({
@@ -26,9 +26,9 @@ router.get('/nft', async (req, res) => {
     const nftContract = getNftContract(req.query.network);
 
     nfts.push(
-      ...(await Promise.all(
-        tokenIds
-          .map(async tokenId => {
+      ...(
+        await Promise.all(
+          tokenIds.map(async tokenId => {
             if (nfts.find(nft => nft.tokenId === tokenId)) return null;
             try {
               await etherscanLimiter.wait({ chainId: req.query.network });
@@ -52,8 +52,8 @@ router.get('/nft', async (req, res) => {
             }
             return null;
           })
-          .filter(i => i)
-      ))
+        )
+      ).filter(i => i)
     );
 
     if (nfts.length === 0) return res.status(404).send();

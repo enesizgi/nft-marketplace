@@ -258,13 +258,14 @@ export const getIsItemInSale = async (chainId, tokenId) => {
   const itemStatus = await NftStatus.findOne({
     nft: CONTRACTS[chainId].NFT.address,
     tokenId,
-    network: chainId
-  });
+    network: chainId,
+    type: 'Listing'
+  }).lean();
   if (!itemStatus || !Object.keys(itemStatus).length) {
     return false;
   }
-  const { canceled, claimed, sold, auctionId } = itemStatus;
-  return !claimed && !sold && !canceled && !auctionId;
+  const { canceled, sold } = itemStatus;
+  return !canceled && !sold;
 };
 
 export const canAddedToShoppingList = async (chainId, tokenId, walletId) => {
