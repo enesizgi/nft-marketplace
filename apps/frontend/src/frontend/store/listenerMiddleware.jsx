@@ -6,9 +6,9 @@ import API from '../modules/api';
 import { changeNetwork, serializeBigNumber, signatureGenerator } from '../utils';
 import { setChainId } from './marketplaceSlice';
 import { setProfile } from './profileSlice';
-import { loadNFT, setCurrentPath, setLoading, setToast } from './uiSlice';
+import { loadNFT, setCurrentPath, setLoading } from './uiSlice';
 import { defaultChainId, NFT_ACTIVITY_TYPES } from '../constants';
-import { getMarketplaceContractFn, getNFTContractFn } from '../components/utils';
+import { dispatchToastHandler, getMarketplaceContractFn, getNFTContractFn } from '../components/utils';
 import { setNFT } from './nftSlice';
 import { initProfile } from './actionCreators';
 import { setListedItems } from './listingSlice';
@@ -47,13 +47,8 @@ const getChainIdOfAccount = async () => {
 
 const handleInitMarketplace = async (action, listenerApi) => {
   if (!window.ethereum) {
-    listenerApi.dispatch(
-      setToast({
-        id: Math.random(),
-        title: 'You should install Metamask.',
-        status: 'error'
-      })
-    );
+    const dispatchToast = dispatchToastHandler(listenerApi.dispatch);
+    dispatchToast('You should install Metamask.');
     return;
   }
   const chainIdOfAccount = await getChainIdOfAccount();
@@ -66,13 +61,8 @@ const handleInitMarketplace = async (action, listenerApi) => {
     const result = await changeNetwork(defaultChainId);
     if (result) listenerApi.dispatch(setChainId(defaultChainId));
     if (!result) {
-      listenerApi.dispatch(
-        setToast({
-          id: Math.random(),
-          title: 'You should change your network from navigation bar.',
-          status: 'error'
-        })
-      );
+      const dispatchToast = dispatchToastHandler(listenerApi.dispatch);
+      dispatchToast('You should change your network from navigation bar.');
     }
   }
 
@@ -305,21 +295,11 @@ const handleUpdateCart = async (action, listenerApi) => {
     const result = await API.setCart(id, chainId, updatedCart);
     listenerApi.dispatch(setCart(result?.cart));
     if (isAddition) {
-      listenerApi.dispatch(
-        setToast({
-          id: Math.random(),
-          title: 'Item added to your cart.',
-          status: 'success'
-        })
-      );
+      const dispatchToast = dispatchToastHandler(listenerApi.dispatch);
+      dispatchToast('Item added to your cart.', 'success');
     } else if (currentPath !== '/cart') {
-      listenerApi.dispatch(
-        setToast({
-          id: Math.random(),
-          title: 'Item removed from your cart.',
-          status: 'error'
-        })
-      );
+      const dispatchToast = dispatchToastHandler(listenerApi.dispatch);
+      dispatchToast('Item removed from your cart.', 'error');
     }
   } catch (e) {
     console.log(e);
@@ -352,21 +332,11 @@ const handleUpdateFavorites = async (action, listenerApi) => {
     const result = await API.setUserFavorites(id, chainId, updatedFavorites);
     listenerApi.dispatch(setUserFavorites(result?.favorites));
     if (isAddition) {
-      listenerApi.dispatch(
-        setToast({
-          id: Math.random(),
-          title: 'Item added to your favorites.',
-          status: 'success'
-        })
-      );
+      const dispatchToast = dispatchToastHandler(listenerApi.dispatch);
+      dispatchToast('Item added to your favorites.', 'success');
     } else if (currentPath !== '/cart') {
-      listenerApi.dispatch(
-        setToast({
-          id: Math.random(),
-          title: 'Item removed from your favorites.',
-          status: 'error'
-        })
-      );
+      const dispatchToast = dispatchToastHandler(listenerApi.dispatch);
+      dispatchToast('Item removed from your favorites.', 'error');
     }
   } catch (e) {
     console.log(e);

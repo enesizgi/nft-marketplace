@@ -4,7 +4,7 @@ import NftStatus from '../models/nft_status';
 import { apiBaseURL, apiProtocol } from '../constants';
 import Metadata from '../models/metadata';
 import RandomNft from '../models/randomNft';
-import { etherscanLimiter, getMarketplaceContract, getNftContract } from '../utils';
+import { etherscanLimiter, getNftContract } from '../utils';
 
 const router = express.Router();
 
@@ -60,21 +60,15 @@ router.get('/nft', async (req, res) => {
 
     const metadata = await Metadata.find({ cid: { $in: nfts.map(n => n.cid) } }).lean();
 
-    const marketplaceContract = getMarketplaceContract(req.query.network);
-
     const nftStatus = await NftStatus.find({
-      tokenId: { $in: tokenIds }
+      tokenId: { $in: tokenIds },
+      canceled: false,
+      sold: false
     }).lean();
 
-    const storeInfo = await nftStatus.reduce(async (_prev, nft) => {
-      const prev = await _prev;
-      if (nft.itemId) {
-        await etherscanLimiter.wait({ chainId: req.query.network });
-        const price = await marketplaceContract.getTotalPrice(nft.itemId);
-        prev[nft.tokenId] = { price, itemId: nft.itemId };
-        return prev;
-      }
-      return prev;
+    const storeInfo = nftStatus.reduce((acc, nft) => {
+      if (nft.itemId) acc[nft.tokenId] = { itemId: nft.itemId };
+      return acc;
     }, {});
 
     return res.json(
@@ -82,7 +76,7 @@ router.get('/nft', async (req, res) => {
         ...nft,
         path: nft.image || nft.url || `${apiProtocol}://${apiBaseURL}/${nft.imagePath.join('/')}`,
         metadata: nft.metadata || metadata.find(m => m.cid === nft.cid),
-        ...(storeInfo && { ...storeInfo[nft.tokenId] })
+        ...(nft.tokenId && storeInfo[nft.tokenId])
       }))
     );
   } catch (err) {

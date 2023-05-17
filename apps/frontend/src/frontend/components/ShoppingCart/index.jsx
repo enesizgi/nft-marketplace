@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
@@ -11,8 +11,8 @@ import Button from '../Button';
 import { updateCart, updateFavorites } from '../../store/actionCreators';
 import API from '../../modules/api';
 import LoadingSpinner from '../LoadingSpinner';
-import { setToast } from '../../store/uiSlice';
 import { setCart } from '../../store/userSlice';
+import { dispatchToastHandler } from '../utils';
 
 const ScShoppingCart = styled.div`
   margin: 0 auto;
@@ -96,19 +96,45 @@ const ShoppingCart = () => {
   const [favoritesInfo, setFavoritesInfo] = useState([]);
   const [cartInfo, setCartInfo] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState('');
   const dispatch = useDispatch();
+
+  const dispatchToast = dispatchToastHandler(dispatch);
 
   useEffect(() => {
     if (!userId) return;
     if (userFavorites.length > 0 || cart.length > 0) {
       (async () => {
-        const response = await API.getNft({
-          tokenId: JSON.stringify([...(userFavorites || []), ...(cart || [])]),
-          nftContract: nftContract.address,
-          network: chainId
-        });
-        setFavoritesInfo(response ? response.filter(nft => userFavorites.includes(nft.tokenId)) : []);
-        setCartInfo(response ? response.filter(nft => cart.includes(nft.tokenId)) : []);
+        setLoadingMessage('Fetching NFTs...');
+        setIsLoading(true);
+        try {
+          let response = await API.getNft({
+            tokenId: JSON.stringify([...(userFavorites || []), ...(cart || [])]),
+            nftContract: nftContract.address,
+            network: chainId
+          });
+          response = response ?? [];
+          response = await Promise.all(
+            response.map(async nft => {
+              try {
+                if (nft.itemId != null) {
+                  const price = await marketplaceContract.getTotalPrice(nft.itemId);
+                  if (price) return { ...nft, price };
+                }
+              } catch (e) {
+                console.error(e);
+              }
+              return nft;
+            })
+          );
+          setFavoritesInfo(response.filter(nft => userFavorites.includes(nft.tokenId)));
+          setCartInfo(response.filter(nft => cart.includes(nft.tokenId)));
+        } catch (e) {
+          console.error(e);
+          setFavoritesInfo([]);
+          setCartInfo([]);
+        }
+        setIsLoading(false);
       })();
     }
     if (cart.length === 0) setCartInfo([]);
@@ -141,19 +167,14 @@ const ShoppingCart = () => {
   };
 
   const handleCompletePurchase = async () => {
+    setLoadingMessage('Completing purchase...');
     setIsLoading(true);
     try {
       const listedItemIds = listedItems.map(item => item.itemId);
       await (await marketplaceContract.purchaseItem_multiple(listedItemIds, { value: totalPrice })).wait();
       dispatch(setCart([])); // TODO: purchase success screen should be added
     } catch (e) {
-      dispatch(
-        setToast({
-          title: 'Purchase cannot be completed.',
-          duration: 9000,
-          status: 'error'
-        })
-      );
+      dispatchToast('Purchase cannot be completed.', 'error', 9000);
     }
     setIsLoading(false);
   };
@@ -161,7 +182,7 @@ const ShoppingCart = () => {
   return (
     <ScShoppingCart>
       {isLoading ? (
-        <LoadingSpinner message="Completing purchase" />
+        <LoadingSpinner message={loadingMessage} />
       ) : (
         <>
           <div className="switch-container">
