@@ -112,6 +112,8 @@ const handleInitProfile = async (action, listenerApi) => {
 };
 
 const handleInitNFTState = async (action, listenerApi) => {
+  listenerApi.cancelActiveListeners();
+  await listenerApi.delay(200);
   listenerApi.dispatch(setLoading(true));
   const {
     user: { id: userId },

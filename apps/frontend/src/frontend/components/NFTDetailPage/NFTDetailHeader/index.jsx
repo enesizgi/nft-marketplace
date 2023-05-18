@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { BiRefresh } from 'react-icons/bi';
+import { ethers } from 'ethers';
 import {
-  getActiveModal,
+  getChainId,
   getFormattedPrice,
   getIsListed,
   getIsOnAuction,
@@ -21,6 +22,7 @@ import { loadNFT } from '../../../store/uiSlice';
 import NFTActionButtons from '../NFTActionButtons';
 import AuctionButton from '../../AuctionButton';
 import ScNFTDetailHeader from './ScNFTDetailHeader';
+import { CHAIN_PARAMS } from '../../../constants';
 
 const NFTDetailHeader = () => {
   const dispatch = useDispatch();
@@ -32,7 +34,9 @@ const NFTDetailHeader = () => {
   const isListed = useSelector(getIsListed);
   const isOnAuction = useSelector(getIsOnAuction);
   const formattedPrice = useSelector(getFormattedPrice);
-  const { type: modalType } = useSelector(getActiveModal);
+  const chainId = useSelector(getChainId);
+  const [blockNumber, setBlockNumber] = useState(0);
+  const [lastUpdate, setLastUpdate] = useState(0);
   const isOwnerPage = seller ? compare(seller, userId) : compare(owner, userId);
 
   const [isWindowFocused, setIsWindowFocused] = useState(true);
@@ -53,22 +57,32 @@ const NFTDetailHeader = () => {
   }, [isWindowFocused]);
 
   const handleReloadNftInfo = () => {
+    setLastUpdate(blockNumber);
     dispatch(loadNFT());
   };
 
+  const getBlockNumber = async () => {
+    const rpcUrl = CHAIN_PARAMS[chainId].rpcUrls[0];
+    const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
+    return provider.getBlockNumber();
+  };
+
   useEffect(() => {
-    if (isWindowFocused) {
-      dispatch(loadNFT());
-    }
-    const intervalId = setInterval(() => {
-      if (isWindowFocused && !modalType) {
-        dispatch(loadNFT());
-      }
-    }, 15000);
+    const intervalId = setInterval(async () => {
+      const blockNo = await getBlockNumber();
+      if (blockNumber !== blockNo) setBlockNumber(blockNo);
+    }, 1000);
     return () => {
       clearInterval(intervalId);
     };
-  }, [isWindowFocused, modalType, dispatch]);
+  }, [blockNumber]);
+
+  useEffect(() => {
+    if (isWindowFocused && lastUpdate !== blockNumber) {
+      setLastUpdate(blockNumber);
+      dispatch(loadNFT());
+    }
+  }, [blockNumber, isWindowFocused, lastUpdate]);
 
   return (
     <ScNFTDetailHeader>
