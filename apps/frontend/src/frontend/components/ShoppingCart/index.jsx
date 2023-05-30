@@ -13,6 +13,7 @@ import API from '../../modules/api';
 import LoadingSpinner from '../LoadingSpinner';
 import { setCart } from '../../store/userSlice';
 import { dispatchToastHandler } from '../utils';
+import ShoppingSuccess from './ShoppingSuccess';
 
 const ScShoppingCart = styled.div`
   margin: 0 auto;
@@ -96,6 +97,7 @@ const ShoppingCart = () => {
   const [favoritesInfo, setFavoritesInfo] = useState([]);
   const [cartInfo, setCartInfo] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
   const dispatch = useDispatch();
 
@@ -173,6 +175,7 @@ const ShoppingCart = () => {
       const listedItemIds = listedItems.map(item => item.itemId);
       await (await marketplaceContract.purchaseItem_multiple(listedItemIds, { value: totalPrice })).wait();
       dispatch(setCart([])); // TODO: purchase success screen should be added
+      setIsSuccess(true);
     } catch (e) {
       dispatchToast('Purchase cannot be completed.', 'error', 9000);
     }
@@ -181,9 +184,9 @@ const ShoppingCart = () => {
 
   return (
     <ScShoppingCart>
-      {isLoading ? (
-        <LoadingSpinner message={loadingMessage} />
-      ) : (
+      {isLoading && <LoadingSpinner message={loadingMessage} />}
+      {isSuccess && <ShoppingSuccess userId={userId} setIsSuccess={setIsSuccess} />}
+      {!isLoading && !isSuccess && (
         <>
           <div className="switch-container">
             <Switch keys={Object.values(SHOPPING_TYPES)} selected={selectedTab} onChange={setSelectedTab} />

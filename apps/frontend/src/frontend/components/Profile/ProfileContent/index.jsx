@@ -2,6 +2,7 @@
 // TODO: Remove eslint disables
 import React from 'react';
 import { string } from 'prop-types';
+import { useLocation } from 'react-router-dom';
 import { ReactComponent as ListedIcon } from '../../../assets/article_black_24dp.svg';
 import { ReactComponent as PurchasedIcon } from '../../../assets/shopping_bag_black_24dp.svg';
 import { classNames } from '../../../utils';
@@ -17,7 +18,8 @@ const tabs = [
 ];
 
 const ProfileContent = ({ id }) => {
-  const [selectedTab, setSelectedTab] = React.useState(tabs[0].name);
+  const location = useLocation();
+  const [selectedTab, setSelectedTab] = React.useState(location.state.owned ? 'Owned' : tabs[0].name);
 
   return (
     <ScProfileContent>
