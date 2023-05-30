@@ -178,7 +178,7 @@ const AuctionButton = () => {
           <p className="item price">{ethers.utils.formatEther(price.toString())} ETH</p>
         </>
       )}
-      {auctionId && (
+      {auctionId && bids.length > 0 && (
         <p>
           Winner:
           <button type="button" className="item address" onClick={handleGoToProfile(winner)}>

@@ -16,7 +16,7 @@ import { dispatchToastHandler } from '../utils';
 
 const ScShoppingCart = styled.div`
   margin: 0 auto;
-  height: 100%;
+  min-height: 100%;
   width: 100%;
   padding: 2%;
   @media screen and (max-width: 768px) {
