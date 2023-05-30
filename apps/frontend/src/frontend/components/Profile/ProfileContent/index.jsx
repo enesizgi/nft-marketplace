@@ -19,7 +19,7 @@ const tabs = [
 
 const ProfileContent = ({ id }) => {
   const location = useLocation();
-  const [selectedTab, setSelectedTab] = React.useState(location.state.owned ? 'Owned' : tabs[0].name);
+  const [selectedTab, setSelectedTab] = React.useState(location?.state?.owned ? 'Owned' : tabs[0].name);
 
   return (
     <ScProfileContent>
