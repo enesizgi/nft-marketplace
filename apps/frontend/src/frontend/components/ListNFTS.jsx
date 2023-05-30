@@ -148,8 +148,6 @@ const ListNFTSPage = ({ profileId, selectedTab }) => {
     })();
   }, [listedCurrentPage, marketplaceContract, nftContract, profileId, selectedTab]);
 
-  console.log({ selectedTab });
-
   useEffect(() => {
     (async () => {
       if (!marketplaceContract?.address || !nftContract.address) return;

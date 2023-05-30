@@ -23,6 +23,7 @@ const NavigationBar = () => {
   const isDesktop = deviceType === DEVICE_TYPES.DESKTOP;
   const isTablet = deviceType === DEVICE_TYPES.TABLET;
   const isMobile = deviceType === DEVICE_TYPES.MOBILE;
+  const isHomepage = currentPath === '/';
 
   const handleInitMarketplace = () => dispatch(initMarketplace());
 
@@ -30,9 +31,10 @@ const NavigationBar = () => {
     <ScNavigationBar
       className={classNames({
         navigationItemContainer: true,
-        isHomepage: currentPath === '/'
+        isHomepage
       })}
       ref={navigationBarRef}
+      isHomepage={isHomepage}
     >
       <Link
         to="/"
@@ -47,7 +49,7 @@ const NavigationBar = () => {
       >
         <LogoSvg />
       </Link>
-      {isDesktop && (
+      {isDesktop && isHomepage && (
         <div className="navigationItem searchBar">
           <SearchBar />
         </div>
