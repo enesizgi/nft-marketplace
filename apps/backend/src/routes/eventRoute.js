@@ -9,7 +9,8 @@ router.get('/events', async (req, res) => {
     const filters = {
       ...(req.query.network && { network: req.query.network }),
       ...(req.query.type && { type: req.query.type }),
-      ...(req.query.seller && { seller: req.query.seller }),
+      ...(req.query.type && { buyer: { $regex: `${req.query.buyer}/i` } }),
+      ...(req.query.seller && { seller: { $regex: `${req.query.seller}/i` } }),
       ...(req.query.nft && { nft: req.query.nft }),
       ...(req.query.marketplaceContract && { marketplaceContract: req.query.marketplaceContract }),
       ...(req.query.tokenId && { tokenId: parseInt(req.query.tokenId, 10) }),

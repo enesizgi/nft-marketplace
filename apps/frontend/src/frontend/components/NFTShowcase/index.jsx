@@ -45,7 +45,7 @@ const ScNFTShowcase = styled.div`
   }
 `;
 
-const NFTShowcase = ({ NFTs, selectedTab, loading }) => {
+const NFTShowcase = ({ NFTs, selectedTab, loading, setCounter }) => {
   const buttonSize = useSelector(getButtonSize);
   const navigate = useNavigate();
   return (
@@ -53,7 +53,7 @@ const NFTShowcase = ({ NFTs, selectedTab, loading }) => {
       {NFTs.length ? (
         <div className="nftCard-container">
           {NFTs.map(item => (
-            <NFTCard key={`${item.url}-${Math.random()}`} item={item} selectedTab={selectedTab} loading={loading} />
+            <NFTCard key={`${item.url}-${Math.random()}`} item={item} selectedTab={selectedTab} loading={loading} setCounter={setCounter} />
           ))}
         </div>
       ) : (

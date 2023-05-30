@@ -10,7 +10,7 @@ import ScSellModal from './ScSellModal';
 import Switch from '../../Switch';
 import API from '../../../modules/api';
 
-const SellModal = ({ tokenId }) => {
+const SellModal = ({ tokenId, setCounter }) => {
   const [nftMetadata, setNFTMetadata] = useState({});
   const [selectedOption, setSelectedOption] = useState(NFT_LISTING_TYPES.FIXED_PRICE);
   const userId = useSelector(getUserId);
@@ -75,6 +75,9 @@ const SellModal = ({ tokenId }) => {
     }
     dispatch(loadNFT());
     dispatch(setLoading(false));
+    if (setCounter) {
+      setCounter(prev => prev + 1);
+    }
     return true;
   };
 
