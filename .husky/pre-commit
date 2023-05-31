@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-npx lint-staged
+./libs/contracts/src/scripts/package-json-locker.sh ; npx lint-staged
