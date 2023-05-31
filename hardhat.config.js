@@ -9,7 +9,7 @@ dotenv.config();
 const { ALCHEMY_GOERLI_API_KEY, ALCHEMY_SEPOLIA_API_KEY, DEPLOYER_PRIVATE_KEY, DISABLE_AUTOMINING, ETHERSCAN_API_KEY } = process.env;
 
 module.exports = {
-  solidity: '0.8.4',
+  solidity: '0.8.18',
   paths: {
     artifacts: './libs/contracts/src/artifacts',
     sources: './libs/contracts/src/contracts',
