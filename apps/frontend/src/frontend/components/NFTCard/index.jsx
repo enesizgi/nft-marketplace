@@ -14,7 +14,7 @@ import { setActiveModal } from '../../store/uiSlice';
 import { classNames, compare, convertBigNumberToNumber } from '../../utils';
 import { updateCart, updateFavorites } from '../../store/actionCreators';
 
-const NFTCard = ({ item, selectedTab, loading, setCounter }) => {
+const NFTCard = ({ item, selectedTab, loading }) => {
   const tokenId = convertBigNumberToNumber(item.tokenId);
   const userId = useSelector(getUserId);
   const nftContract = useSelector(getNFTContract);
@@ -86,7 +86,7 @@ const NFTCard = ({ item, selectedTab, loading, setCounter }) => {
 
   const handleSellButtonClicked = e => {
     e.stopPropagation();
-    dispatch(setActiveModal({ type: MODAL_TYPES.SELL, props: { tokenId, setCounter } }));
+    dispatch(setActiveModal({ type: MODAL_TYPES.SELL, props: { tokenId } }));
   };
 
   const imageUrl = item.url || item.image;

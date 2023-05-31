@@ -11,7 +11,7 @@ import { getChainId, getNFTContract, getUserId } from '../store/selectors';
 import { CHAIN_PARAMS, defaultChainId } from '../constants';
 import LoadingSpinner from './LoadingSpinner';
 
-const OwnedPage = ({ profileId, selectedTab, setCounter }) => {
+const OwnedPage = ({ profileId, selectedTab }) => {
   const [loading, setLoading] = useState(true);
   const [ownedItems, setOwnedItems] = useState([]);
   const nftContract = useSelector(getNFTContract);
@@ -140,7 +140,7 @@ const OwnedPage = ({ profileId, selectedTab, setCounter }) => {
   if (loading) {
     return <LoadingSpinner />;
   }
-  return <NFTShowcase NFTs={ownedItems} selectedTab={selectedTab} setCounter={setCounter} />;
+  return <NFTShowcase NFTs={ownedItems} selectedTab={selectedTab} />;
 };
 
 export default OwnedPage;

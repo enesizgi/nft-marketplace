@@ -6,7 +6,7 @@ import NFTShowcase from './NFTShowcase';
 import { getMarketplaceContract, getNFTContract } from '../store/selectors';
 import LoadingSpinner from './LoadingSpinner';
 
-const PurchasesPage = ({ profileId, selectedTab, setCounter }) => {
+const PurchasesPage = ({ profileId, selectedTab }) => {
   const [loading, setLoading] = useState(true);
   const [purchases, setPurchases] = useState([]);
   const nftContract = useSelector(getNFTContract);
@@ -20,7 +20,6 @@ const PurchasesPage = ({ profileId, selectedTab, setCounter }) => {
     const sortedEvents = [...boughtResults, ...offeredResults].sort((a, b) => b.blockNumber - a.blockNumber);
     const uniqEvents = sortedUniqBy(sortedEvents, i => i.tokenId);
     const boughtItems = uniqEvents.filter(i => i.type === 'Bought');
-    console.log({ sortedEvents, uniqEvents, boughtItems, offeredResults });
     // Fetch metadata of each nft and add that to listedItem object.
     // eslint-disable-next-line no-shadow
     const purchases = await Promise.all(
@@ -57,7 +56,7 @@ const PurchasesPage = ({ profileId, selectedTab, setCounter }) => {
   }
   // TODO @Enes: Find better way for Math.random below
 
-  return <NFTShowcase NFTs={purchases} selectedTab={selectedTab} setCounter={setCounter} />;
+  return <NFTShowcase NFTs={purchases} selectedTab={selectedTab} />;
 };
 
 export default PurchasesPage;

@@ -1,8 +1,7 @@
 /* eslint-disable react/prop-types */
 // TODO: Remove eslint disables
-import React, { useState } from 'react';
+import React from 'react';
 import { string } from 'prop-types';
-import { useLocation } from 'react-router-dom';
 import { ReactComponent as ListedIcon } from '../../../assets/article_black_24dp.svg';
 import { ReactComponent as PurchasedIcon } from '../../../assets/shopping_bag_black_24dp.svg';
 import { classNames } from '../../../utils';
@@ -18,9 +17,7 @@ const tabs = [
 ];
 
 const ProfileContent = ({ id }) => {
-  const location = useLocation();
-  const [selectedTab, setSelectedTab] = React.useState(location?.state?.owned ? 'Owned' : tabs[0].name);
-  const [counter, setCounter] = useState(0);
+  const [selectedTab, setSelectedTab] = React.useState(tabs[0].name);
 
   return (
     <ScProfileContent>
@@ -41,8 +38,8 @@ const ProfileContent = ({ id }) => {
         ))}
       </div>
       {selectedTab === 'Listed' && <ListNFTSPage profileId={id} selectedTab={selectedTab} />}
-      {selectedTab === 'Purchased' && <PurchasesPage profileId={id} selectedTab={selectedTab} key={counter} setCounter={setCounter} />}
-      {selectedTab === 'Owned' && <OwnedPage profileId={id} selectedTab={selectedTab} key={counter + 1} setCounter={setCounter} />}
+      {selectedTab === 'Purchased' && <PurchasesPage profileId={id} selectedTab={selectedTab} />}
+      {selectedTab === 'Owned' && <OwnedPage profileId={id} selectedTab={selectedTab} />}
     </ScProfileContent>
   );
 };

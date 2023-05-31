@@ -78,7 +78,6 @@ const ScNavigationBar = styled.nav`
     }
 
     &.networkSelector {
-      ${({ isHomepage }) => (!isHomepage ? 'margin-left: auto;' : '')}
       @media screen and (min-width: 481px) and (max-width: 768px) {
         margin-left: auto;
       }
