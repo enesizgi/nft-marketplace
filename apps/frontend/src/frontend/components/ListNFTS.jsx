@@ -99,14 +99,14 @@ const ListNFTSPage = ({ profileId, selectedTab }) => {
         type: 'Auction',
         claimed: false,
         canceled: false,
-        timeToEnd: new Date().getTime(),
+        ...(selectedTab === 'Home' && { timeToEnd: new Date().getTime() }),
         marketplaceContract: marketplaceContract.address
       });
       const [{ count: listedCount }, { count: auctionCount }] = await Promise.all([listedPromise, auctionPromise]);
       setListedItemCount(listedCount);
       setAuctionItemCount(auctionCount);
     })();
-  }, [marketplaceContract.address]);
+  }, [marketplaceContract.address, selectedTab]);
 
   useEffect(() => {
     (async () => {
@@ -160,7 +160,7 @@ const ListNFTSPage = ({ profileId, selectedTab }) => {
         skip: (auctionCurrentPage - 1) * 5,
         canceled: false,
         claimed: false,
-        timeToEnd: new Date().getTime()
+        ...(selectedTab === 'Home' && { timeToEnd: new Date().getTime() })
       });
       const batchItems = await Promise.allSettled(
         mongoItems.map(async i => {

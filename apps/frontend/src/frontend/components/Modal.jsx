@@ -17,7 +17,7 @@ const ScModal = styled.div`
   max-height: 100%;
   max-width: 100%;
   z-index: 3000;
-  background-color: rgba(35, 37, 42, 0.5);
+  background-color: rgba(35, 37, 42, 0.8);
   display: flex;
   flex-direction: column;
   align-items: center;

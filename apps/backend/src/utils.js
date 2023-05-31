@@ -356,11 +356,16 @@ export const finishAuctions = async chainId => {
     ? new ethers.Wallet('0x8166f546bab6da521a8369cab06c5d2b9e46670292d85c875ee9ec20e84ffb61', provider)
     : new ethers.Wallet(process.env.DEPLOYER_PRIVATE_KEY, provider);
   const marketplaceContract = new ethers.Contract(CONTRACTS[chainId].MARKETPLACE.address, CONTRACTS[chainId].MARKETPLACE.abi, wallet);
+  const wEthContract = new ethers.Contract(CONTRACTS[chainId].wETH.address, CONTRACTS[chainId].wETH.abi, wallet);
   // eslint-disable-next-line no-restricted-syntax
   for await (const auction of endedAuctions) {
-    const bid = auction.bids[0];
-    // TODO @Enes: Check if bidder has enough balance. Send to highest bidder with balance.
     await etherscanLimiter.wait({ chainId });
+    const validBids = await Promise.all(auction.bids.filter(bid => wEthContract.balanceOf(bid.bidder) >= bid.amount));
+    console.log('validBids', validBids);
+
+    if (validBids.count === 0) break;
+
+    const bid = validBids[0];
     const receipt = await (
       await marketplaceContract.claimNFT(
         CONTRACTS[chainId].wETH.address,
@@ -374,6 +379,7 @@ export const finishAuctions = async chainId => {
         bid.s
       )
     ).wait();
+
     if (receipt) {
       // TODO: Delete bids from db or use different nonces for all bids.
     }

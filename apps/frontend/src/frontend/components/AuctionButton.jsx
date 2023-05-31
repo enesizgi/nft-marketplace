@@ -172,13 +172,7 @@ const AuctionButton = () => {
           <p className="item price">{ethers.utils.formatEther(price.toString())} ETH</p>
         </>
       )}
-      {auctionId && isAuctionOver && (
-        <>
-          {winner.toLowerCase() === userId ? <p className="item">Sale Ended. You won the auction!</p> : <p className="item">Auction is over.</p>}
-          <p className="item price">{ethers.utils.formatEther(price.toString())} ETH</p>
-        </>
-      )}
-      {auctionId && (
+      {auctionId && bids.length > 0 && (
         <p>
           Winner:
           <button type="button" className="item address" onClick={handleGoToProfile(winner)}>

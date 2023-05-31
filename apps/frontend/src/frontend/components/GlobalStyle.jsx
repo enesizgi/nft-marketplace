@@ -36,6 +36,7 @@ const GlobalStyle = createGlobalStyle`
   
   #chakra-toast-manager-top-right {
     top: 100px !important;
+    z-index: 50 !important;
     @media screen and (max-width: 768px) {
       top: 80px !important;
     }
