@@ -70,7 +70,7 @@ const NFTOfferActivity = () => {
     return date.toLocaleString();
   };
 
-  const headers = [<th key={1}>Price</th>, <th key={2}>Expiration</th>, <th key={3}>From</th>, <th key={4}> Action </th>];
+  const headers = [<th key={1}>Price</th>, <th key={2}>Expiration</th>, <th key={3}>From</th>, <th key={4}> </th>];
   const content =
     offers &&
     Object.entries(offers).map(([offerIndex, offer]) => (

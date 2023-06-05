@@ -2,17 +2,22 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { ethers } from 'ethers';
 import AddressDisplay from '../../AddressDisplay';
-import { getETHPriceUSD, getNFTBids } from '../../../store/selectors';
+import { getETHPriceUSD, getNFTBids, getTokenId, getUserId } from '../../../store/selectors';
 import ScContractAddress from '../ScContractAddress';
 import DetailsTable from '../DetailsTable';
+import Button from '../../Button';
 import API from '../../../modules/api';
 import { setETHPriceUSD } from '../../../store/marketplaceSlice';
+import { dispatchToastHandler } from '../../utils';
 
 const BidActivity = () => {
   const dispatch = useDispatch();
   const bids = useSelector(getNFTBids);
+  const userId = useSelector(getUserId);
+  const tokenId = useSelector(getTokenId);
   const ethPriceUSD = useSelector(getETHPriceUSD);
   const now = new Date();
+  const dispatchToast = dispatchToastHandler(dispatch);
 
   const createAgoDateString = (date1, date2) => {
     const diff = Math.abs(date1.getTime() - date2.getTime());
@@ -35,6 +40,10 @@ const BidActivity = () => {
       return 0;
     }
   };
+  const handleCancelBid = async bid => {
+    await API.deleteBid({ bidder: bid.bidder, tokenId, deadline: ethers.BigNumber.from(bid.deadline).toNumber() });
+    dispatchToast('Your bid is cancelled.', 'info', 2000);
+  };
 
   useEffect(() => {
     const getEthPrice = async () => {
@@ -54,7 +63,7 @@ const BidActivity = () => {
 
   const getUSDPrice = (amount, price) => (getFormattedEther(amount) * price).toFixed(2);
 
-  const headers = [<th key={1}>Price (ETH)</th>, <th key={2}>Price (USD)</th>, <th key={3}>From</th>, <th key={4}>Date</th>];
+  const headers = [<th key={1}>Price (ETH)</th>, <th key={2}>Price (USD)</th>, <th key={3}>From</th>, <th key={4}> </th>];
   const content = Object.entries(bids).map(([bidId, bid]) => (
     <tr className="nft-activity-content" key={bidId}>
       <td className="nft-activity-content-item">{getFormattedEther(bid.amount)}</td>
@@ -64,7 +73,15 @@ const BidActivity = () => {
           <AddressDisplay address={bid.bidder} isShortAddress />
         </ScContractAddress>
       </td>
-      <td className="nft-activity-content-item">{createAgoDateString(new Date(bid.createdAt), now)}</td>
+      <td className="nft-activity-content-item">
+        {userId.toLowerCase() !== bid.bidder ? (
+          createAgoDateString(new Date(bid.createdAt), now)
+        ) : (
+          <Button className="cancelButton cancel" onClick={() => handleCancelBid(bid)}>
+            Cancel
+          </Button>
+        )}
+      </td>
     </tr>
   ));
 

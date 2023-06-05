@@ -31,6 +31,11 @@ const ScNFTDetailActivity = styled.table`
 
     border-top: 1px solid rgba(35, 37, 42, 0.3);
   }
+  .cancelButton {
+    height: 40px;
+    margin: 5px auto;
+    font-size: 16px;
+  }
 `;
 
 export default ScNFTDetailActivity;
