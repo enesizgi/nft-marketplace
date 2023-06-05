@@ -6,7 +6,6 @@ import styled from 'styled-components';
 import { ethers } from 'ethers';
 import {
   getAuctionId,
-  getChainId,
   getMarketplaceContract,
   getNFTBids,
   getNFTSeller,
@@ -114,7 +113,6 @@ const AuctionButton = () => {
   const basePrice = useSelector(getPriceOfNFT);
   const bids = useSelector(getNFTBids);
   const seller = useSelector(getNFTSeller);
-  const chainId = useSelector(getChainId);
   const timeToEnd = useSelector(getTimeToEnd);
   const [makeBid, setMakeBid] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -125,7 +123,6 @@ const AuctionButton = () => {
 
   const dispatchToast = dispatchToastHandler(dispatch);
   const checkForUserRejectedError = checkUserRejectedHandler(dispatchToast);
-  const waitForTransaction = waitTransactionHandler(null, dispatchToast);
 
   const handleMakeBid = async () => {
     setIsLoading(true);
@@ -162,17 +159,6 @@ const AuctionButton = () => {
     setIsLoading(false);
   };
 
-  const claimNFTHandler = async () => {
-    try {
-      const waitForConfirm = waitConfirmHandler(async () => marketplaceContract.claimNFT(auctionId), checkForUserRejectedError);
-      const transaction = await waitForConfirm();
-      if (transaction != null) await waitForTransaction(transaction);
-      await API.syncEvents({ chainId });
-    } catch (e) {
-      console.error(e);
-    }
-    dispatch(loadNFT());
-  };
   const now = Math.floor(new Date().getTime() / 1000);
   const isAuctionOver = auctionId && now > timeToEnd;
   const auctionEndTime = auctionId && new Date(timeToEnd * 1000).toLocaleString();

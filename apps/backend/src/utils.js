@@ -395,7 +395,7 @@ export const finishAuctions = async chainId => {
 
     if (!isConfirmed) {
       // TODO: Send nft to seller.
-      await marketplaceContract.sendNftToSeller(auction.auctionId).wait();
+      await (await marketplaceContract.sendNftToSeller(auction.auctionId)).wait();
     }
 
     try {
