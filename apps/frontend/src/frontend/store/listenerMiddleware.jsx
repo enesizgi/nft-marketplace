@@ -6,7 +6,7 @@ import API from '../modules/api';
 import { changeNetwork, serializeBigNumber, signatureGenerator } from '../utils';
 import { setChainId } from './marketplaceSlice';
 import { setProfile } from './profileSlice';
-import { loadNFT, setCurrentPath, setLoading } from './uiSlice';
+import { loadNFT, setCurrentPath } from './uiSlice';
 import { defaultChainId, NFT_ACTIVITY_TYPES } from '../constants';
 import { dispatchToastHandler, getMarketplaceContractFn, getNFTContractFn } from '../components/utils';
 import { setNFT } from './nftSlice';
@@ -114,7 +114,6 @@ const handleInitProfile = async (action, listenerApi) => {
 const handleInitNFTState = async (action, listenerApi) => {
   listenerApi.cancelActiveListeners();
   await listenerApi.delay(200);
-  listenerApi.dispatch(setLoading(true));
   const {
     user: { id: userId },
     nft: { metadata: currentMetadata, tokenId: currentTokenId }
@@ -257,7 +256,6 @@ const handleInitNFTState = async (action, listenerApi) => {
         lastUpdate: Date.now()
       })
     );
-    listenerApi.dispatch(setLoading(false));
   }
 };
 
