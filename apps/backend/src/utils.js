@@ -5,6 +5,7 @@ import Event from './models/event';
 import Price from './models/price';
 import NftStatus from './models/nft_status';
 import Offer from './models/offer';
+import Bid from './models/bid';
 
 class EtherScanLimiter {
   constructor() {
@@ -360,28 +361,55 @@ export const finishAuctions = async chainId => {
   // eslint-disable-next-line no-restricted-syntax
   for await (const auction of endedAuctions) {
     await etherscanLimiter.wait({ chainId });
-    const validBids = await Promise.all(auction.bids.filter(bid => wEthContract.balanceOf(bid.bidder) >= bid.amount));
-    console.log('validBids', validBids);
+    const valid = await Promise.all(
+      auction.bids.map(async bid => {
+        const balance = await wEthContract.balanceOf(bid.bidder);
+        const fbalance = parseFloat(ethers.utils.formatEther(balance));
+        const famount = parseFloat(ethers.utils.formatEther(bid.amount.toString()));
+        return fbalance >= famount ? bid : null;
+      })
+    );
+    const validBids = valid.filter(bid => bid != null);
 
-    if (validBids.count === 0) break;
+    let isConfirmed = false;
+    // eslint-disable-next-line no-restricted-syntax
+    for await (const bid of validBids) {
+      try {
+        const receipt = await (
+          await marketplaceContract.claimNFT(
+            CONTRACTS[chainId].wETH.address,
+            auction.tokenId,
+            auction.auctionId,
+            bid.deadline,
+            bid.bidder,
+            ethers.BigNumber.from(bid.amount.toString()),
+            bid.v,
+            bid.r,
+            bid.s
+          )
+        ).wait();
+        // TODO: Check for transaction failure.
+        console.log(receipt);
+        await Bid.deleteMany({
+          bidder: bid.bidder
+        });
+        isConfirmed = true;
+        break;
+      } catch (e) {
+        console.error(e);
+      }
+    }
 
-    const bid = validBids[0];
-    const receipt = await (
-      await marketplaceContract.claimNFT(
-        CONTRACTS[chainId].wETH.address,
-        auction.tokenId,
-        auction.auctionId,
-        bid.deadline,
-        bid.bidder,
-        ethers.BigNumber.from(bid.amount.toString()),
-        bid.v,
-        bid.r,
-        bid.s
-      )
-    ).wait();
+    if (!isConfirmed) {
+      // TODO: Send nft to seller.
+    }
 
-    if (receipt) {
-      // TODO: Delete bids from db or use different nonces for all bids.
+    try {
+      await Bid.deleteMany({
+        tokenId: auction.tokenId
+      });
+    } catch (err) {
+      console.log(err);
     }
   }
 };

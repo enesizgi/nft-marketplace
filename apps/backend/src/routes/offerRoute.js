@@ -51,8 +51,7 @@ router.post('/offers/delete', async (req, res) => {
 router.post('/offers/deleteAccepted', async (req, res) => {
   try {
     await Offer.deleteMany({
-      offerer: req.query.offerer,
-      tokenId: req.query.tokenId
+      offerer: req.query.offerer
     });
     return res.status(200).send();
   } catch (err) {

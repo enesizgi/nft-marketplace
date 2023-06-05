@@ -48,7 +48,8 @@ const NFTOfferActivity = () => {
         offer.r,
         offer.s
       );
-      await API.deleteAcceptedOffers({ offerer: offer.offerer, tokenId: nftTokenId });
+      // TODO: move this to backend with set Interval
+      await API.deleteAcceptedOffers({ offerer: offer.offerer });
     } catch (err) {
       console.log(err);
     }
