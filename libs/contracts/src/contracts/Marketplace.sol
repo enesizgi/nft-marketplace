@@ -219,9 +219,11 @@ contract Marketplace is ReentrancyGuard, Ownable {
 
         // Transfer NFT to winner and pay seller
         erc20.permit(bidder, address(this), amount, deadline, _v, _r, _s);
-        erc20.transferFrom(bidder, auctionItem.seller, amount);
-        // TODO @Enes: Get fee from bidder.
-        auctionItem.nft.transferFrom(address(this), bidder, _tokenId);
+        uint fee = amount * feePercent / 100;
+        bool feeSuccess = erc20.transferFrom(bidder, feeAccount, fee);
+        bool sellerSuccess = erc20.transferFrom(bidder, auctionItem.seller, amount - fee);
+        require(feeSuccess && sellerSuccess, "Failed to transfer fee or seller amount.");
+        auctionItem.nft.safeTransferFrom(address(this), bidder, _tokenId);
 
         // Mark auction item as claimed
         auctionItem.claimed = true;

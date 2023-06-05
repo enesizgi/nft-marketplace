@@ -327,13 +327,6 @@ export const finishAuctions = async chainId => {
       }
     },
     {
-      $match: {
-        'bids.0': {
-          $exists: true
-        }
-      }
-    },
-    {
       $set: {
         bids: {
           $sortArray: {
@@ -354,7 +347,7 @@ export const finishAuctions = async chainId => {
     ? new ethers.providers.JsonRpcProvider('http://127.0.0.1:8545')
     : new ethers.providers.EtherscanProvider(Number(chainId), process.env.ETHERSCAN_API_KEY);
   const wallet = isLocalhost
-    ? new ethers.Wallet('0x8166f546bab6da521a8369cab06c5d2b9e46670292d85c875ee9ec20e84ffb61', provider)
+    ? new ethers.Wallet('0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80', provider)
     : new ethers.Wallet(process.env.DEPLOYER_PRIVATE_KEY, provider);
   const marketplaceContract = new ethers.Contract(CONTRACTS[chainId].MARKETPLACE.address, CONTRACTS[chainId].MARKETPLACE.abi, wallet);
   const wEthContract = new ethers.Contract(CONTRACTS[chainId].wETH.address, CONTRACTS[chainId].wETH.abi, wallet);
@@ -402,6 +395,7 @@ export const finishAuctions = async chainId => {
 
     if (!isConfirmed) {
       // TODO: Send nft to seller.
+      await marketplaceContract.returnNftToSeller(auction.auctionId).wait();
     }
 
     try {

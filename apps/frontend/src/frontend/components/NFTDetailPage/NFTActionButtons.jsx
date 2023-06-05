@@ -14,6 +14,7 @@ import {
   getMarketplaceContract,
   getNFTOwner,
   getNFTSeller,
+  getTimeToEnd,
   getTokenId,
   getUserId
 } from '../../store/selectors';
@@ -64,6 +65,10 @@ const NFTActionButtons = () => {
   const formattedPrice = useSelector(getFormattedPrice);
   const isInCart = useSelector(getIsInCart(tokenId));
   const chainId = useSelector(getChainId);
+  const timeToEnd = useSelector(getTimeToEnd);
+
+  const now = Math.floor(new Date().getTime() / 1000);
+  const isAuctionOver = now > timeToEnd;
 
   const isOwner = seller ? compare(seller, userId) : compare(owner, userId);
 
@@ -116,7 +121,7 @@ const NFTActionButtons = () => {
           Sell Item
         </Button>
       )}
-      {isOwner && (isListed || isOnAuction) && (
+      {isOwner && (isListed || (isOnAuction && !isAuctionOver)) && (
         <Button size={buttonSize} className={classNames({ cancel: isListed })} onClick={handleCancel}>
           Cancel {isListed ? 'Sale' : 'Auction'}
         </Button>

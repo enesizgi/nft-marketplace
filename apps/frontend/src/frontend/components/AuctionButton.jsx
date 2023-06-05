@@ -229,11 +229,11 @@ const AuctionButton = () => {
               </p>
             </>
           )}
-          {isAuctionOver && (winner.toLowerCase() === userId || seller.toLowerCase() === userId) && (
+          {isAuctionOver && (
             <div className="item">
-              <Button type="button" className="nftActionButton outline" onClick={claimNFTHandler}>
-                Claim
-              </Button>
+              <div className="item">
+                <LoadingSpinner message="Finalizing Auction..." />
+              </div>
             </div>
           )}
         </>
