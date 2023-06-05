@@ -1,6 +1,6 @@
 import { signatureGenerator } from '../../utils';
 
-export const baseURL = window.location.href.includes('localhost') ? 'http://localhost:3001' : 'https://api.enesizgi.me';
+export const baseURL = window.location.href.includes('localhost') ? 'http://localhost:3001' : 'https://api.enesizgi.me:3001';
 
 class API {
   constructor() {
