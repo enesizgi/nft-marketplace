@@ -9,7 +9,7 @@ router.get('/bids', async (req, res) => {
     if (!tokenId) {
       return res.status(404).send();
     }
-    const offers = await Bid.find({ tokenId }).lean();
+    const offers = await Bid.find({ tokenId }).sort({ doc_updated_at: -1 }).lean();
     return res.send(offers || []);
   } catch (err) {
     console.log(err);

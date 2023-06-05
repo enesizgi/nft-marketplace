@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, FormLabel, Input } from '@chakra-ui/react';
+import { FormLabel, Input } from '@chakra-ui/react';
 import styled from 'styled-components';
 import { ethers } from 'ethers';
 import {
@@ -18,12 +18,15 @@ import {
 } from '../store/selectors';
 import { loadNFT } from '../store/uiSlice';
 import API from '../modules/api';
+import Button from './Button';
 import { checkUserRejectedHandler, dispatchToastHandler, waitConfirmHandler, waitTransactionHandler, getPermitSignature } from './utils';
+import { theme } from '../constants';
+import LoadingSpinner from './LoadingSpinner';
 
 const ScAuctionButton = styled.div`
   margin-bottom: 20px;
   margin-top: 20px;
-  border: 3px dashed ${({ theme }) => theme.blue};
+  border: 3px solid ${theme.secondaryBlue};
   border-radius: 16px;
   padding: 16px;
 
@@ -31,23 +34,35 @@ const ScAuctionButton = styled.div`
     margin-bottom: 8px;
   }
 
-  .nftActionButton {
-    background: none;
-    border: 2px solid ${({ theme }) => theme.blue};
-    cursor: pointer;
-    padding: 8px 16px;
-    font-size: 16px;
-    transition: all 0.3s ease;
-  }
-
-  .nftActionButton:hover {
-    background: ${({ theme }) => theme.blue};
-    color: white;
-  }
-
   .price {
     font-weight: bold;
-    font-size: 20px;
+    font-size: 36px;
+  }
+
+  label {
+    font-weight: 600;
+  }
+
+  input {
+    border: 1px solid ${theme.blue} !important;
+  }
+
+  .auction-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    @media screen and (max-width: 480px) {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+
+  .last-bid {
+    margin-bottom: 8px;
+  }
+
+  .winner {
+    text-align: end;
   }
 
   .address {
@@ -56,7 +71,7 @@ const ScAuctionButton = styled.div`
     cursor: pointer;
     padding-left: 8px;
     font-size: 16px;
-    color: ${({ theme }) => theme.blue};
+    color: ${theme.blue};
   }
 
   .address:hover {
@@ -70,7 +85,7 @@ const ScAuctionButton = styled.div`
       width: 100%;
     }
     font-size: 24px;
-    background: ${({ theme }) => theme.blue};
+    background: ${theme.blue};
     color: #fff;
     border: 0;
     border-radius: 10px;
@@ -98,12 +113,11 @@ const AuctionButton = () => {
   const bids = useSelector(getNFTBids);
   const seller = useSelector(getNFTSeller);
   const chainId = useSelector(getChainId);
-
   const timeToEnd = useSelector(getTimeToEnd);
-  const [makeBid, setMakeBid] = React.useState(null);
-
+  const [makeBid, setMakeBid] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-
+  const lastBid = bids.find(bid => bid.bidder.toLowerCase() === userId.toLowerCase());
   const winner = bids.length > 0 ? bids[0].bidder : seller;
   const price = bids.length > 0 ? ethers.BigNumber.from(bids[0].amount).toString() : basePrice;
 
@@ -112,6 +126,7 @@ const AuctionButton = () => {
   const waitForTransaction = waitTransactionHandler(null, dispatchToast);
 
   const handleMakeBid = async () => {
+    setIsLoading(true);
     if (makeBid <= parseInt(ethers.utils.formatEther(price.toString()), 10)) {
       dispatchToast('Not enough price to make bid', 'error', 2000);
       return;
@@ -135,11 +150,14 @@ const AuctionButton = () => {
       const rStr = ethers.utils.hexlify(r);
       const sStr = ethers.utils.hexlify(s);
       await API.createBid({ bidder: userId, amount: bidPrice, tokenId, deadline, v: vStr, r: rStr, s: sStr });
+      setMakeBid(false);
+      dispatchToast('Your bid is accepted.', 'success', 2000);
     } catch (e) {
       console.log(e);
       checkForUserRejectedError(e);
     }
     dispatch(loadNFT());
+    setIsLoading(false);
   };
 
   const claimNFTHandler = async () => {
@@ -166,39 +184,57 @@ const AuctionButton = () => {
 
   return (
     <ScAuctionButton>
-      {auctionId && !isAuctionOver && (
+      {isLoading ? (
+        <LoadingSpinner message="Your bid is being processed..." />
+      ) : (
         <>
-          <p className="item">{`Sale ends at ${auctionEndTime}`}</p>
-          <p className="item price">{ethers.utils.formatEther(price.toString())} ETH</p>
+          {auctionId && !isAuctionOver && (
+            <div className="auction-info">
+              <p className="item price">{ethers.utils.formatEther(price.toString())} ETH</p>
+              <p className="item">{`Sale ends at ${auctionEndTime}`}</p>
+            </div>
+          )}
+          {auctionId && bids.length > 0 && (
+            <p className="winner">
+              Winner:
+              <button type="button" className="item address" onClick={handleGoToProfile(winner)}>
+                {winner.toLowerCase() === userId ? 'You' : winner}
+              </button>
+            </p>
+          )}
+          {auctionId && seller.toLowerCase() !== userId && !isAuctionOver && (
+            <>
+              <p className="item">
+                <FormLabel htmlFor="bid-price">Bid Price:</FormLabel>
+                <Input
+                  type="number"
+                  id="bid-price"
+                  className="bid-price"
+                  placeholder="Price in ETH"
+                  value={makeBid}
+                  onChange={e => setMakeBid(e.target.value)}
+                />
+              </p>
+              {lastBid && (
+                <p className="last-bid">
+                  Your last bid: <strong>{ethers.utils.formatEther(lastBid.amount)} ETH</strong>
+                </p>
+              )}
+              <p className="item">
+                <Button className="nftActionButton outline" onClick={handleMakeBid}>
+                  Make Bid
+                </Button>
+              </p>
+            </>
+          )}
+          {isAuctionOver && (winner.toLowerCase() === userId || seller.toLowerCase() === userId) && (
+            <div className="item">
+              <Button type="button" className="nftActionButton outline" onClick={claimNFTHandler}>
+                Claim
+              </Button>
+            </div>
+          )}
         </>
-      )}
-      {auctionId && bids.length > 0 && (
-        <p>
-          Winner:
-          <button type="button" className="item address" onClick={handleGoToProfile(winner)}>
-            {winner.toLowerCase() === userId ? 'You' : winner}
-          </button>
-        </p>
-      )}
-      {auctionId && seller.toLowerCase() !== userId && !isAuctionOver && (
-        <>
-          <p className="item">
-            <FormLabel htmlFor="bid-price">Bid Price:</FormLabel>
-            <Input type="number" id="bid-price" className="bid-price" placeholder="Price in ETH" onChange={e => setMakeBid(e.target.value)} />
-          </p>
-          <p className="item">
-            <Button className="nftActionButton" onClick={handleMakeBid}>
-              Make Bid
-            </Button>
-          </p>
-        </>
-      )}
-      {isAuctionOver && (winner.toLowerCase() === userId || seller.toLowerCase() === userId) && (
-        <div className="item">
-          <Button type="button" className="nftActionButton" onClick={claimNFTHandler}>
-            Claim
-          </Button>
-        </div>
       )}
     </ScAuctionButton>
   );
