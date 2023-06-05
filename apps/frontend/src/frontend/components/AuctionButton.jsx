@@ -18,8 +18,8 @@ import {
 } from '../store/selectors';
 import { loadNFT } from '../store/uiSlice';
 import API from '../modules/api';
+import { checkUserRejectedHandler, dispatchToastHandler, getPermitSignature } from './utils';
 import Button from './Button';
-import { checkUserRejectedHandler, dispatchToastHandler, waitConfirmHandler, waitTransactionHandler, getPermitSignature } from './utils';
 import { theme } from '../constants';
 import LoadingSpinner from './LoadingSpinner';
 
