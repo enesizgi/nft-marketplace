@@ -209,29 +209,8 @@ contract Marketplace is ReentrancyGuard, Ownable {
         );
     }
 
-//    function makeOffer(uint _auctionId) external payable nonReentrant {
-//        require(_auctionId > 0, "Auction id should be bigger than zero.");
-//        AuctionItem storage auctionItem = auctionItems[_auctionId];
-//        require(msg.value > auctionItem.price, "Price should be greater than current price.");
-//        require(block.timestamp < auctionItem.timeToEnd, "Auction should not be ended.");
-//        uint previousDeposit = auctionItem.deposited;
-//        address payable previousWinner = auctionItem.winner;
-//        auctionItem.price = msg.value;
-//        auctionItem.winner = payable(msg.sender);
-//        auctionItem.deposited = msg.value;
-//        if (previousDeposit > 0) {
-//            previousWinner.transfer(previousDeposit);
-//        }
-//        emit BidPlaced(
-//            _auctionId,
-//            msg.sender,
-//            msg.value
-//        );
-//    }
-
-
     function claimNFT(IERC20Permit erc20, uint256 _tokenId, uint _auctionId,
-            uint256 deadline, address bidder, uint256 amount, uint8 _v, bytes32 _r, bytes32 _s) external nonReentrant {
+            uint256 deadline, address bidder, uint256 amount, uint8 _v, bytes32 _r, bytes32 _s) external nonReentrant onlyOwner {
         require(_auctionId > 0, "Auction id should be bigger than zero");
         AuctionItem storage auctionItem = auctionItems[_auctionId];
         require(block.timestamp >= auctionItem.timeToEnd, "Auction should end first.");
@@ -257,6 +236,23 @@ contract Marketplace is ReentrancyGuard, Ownable {
         );
     }
 
+    function returnNftToSeller(uint _auctionId) external nonReentrant onlyOwner {
+        require(_auctionId > 0, "Auction id should be bigger than zero");
+        AuctionItem storage auctionItem = auctionItems[_auctionId];
+        require(!auctionItem.claimed, "NFT is already claimed.");
+        require(!auctionItem.canceled, "Auction is already canceled.");
+        auctionItem.nft.transferFrom(address(this), auctionItem.seller, auctionItem.tokenId);
+        auctionItem.canceled = true;
+
+        emit AuctionEnded(
+            _auctionId,
+            address(auctionItem.nft),
+            auctionItem.tokenId,
+            auctionItem.price,
+            auctionItem.seller,
+            auctionItem.seller
+        );
+    }
 
     function cancelOffered(uint _itemId) external nonReentrant {
         require(_itemId > 0, "Item id should be bigger than zero.");
