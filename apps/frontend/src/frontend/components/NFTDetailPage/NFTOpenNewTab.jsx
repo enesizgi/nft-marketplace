@@ -2,6 +2,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { BsFullscreen } from 'react-icons/bs';
+import { theme } from '../../constants';
 
 const ScOpenLinkButton = styled.div`
   position: relative;
@@ -10,8 +11,8 @@ const ScOpenLinkButton = styled.div`
 
   .openbtn {
     display: flex;
-    background-color: ${({ theme }) => theme.blue};
-    border: 3px solid ${({ theme }) => theme.blue};
+    background-color: ${theme.blue};
+    border: 3px solid ${theme.blue};
     border-radius: 17px;
     box-shadow: rgb(0 0 0 / 10%) 0 2px 4px 0;
     box-sizing: border-box;

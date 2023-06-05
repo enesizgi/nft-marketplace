@@ -62,7 +62,9 @@ const ScAuctionButton = styled.div`
   }
 
   .winner {
-    text-align: end;
+    @media screen and (min-width: 481px) {
+      text-align: end;
+    }
   }
 
   .address {

@@ -17,16 +17,16 @@
   color: #212529;
   text-align: left;
   list-style: none;
-  background-color: #fff;
+  background-color: #0A101E;
   background-clip: padding-box;
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  border: 1px solid #00A0DC;
   border-radius: 0.25rem;
 }
 
 .dropdown-item {
   display: block;
   width: 100%;
-  padding: 0.25rem 1.5rem;
+  padding: 5px 10px 5px 26px;
   clear: both;
   font-weight: 400;
   color: #212529;
@@ -66,8 +66,8 @@
 }
 
 .btn-secondary {
-  background-color: #0089a8;
-  border: 3px solid #0089a8;
+  background-color: #00A0DC;
+  border: 3px solid #00A0DC;
   border-radius: 17px;
   box-shadow: rgb(0 0 0 / 10%) 0 2px 4px 0;
   box-sizing: border-box;

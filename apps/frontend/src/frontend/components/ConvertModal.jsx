@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { ethers } from 'ethers';
-import { Button, FormLabel, Input } from '@chakra-ui/react';
+import { FormLabel, Input } from '@chakra-ui/react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getButtonSize, getProviderOrSigner, getUserId, getwETHContract } from '../store/selectors';
 import LoadingSpinner from './LoadingSpinner';
+import Button from './Button';
 import { setActiveModal } from '../store/uiSlice';
 import { checkUserRejectedHandler, dispatchToastHandler, waitConfirmHandler, waitTransactionHandler } from './utils';
+import { theme } from '../constants';
 
 const ScConvertModal = styled.div`
   display: flex;
@@ -14,18 +16,27 @@ const ScConvertModal = styled.div`
 
   .amount-label {
     align-self: flex-start;
-    font-size: 24px;
+    margin-bottom: 30px;
+    font-size: 36px;
     font-weight: 600;
   }
   .convert-buttons {
-    margin-top: 30px;
-    & > button {
-      margin-right: 10px;
+    display: flex;
+    > button {
+      margin: 30px;
+      @media screen and (max-width: 480px) {
+        margin: 30px 10px;
+      }
     }
   }
   > input {
     color: #fff;
     font-size: 18px;
+    border: 2px solid ${theme.blue};
+  }
+  .info-label {
+    color: white;
+    margin-bottom: 20px;
   }
 `;
 
@@ -98,10 +109,16 @@ const ConvertModal = () => {
   return (
     <ScConvertModal>
       <FormLabel className="amount-label" htmlFor="amount">
-        Select Amount:
+        Convert
       </FormLabel>
-      <div style={{ color: 'white' }}>Your ETH Balance:{ethBalance}</div>
-      <div style={{ color: 'white' }}>Your WETH Balance:{wethBalance}</div>
+      <div className="info-label">
+        <strong>Your ETH Balance: </strong>
+        {ethBalance}
+      </div>
+      <div className="info-label">
+        <strong>Your WETH Balance: </strong>
+        {wethBalance}
+      </div>
       <Input id="amount" type="number" value={amount} onChange={e => setAmount(e.target.value)} />
       <div className="convert-buttons">
         <Button colorScheme="linkedin" size={buttonSize} onClick={handleConvertToWETH}>
