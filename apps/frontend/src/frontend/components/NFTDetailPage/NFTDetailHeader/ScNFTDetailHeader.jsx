@@ -43,6 +43,7 @@ const ScNFTDetailHeader = styled.div`
       width: 100%;
       display: flex;
       flex-direction: column;
+      margin-bottom: 20px;
       .header-buttons {
         align-self: flex-end;
         .refresh-button {

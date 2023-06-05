@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { Button } from '@chakra-ui/react';
 import NFTCard from '../NFTCard';
 import { getButtonSize } from '../../store/selectors';
+import UserCard from '../UserCard';
 
 const ScNFTShowcase = styled.div`
   width: 100%;
@@ -45,16 +46,19 @@ const ScNFTShowcase = styled.div`
   }
 `;
 
-const NFTShowcase = ({ NFTs, selectedTab, loading, setCounter }) => {
+const NFTShowcase = ({ NFTs, users, selectedTab, loading, setCounter }) => {
   const buttonSize = useSelector(getButtonSize);
   const navigate = useNavigate();
+
   return (
     <ScNFTShowcase>
-      {NFTs.length ? (
+      {NFTs?.length || users?.length ? (
         <div className="nftCard-container">
-          {NFTs.map(item => (
-            <NFTCard key={`${item.url}-${Math.random()}`} item={item} selectedTab={selectedTab} loading={loading} setCounter={setCounter} />
-          ))}
+          {NFTs.length &&
+            NFTs.map(item => (
+              <NFTCard key={`${item.url}-${Math.random()}`} item={item} selectedTab={selectedTab} loading={loading} setCounter={setCounter} />
+            ))}
+          {users?.length && users.map(user => <UserCard key={Math.random()} user={user} loading={loading} />)}
         </div>
       ) : (
         <div className="emptyShowcase">

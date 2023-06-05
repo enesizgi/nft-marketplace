@@ -35,7 +35,11 @@ const HomePage = () => {
           <SearchBar />
         </div>
       )}
-      {listedItems ? <NFTShowcase NFTs={listedItems} selectedTab="Home" /> : <ListNFTSPage profileId={userId} selectedTab="Home" />}
+      {Object.keys(listedItems)?.length ? (
+        <NFTShowcase NFTs={listedItems.nfts} users={listedItems.users} selectedTab="Home" />
+      ) : (
+        <ListNFTSPage profileId={userId} selectedTab="Home" />
+      )}
     </ScHomePage>
   );
 };

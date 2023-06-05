@@ -21,6 +21,13 @@ const ScNFTCard = styled.div`
     }
   }
 
+  .defaultPhoto {
+    fill: ${theme.secondaryBlue};
+    background: #fff;
+    height: 100%;
+    width: 100%;
+  }
+
   .favorite-icon {
     z-index: 2;
     width: 25px;

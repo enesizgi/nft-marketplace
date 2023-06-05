@@ -13,7 +13,7 @@ export const getUI = state => state.ui;
 
 export const getNFT = state => state.nft;
 
-export const getListedItems = state => state.listing;
+export const getListedItems = state => state.listing || {};
 
 export const getUserId = createSelector(getUser, ({ id }) => id.toLowerCase());
 

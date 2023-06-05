@@ -53,8 +53,10 @@ const ScProfileHeader = styled.div`
         height: 100%;
       }
       &-default {
-        fill: ${({ theme }) => theme.secondaryBlue};
-        background: #fff;
+        fill: #fff;
+        background: ${({ theme }) => theme.secondaryBlue};
+        width: 100%;
+        height: 100%;
       }
     }
   }

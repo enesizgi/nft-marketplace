@@ -5,6 +5,7 @@ import profileSlice from './profileSlice';
 import uiSlice from './uiSlice';
 import nftSlice from './nftSlice';
 import listenerMiddleware from './listenerMiddleware';
+import listingSlice from './listingSlice';
 
 const store = configureStore({
   reducer: {
@@ -12,7 +13,8 @@ const store = configureStore({
     marketplace: marketplaceSlice,
     profile: profileSlice,
     ui: uiSlice,
-    nft: nftSlice
+    nft: nftSlice,
+    listing: listingSlice
   },
   middleware: getDefaultMiddleware => getDefaultMiddleware().prepend(listenerMiddleware.middleware)
 });

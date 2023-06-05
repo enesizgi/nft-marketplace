@@ -236,7 +236,7 @@ router.get('/user/profile-photo', async (req, res) => {
     const image = req.query.id && imageType.ProfilePhoto && (await Image.findOne({ user_id: req.query.id, type: imageType.ProfilePhoto }).lean());
     if (image) {
       const { _id, user_id: id, image_path: url, ...rest } = image;
-      return res.send({ ...rest, id, url: `${apiProtocol}://${apiBaseURL}/${image.url}` });
+      return res.send({ ...rest, id, url: `${apiProtocol}://${apiBaseURL}/${image.image_path}` });
     }
     return res.status(404).send();
   } catch (err) {
