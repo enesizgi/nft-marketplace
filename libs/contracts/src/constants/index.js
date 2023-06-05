@@ -14,6 +14,8 @@ import * as MarketplaceAddressSepolia from '../contractsData/sepolia/Marketplace
 import * as MarketplaceAbiSepolia from '../contractsData/sepolia/Marketplace.json';
 import * as wETHAddressSepolia from '../contractsData/sepolia/wETH-address.json';
 import * as wETHAbiSepolia from '../contractsData/sepolia/wETH.json';
+import * as wETHAddressGoerli from '../contractsData/goerli/wETH-address.json';
+import * as wETHAbiGoerli from '../contractsData/goerli/wETH.json';
 
 export const NETWORK_NAMES = {
   '0xaa36a7': 'sepolia',
@@ -39,6 +41,10 @@ export const CONTRACTS = {
     MARKETPLACE: {
       address: MarketplaceAddressGoerli.address,
       abi: MarketplaceAbiGoerli.abi
+    },
+    wETH: {
+      address: wETHAddressGoerli.address,
+      abi: wETHAbiGoerli.abi
     }
   },
   [NETWORK_IDS.LOCALHOST]: {
