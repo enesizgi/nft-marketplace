@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import OnOutsideClick from 'react-outclick';
 import CoolButton from './CoolButton';
-import { ReactComponent as PolygonLogo } from '../../assets/polygon-logo.svg';
 import EthereumLogo from '../../assets/ethereum-logo.png';
 import { ReactComponent as LocalhostIcon } from '../../assets/localhost-icon.svg';
 import { CHAIN_PARAMS, DEVICE_TYPES, NETWORK_LOGOS, theme } from '../../constants';
@@ -110,14 +109,14 @@ const NetworkSelector = () => {
               <img src={EthereumLogo} alt="ethereum-logo" className="dropdown-content-item-icon" />
               <div className="dropdown-container-network-title">Sepolia</div>
             </button>
-            <button type="button" className="dropdown-content-item" onClick={handleNetworkChange('0x5')}>
-              <img src={EthereumLogo} alt="ethereum-logo" className="dropdown-content-item-icon" />
-              <div className="dropdown-container-network-title">Goerli</div>
-            </button>
-            <button type="button" className="dropdown-content-item" onClick={handleNetworkChange('0x89')}>
-              <PolygonLogo className="dropdown-content-item-icon" />
-              <div className="dropdown-container-network-title">Polygon</div>
-            </button>
+            {/* <button type="button" className="dropdown-content-item" onClick={handleNetworkChange('0x5')}> */}
+            {/*  <img src={EthereumLogo} alt="ethereum-logo" className="dropdown-content-item-icon" /> */}
+            {/*  <div className="dropdown-container-network-title">Goerli</div> */}
+            {/* </button> */}
+            {/* <button type="button" className="dropdown-content-item" onClick={handleNetworkChange('0x89')}> */}
+            {/*  <PolygonLogo className="dropdown-content-item-icon" /> */}
+            {/*  <div className="dropdown-container-network-title">Polygon</div> */}
+            {/* </button> */}
           </Dropdown>
         )}
       </OnOutsideClick>
