@@ -67,7 +67,7 @@ app.use('/assets', express.static(path.join(dirname, '/assets')));
   setInterval(async () => {
     try {
       if (process.env.NODE_ENV === 'production') {
-        const chainIds = Object.keys(CONTRACTS).filter(chainId => chainId !== NETWORK_IDS.LOCALHOST);
+        const chainIds = Object.keys(CONTRACTS).filter(chainId => chainId === NETWORK_IDS.SEPOLIA);
         await Promise.all(chainIds.map(chainId => fetchMarketplaceEvents(chainId)));
         await Promise.all(chainIds.map(chainId => finishAuctions(chainId)));
       } else {
