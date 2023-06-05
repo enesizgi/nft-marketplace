@@ -238,7 +238,7 @@ contract Marketplace is ReentrancyGuard, Ownable {
         );
     }
 
-    function returnNftToSeller(uint _auctionId) external nonReentrant onlyOwner {
+    function sendNftToSeller(uint _auctionId) external nonReentrant onlyOwner {
         require(_auctionId > 0, "Auction id should be bigger than zero");
         AuctionItem storage auctionItem = auctionItems[_auctionId];
         require(!auctionItem.claimed, "NFT is already claimed.");
