@@ -1,7 +1,7 @@
 # Calculate the SHA checksum
 sha=$(shasum package.json pnpm-lock.yaml | shasum | sed 's/ .*//')
 
-if [ $sha == "224b02b35475100442a843c6dafb8ff763ef376c" ]
+if [ $sha == "790e2a566312e737032426e33ef2ec8f86ebac2e" ]
 then
 	exit 0
 fi

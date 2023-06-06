@@ -3,9 +3,9 @@ import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import API from '../modules/api';
 import NFTShowcase from './NFTShowcase';
-import { getMarketplaceContract, getNFTContract } from '../store/selectors';
+import { getDeviceType, getMarketplaceContract, getNFTContract } from '../store/selectors';
 import NFTSlider from './NFTSlider';
-import { theme } from '../constants';
+import { DEVICE_TYPES, theme } from '../constants';
 
 const ScListNFTSPage = styled.div`
   margin: 16px;
@@ -86,6 +86,10 @@ const ListNFTSPage = ({ profileId, selectedTab }) => {
   const [auctionItemsLoading, setAuctionItemsLoading] = useState(false);
   const marketplaceContract = useSelector(getMarketplaceContract);
   const nftContract = useSelector(getNFTContract);
+  const deviceType = useSelector(getDeviceType);
+  const isMobile = deviceType === DEVICE_TYPES.MOBILE;
+
+  const onePageNftCount = isMobile ? 1 : 8;
 
   useEffect(() => {
     (async () => {
@@ -118,8 +122,8 @@ const ListNFTSPage = ({ profileId, selectedTab }) => {
         type: 'Listing',
         sold: false,
         canceled: false,
-        limit: 5,
-        skip: (listedCurrentPage - 1) * 5
+        limit: onePageNftCount,
+        skip: (listedCurrentPage - 1) * onePageNftCount
       });
       const batchItems = await Promise.allSettled(
         mongoItems.map(async i => {
@@ -156,8 +160,8 @@ const ListNFTSPage = ({ profileId, selectedTab }) => {
       const mongoItems = await API.getNftStatus({
         marketplaceContract: marketplaceContract.address,
         type: 'Auction',
-        limit: 5,
-        skip: (auctionCurrentPage - 1) * 5,
+        limit: onePageNftCount,
+        skip: (auctionCurrentPage - 1) * onePageNftCount,
         canceled: false,
         claimed: false,
         ...(selectedTab === 'Home' && { timeToEnd: new Date().getTime() })
@@ -199,6 +203,7 @@ const ListNFTSPage = ({ profileId, selectedTab }) => {
             currentPage={listedCurrentPage}
             setCurrentPage={setListedCurrentPage}
             items={listedItems}
+            onePageNftCount={onePageNftCount}
           />
         )}
         {auctionItemCount && (
@@ -209,6 +214,7 @@ const ListNFTSPage = ({ profileId, selectedTab }) => {
             currentPage={auctionCurrentPage}
             setCurrentPage={setAuctionCurrentPage}
             items={auctionItems}
+            onePageNftCount={onePageNftCount}
           />
         )}
       </ScListNFTSPage>

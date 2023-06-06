@@ -155,6 +155,9 @@ dependencies:
   typescript:
     specifier: 5.0.4
     version: 5.0.4
+  use-swipe-hook:
+    specifier: ^2.0.0
+    version: 2.0.0(react-dom@18.2.0)(react@18.2.0)
   uuid:
     specifier: ^9.0.0
     version: 9.0.0
@@ -16652,6 +16655,16 @@ packages:
       detect-node-es: 1.1.0
       react: 18.2.0
       tslib: 2.5.0
+    dev: false
+
+  /use-swipe-hook@2.0.0(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-voZW2L4ESEkcClEl3LMAPzbQCxAqGjbI85RQCLVdg6Sjaw1Tpz6d6uiZZj9EcKnyQKOgcXLUH488vRwaqCsagQ==}
+    peerDependencies:
+      react: ^16.8.0
+      react-dom: ^16.8.0
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
     dev: false
 
   /use-sync-external-store@1.2.0(react@18.2.0):
