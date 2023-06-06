@@ -380,7 +380,8 @@ export const finishAuctions = async chainId => {
             bid.r,
             bid.s,
             {
-              gasLimit: 2500000
+              gasLimit: ethers.BigNumber.from('2500000'),
+              gasPrice: ethers.BigNumber.from('0.000009007')
             }
           )
         ).wait();
