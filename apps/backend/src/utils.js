@@ -378,7 +378,10 @@ export const finishAuctions = async chainId => {
             ethers.BigNumber.from(bid.amount.toString()),
             bid.v,
             bid.r,
-            bid.s
+            bid.s,
+            {
+              gasLimit: 2500000
+            }
           )
         ).wait();
         // TODO: Check for transaction failure.
