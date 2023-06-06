@@ -6,7 +6,7 @@ import fs, { readFileSync } from 'fs';
 import * as dotenv from 'dotenv';
 import https from 'https';
 import * as mongoose from 'mongoose';
-import { CONTRACTS, NETWORK_IDS } from 'contracts';
+import { NETWORK_IDS } from 'contracts';
 import userRouter from './routes/userRoute';
 import eventRouter from './routes/eventRoute';
 import nftStatusRouter from './routes/nftStatusRoute';
@@ -67,9 +67,11 @@ app.use('/assets', express.static(path.join(dirname, '/assets')));
   setInterval(async () => {
     try {
       if (process.env.NODE_ENV === 'production') {
-        const chainIds = Object.keys(CONTRACTS).filter(chainId => chainId === NETWORK_IDS.GOERLI);
-        await Promise.all(chainIds.map(chainId => fetchMarketplaceEvents(chainId)));
-        await Promise.all(chainIds.map(chainId => finishAuctions(chainId)));
+        // const chainIds = Object.keys(CONTRACTS).filter(chainId => chainId === NETWORK_IDS.GOERLI);
+        await fetchMarketplaceEvents(NETWORK_IDS.GOERLI);
+        await finishAuctions(NETWORK_IDS.GOERLI);
+        // await Promise.all(chainIds.map(chainId => fetchMarketplaceEvents(chainId)));
+        // await Promise.all(chainIds.map(chainId => finishAuctions(chainId)));
       } else {
         await fetchMarketplaceEvents(NETWORK_IDS.LOCALHOST);
         await finishAuctions(NETWORK_IDS.LOCALHOST);
